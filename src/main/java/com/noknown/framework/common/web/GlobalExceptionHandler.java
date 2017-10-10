@@ -60,8 +60,6 @@ public class GlobalExceptionHandler {
 				ModelAndView view = new ModelAndView();
 				view.addObject("errorMsg", msg);
 				view.addObject("errorEx", ex);
-				System.out.println("+++++++++错误++++++++");
-				System.out.println(responseStatus.value());
 				view.setViewName("error/" + responseStatus.value());
 				return view;
 			}

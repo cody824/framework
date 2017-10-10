@@ -10,8 +10,11 @@ public class ErrorMsg implements Serializable {
 	
 	/**
 	 * 错误编码
+	 * 	1 ： 参数错误
+	 * 	65535 : 未知错误
+	 * 
 	 */
-	private int errorNum;
+	private int errorNum = 1;
 	
 	/**
 	 * 错误信息的参数列表
