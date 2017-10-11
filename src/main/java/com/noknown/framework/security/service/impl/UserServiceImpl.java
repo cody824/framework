@@ -3,7 +3,16 @@ package com.noknown.framework.security.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,7 +20,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.noknown.framework.common.exception.DAOException;
 import com.noknown.framework.common.exception.ServiceException;
 import com.noknown.framework.common.util.BaseUtil;
+import com.noknown.framework.common.util.JpaUtil;
 import com.noknown.framework.common.util.RegexValidateUtil;
+import com.noknown.framework.common.web.model.PageData;
+import com.noknown.framework.common.web.model.SQLFilter;
 import com.noknown.framework.security.dao.TpaDao;
 import com.noknown.framework.security.dao.UserDao;
 import com.noknown.framework.security.model.ThirdPartyAccount;
@@ -286,6 +298,136 @@ public abstract class UserServiceImpl implements UserService {
 	@Override
 	public void updateTpa(ThirdPartyAccount tpa) throws ServiceException, DAOException {
 		tpaDao.save(tpa);
+	}
+
+
+	@Override
+	public PageData<User> findBySQLFilter(SQLFilter sqlFilter, int start, int limit)
+			throws ServiceException, DAOException {
+		Pageable pageable = new PageRequest(start * limit, limit);
+		Specification<User> spec = new Specification<User>(){
+
+			@Override
+			public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				Predicate predicate = JpaUtil.sqlFilterToPredicate(User.class, root, query, cb, sqlFilter);
+				return predicate;
+			}} ;
+		Page<User> pd = userDao.findAll(spec , pageable);
+		
+		PageData<User> pageData = new PageData<>();
+		pageData.setTotal(pd.getTotalElements());
+		pageData.setTotalPage(pd.getTotalPages());
+		pageData.setData(pd.getContent());
+		pageData.setStart(start);
+		pageData.setLimit(limit);
+		
+		return pageData;
+	}
+	
+
+	@Override
+	public void resetUsersPasswd(List<Integer> userIds) throws ServiceException {
+		for (Integer userId : userIds) {
+			User user = userDao.findOne(userId);
+			if (user == null) {
+				throw new ServiceException("用户ID:" + userId + " 对应的用户不存在");
+			}
+
+			String Password = pswdEncoder.encode("123456");
+			user.setPassword(Password);
+			userDao.save(user);
+		}
+		
+	}
+
+	@Override
+	public void deleteUsersByName(List<String> userNames) throws ServiceException {
+		User user = null;
+		for (String name : userNames) {
+			user = userDao.findByNick(name);
+			if (user == null) {
+				throw new ServiceException("用户:" + name + " 不存在");
+			}
+			userDao.delete(user);
+		}
+		
+	}
+
+	@Override
+	public void unlockUsersByName(List<String> userNames) {
+		for (String name : userNames) {
+			User user = userDao.findByNick(name);
+			if (user != null) {
+				user.setEnable(true);
+				userDao.save(user);
+			}
+		}
+		
+	}
+
+	@Override
+	public void lockUsersByName(List<String> userNames) {
+		for (String name : userNames) {
+			User user = userDao.findByNick(name);
+			if (user != null) {
+				user.setEnable(false);
+				userDao.save(user);
+			}
+		}
+		
+	}
+
+	@Override
+	public void lockUsersById(List<Integer> userSIds) {
+		for (Integer userId : userSIds) {
+			User user = userDao.findOne(userId);
+			if (user != null) {
+				user.setEnable(false);
+				userDao.save(user);
+			}
+		}
+		
+	}
+
+	@Override
+	public void unlockUsersById(List<Integer> userSIds) {
+		for (Integer userId : userSIds) {
+			User user = userDao.findOne(userId);
+			if (user != null) {
+				user.setEnable(true);
+				userDao.save(user);
+			}
+		}
+		
+	}
+
+	@Override
+	public void updateUserPasswd(Integer userId, String oldPassword, String newPassword) throws ServiceException {
+		User user = userDao.findOne(userId);
+		if (user != null){
+			if (!pswdEncoder.matches(oldPassword, user.getPassword())){
+				throw new ServiceException("密码错误");
+			}
+			user.setPassword(pswdEncoder.encode(newPassword));
+			userDao.save(user);
+		}
+	}
+
+	@Override
+	public void updateNick(Integer userId, String name) throws ServiceException {
+		User user = userDao.findOne(userId);
+		if (user == null){
+			throw new ServiceException("用户不存在");
+		}
+		if (user.getNickOk()) {
+			throw new ServiceException("昵称只能修改一次，您不可以再修改昵称");
+		}
+		User existUser = userDao.findByNick(name);
+		if (existUser != null)
+			throw new ServiceException(name + "已经被使用，请换一个昵称");
+		
+		user.setNick(name);
+		userDao.save(user);
 	}
 
 

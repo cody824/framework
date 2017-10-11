@@ -6,6 +6,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 import com.noknown.framework.common.exception.DAOException;
 import com.noknown.framework.common.exception.ServiceException;
+import com.noknown.framework.common.web.model.PageData;
+import com.noknown.framework.common.web.model.SQLFilter;
 import com.noknown.framework.security.model.ThirdPartyAccount;
 import com.noknown.framework.security.model.User;
 import com.noknown.framework.security.model.UserDetails;
@@ -29,6 +31,8 @@ public interface UserService extends UserDetailsService {
 	UserDetails addUser(User user) throws ServiceException;
 	
 	User findById(Integer id);
+
+	PageData<User> findBySQLFilter(SQLFilter sqlFilter, int start, int limit)throws ServiceException, DAOException;
 	
 	
 	UserDetails addUserFromTpa(String tpaType, String tpaId, String avatar, String avatar_hd,
@@ -236,6 +240,22 @@ public interface UserService extends UserDetailsService {
 	 * @throws ServiceException
 	 */
 	List<ThirdPartyAccount> getThirdPartyList(Integer userId) throws DAOException, ServiceException;
+
+	void resetUsersPasswd(List<Integer> userIds) throws DAOException, ServiceException;
+
+	void deleteUsersByName(List<String> userNames)throws DAOException, ServiceException;
+
+	void unlockUsersByName(List<String> userNames)throws DAOException, ServiceException;
+
+	void lockUsersByName(List<String> userNames)throws DAOException, ServiceException;
+
+	void lockUsersById(List<Integer> userIds)throws DAOException, ServiceException;
+
+	void unlockUsersById(List<Integer> userIds)throws DAOException, ServiceException;
+
+	void updateUserPasswd(Integer userId, String oldPassword, String newPassword)throws DAOException, ServiceException;
+
+	void updateNick(Integer userId, String name)throws DAOException, ServiceException;
 
 
 

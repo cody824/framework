@@ -52,6 +52,8 @@ public class User implements Serializable, Authentication, UserDetails {
 	
 	private Boolean enable = true;
 	
+	private Boolean nickOk = false;
+	
 	private Date createDate;
 	
 	private Date lastPasswordResetDate;
@@ -206,6 +208,12 @@ public class User implements Serializable, Authentication, UserDetails {
 		if (roles == null) roles = new ArrayList<>();
 		roles.add(role);
 	}
+	
+	public void removeRole(Role role) {
+		if (roles != null){
+			roles.remove(role);
+		} 
+	}
 
 
 	/**
@@ -294,6 +302,24 @@ public class User implements Serializable, Authentication, UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return enable;
+	}
+
+
+
+	/**
+	 * @return the nickOk
+	 */
+	public Boolean getNickOk() {
+		return nickOk;
+	}
+
+
+
+	/**
+	 * @param nickOk the nickOk to set
+	 */
+	public void setNickOk(Boolean nickOk) {
+		this.nickOk = nickOk;
 	}
 
 }

@@ -25,6 +25,11 @@ public class ErrorMsg implements Serializable {
 	 * 错误信息
 	 */
 	private String errorMsg;
+	
+	/**
+	 * 系统内部错误信息
+	 */
+	private String systemError;
 
 	/**
 	 * 错误异常对象
@@ -38,8 +43,12 @@ public class ErrorMsg implements Serializable {
 	 * 构造错误信息
 	 * @param errorMsg 错误信息
  	 */
-	public ErrorMsg(String errorMsg){
-		this.errorMsg = errorMsg;
+	public ErrorMsg(String errorMsg, boolean isSystem){
+		if (isSystem) {
+			this.systemError = errorMsg;
+		} else {
+			this.errorMsg = errorMsg;
+		}
 	}
 	
 	/**
@@ -131,5 +140,19 @@ public class ErrorMsg implements Serializable {
 	 */
 	public void setDetail(Object detail) {
 		this.detail = detail;
+	}
+
+	/**
+	 * @return the systemError
+	 */
+	public String getSystemError() {
+		return systemError;
+	}
+
+	/**
+	 * @param systemError the systemError to set
+	 */
+	public void setSystemError(String systemError) {
+		this.systemError = systemError;
 	}
 }

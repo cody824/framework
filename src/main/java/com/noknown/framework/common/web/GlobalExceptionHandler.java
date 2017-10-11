@@ -41,12 +41,12 @@ public class GlobalExceptionHandler {
 	        } else if(ex instanceof DAOException) {
 	        	logger.error(ex.getLocalizedMessage());
 	        	ex.printStackTrace();
-	        	msg = new ErrorMsg("服务错误：" + ex.getLocalizedMessage());
+	        	msg = new ErrorMsg("服务错误：" + ex.getLocalizedMessage(), true);
 	        	responseStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 	        }  else {  
 	        	logger.error(ex.getLocalizedMessage());
 	        	ex.printStackTrace();
-	        	msg = new ErrorMsg("服务错误：" + ex.getLocalizedMessage());
+	        	msg = new ErrorMsg("服务错误：" + ex.getLocalizedMessage(), true);
 	        	responseStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 	        }  
 		  	request.setAttribute("errorMsg", msg);
