@@ -97,10 +97,9 @@ public class GlobalConfigController extends BaseController {
 	Object deleteBaseConfig(
 			@PathVariable("domain") String domain,
 			@PathVariable("configType") String configType,
-			@RequestParam(value = "key", required = false) String key,
-			@RequestParam(value = "value", required = false) String value) {
+			@RequestParam(value = "key", required = false) String key) {
 		if (key != null) {
-			gcs.deleteValue(configType, domain, key, value);
+			gcs.deleteValue(configType, domain, key);
 		}
 		return outActionReturn(HttpStatus.OK, HttpStatus.OK);
 	}

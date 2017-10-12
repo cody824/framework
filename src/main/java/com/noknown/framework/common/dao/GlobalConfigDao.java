@@ -70,10 +70,9 @@ public interface GlobalConfigDao {
 	 * @param configType 配置类型
 	 * @param domain domain名
 	 * @param key 配置名称
-	 * @param value 配置值
 	 * @return
 	 */
-	void deleteValue(String cofnigType, String domain, String key, String value);
+	void deleteValue(String cofnigType, String domain, String key);
 	
 	/**
 	 * 删除configType类型的配置库

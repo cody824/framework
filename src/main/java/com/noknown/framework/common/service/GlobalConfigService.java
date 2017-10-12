@@ -90,7 +90,7 @@ public interface GlobalConfigService {
 	 * @param value 配置值
 	 * @return
 	 */
-	void deleteValue(String cofnigType, String domain, String key, String value);
+	void deleteValue(String cofnigType, String domain, String key);
 	
 	/**
 	 * 删除configType类型的配置库

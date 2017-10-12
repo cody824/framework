@@ -176,8 +176,7 @@ public class GlobalConfigImplDao implements GlobalConfigDao {
 	}
 	
 	@Override
-	public void deleteValue(String cofnigType, String domain, String key,
-			String value) {
+	public void deleteValue(String cofnigType, String domain, String key) {
 		String path = getBasePath() + File.separator + cofnigType
 				+ File.separator + domain;
 		try {

@@ -112,9 +112,8 @@ public class GlobalConfigServiceImpl implements GlobalConfigService {
 	}
 	
 	@Override
-	public void deleteValue(String cofnigType, String domain, String key,
-			String value) {
-		gcDao.deleteValue(cofnigType, domain, key, value);
+	public void deleteValue(String cofnigType, String domain, String key) {
+		gcDao.deleteValue(cofnigType, domain, key);
 		fetchConfig(cofnigType, domain, key, true);
 	}
 
