@@ -408,6 +408,7 @@ public abstract class UserServiceImpl implements UserService {
 			if (!pswdEncoder.matches(oldPassword, user.getPassword())){
 				throw new ServiceException("密码错误");
 			}
+			user.setLastPasswordResetDate(new Date());
 			user.setPassword(pswdEncoder.encode(newPassword));
 			userDao.save(user);
 		}

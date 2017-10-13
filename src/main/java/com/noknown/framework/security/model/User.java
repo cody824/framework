@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "security_user")
-@JsonIgnoreProperties({ "handler","hibernateLazyInitializer" }) 
+@JsonIgnoreProperties({ "handler","hibernateLazyInitializer", "authorities" }) 
 public class User implements Serializable, Authentication, UserDetails {
 
 	/**
