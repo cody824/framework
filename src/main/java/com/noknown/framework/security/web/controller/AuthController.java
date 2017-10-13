@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -121,6 +122,13 @@ public class AuthController  extends BaseController {
 		final String token = authService.login(authenticationRequest.getUsername(),
 				authenticationRequest.getPassword());
 		return ResponseEntity.ok(new JwtAuthenticationResponse(token));
+	}
+	
+	@RequestMapping(value = "/auth/getToken", method = RequestMethod.DELETE)
+	public ResponseEntity<?> removeToken()
+			throws AuthenticationException {
+		SecurityContextHolder.getContext().setAuthentication(null);
+		return ResponseEntity.ok(null);
 	}
 
 	@RequestMapping(value = "/auth/refresToken", method = RequestMethod.GET)
