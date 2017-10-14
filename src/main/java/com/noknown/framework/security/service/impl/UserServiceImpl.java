@@ -304,7 +304,7 @@ public abstract class UserServiceImpl implements UserService {
 	@Override
 	public PageData<User> findBySQLFilter(SQLFilter sqlFilter, int start, int limit)
 			throws ServiceException, DAOException {
-		Pageable pageable = new PageRequest(start * limit, limit);
+		Pageable pageable = new PageRequest(start / limit, limit);
 		Specification<User> spec = new Specification<User>(){
 
 			@Override
