@@ -15,7 +15,7 @@ import org.springframework.util.StringUtils;
 public class SureUrlAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler{
 	
 	private String targetUrlParameter = null;
-	private String defaultFailureUrl = null;
+	private String defaultFailureUrl = "/gotoLoginView?error=true";
 	private boolean alwaysUseDefaultTargetUrl = false;
 	private boolean useReferer = false;
 	

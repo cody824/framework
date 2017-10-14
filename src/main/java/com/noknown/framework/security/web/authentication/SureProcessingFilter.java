@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.noknown.framework.common.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -15,8 +14,11 @@ import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import com.noknown.framework.common.util.StringUtil;
 import com.noknown.framework.security.Constants;
 import com.noknown.framework.security.authentication.SureAuthenticationInfo;
 import com.noknown.framework.security.authentication.SureOauthToken;
@@ -111,6 +113,19 @@ public class SureProcessingFilter  extends AbstractAuthenticationProcessingFilte
 		}
         return auth;  
 	}
+	
+	@Autowired
+	public void setAuthenticationSuccessHandler(
+			AuthenticationSuccessHandler successHandler) {
+		super.setAuthenticationSuccessHandler(successHandler);
+	}
+
+	@Autowired
+	public void setAuthenticationFailureHandler(
+			AuthenticationFailureHandler failureHandler) {
+		super.setAuthenticationFailureHandler(failureHandler);
+	}
+	
 	
 	@Override  
     public void afterPropertiesSet() {  

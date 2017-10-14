@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
@@ -127,5 +128,9 @@ public class AjaxLoginUrlAuthenticationEntryPoint extends LoginUrlAuthentication
 	 */
 	public void setResponse401(boolean response401) {
 		this.response401 = response401;
+	}
+	
+	public void setUseForward(@Value("${security.login.userForward:true}") boolean useForward) {
+		super.setUseForward(useForward);
 	}
 }
