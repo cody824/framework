@@ -27,7 +27,8 @@ import com.noknown.framework.common.service.GlobalConfigService;
 @Controller
 public class LoginViewController extends BaseController {
 
-	protected String defaultView = "login";
+	@Value("${security.login.defaultView:login}")
+	private String defaultView = "login";
 
 	@Autowired
 	private GlobalConfigService gcs;
