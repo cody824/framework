@@ -51,7 +51,7 @@ public class JwtTokenUtil implements Serializable {
 			final Claims claims = getClaimsFromToken(token);
 			user = (User) JsonUtil.toObject((String)claims.get(CLAIM_KEY_USER), User.class);
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			user = null;
 		}
 		return user;
@@ -84,7 +84,7 @@ public class JwtTokenUtil implements Serializable {
 		try {
 			claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			claims = null;
 		}
 		return claims;
