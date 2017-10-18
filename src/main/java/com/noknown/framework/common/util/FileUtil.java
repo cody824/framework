@@ -117,7 +117,6 @@ public class FileUtil {
             file.getFileItem().write(uploadFile);
             filePath = upDir + newFileName;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
