@@ -1134,9 +1134,9 @@ public class DateUtil {
         endDay = formatDate(endDay, "yyyy-MM-dd");
 
         String formatStyle = "yyyy-MM-dd";
-        if("1".equals(stype)){
+        if("1".equals(stype + "")){
             formatStyle = "yyyy-MM";
-        }else if("2".equals(stype)){
+        }else if("2".equals(stype + "")){
             formatStyle = "yyyy";
         }
 
