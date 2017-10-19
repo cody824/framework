@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import com.noknown.framework.common.base.BaseService;
 import com.noknown.framework.common.exception.DAOException;
 import com.noknown.framework.common.exception.ServiceException;
 import com.noknown.framework.common.web.model.PageData;
@@ -12,7 +13,7 @@ import com.noknown.framework.security.model.ThirdPartyAccount;
 import com.noknown.framework.security.model.User;
 import com.noknown.framework.security.model.UserDetails;
 
-public interface UserService extends UserDetailsService {
+public interface UserService extends UserDetailsService, BaseService<User, Integer>{
 
 
 	User loginAuth(String userName, String password) throws ServiceException;

@@ -13,10 +13,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.noknown.framework.common.base.BaseServiceImpl;
 import com.noknown.framework.common.exception.DAOException;
 import com.noknown.framework.common.exception.ServiceException;
 import com.noknown.framework.common.util.BaseUtil;
@@ -31,7 +34,7 @@ import com.noknown.framework.security.model.User;
 import com.noknown.framework.security.service.UserService;
 
 
-public abstract class UserServiceImpl implements UserService {
+public abstract class UserServiceImpl extends BaseServiceImpl<User, Integer> implements UserService {
 
 	@Autowired
 	private UserDao userDao;
@@ -41,6 +44,14 @@ public abstract class UserServiceImpl implements UserService {
 	
 	@Autowired
 	private PasswordEncoder pswdEncoder;
+	
+	public JpaRepository<User, Integer> getRepository() {
+		return userDao;
+	}
+	
+	public JpaSpecificationExecutor<User> getSpecificationExecutor() { 
+		return userDao;
+	}
 
 	@Override
 	public User findByNick(String nick) {
