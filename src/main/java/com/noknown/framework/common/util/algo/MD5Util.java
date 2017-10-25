@@ -46,6 +46,20 @@ public class MD5Util {
 		}
 		return null;
 	}
+	
+	/**
+	 * 获取File文件的MD5值
+	 * 
+	 * @param file
+	 * @return
+	 * @throws InvalidKeyException
+	 * @throws NoSuchAlgorithmException
+	 */
+	public static String getSignature(byte[] bytes) throws InvalidKeyException, NoSuchAlgorithmException {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			md.update(bytes);
+			return bufferToHex(md.digest());
+	}
 
 	private static String bufferToHex(byte bytes[], int m, int n) {
 		StringBuffer stringbuffer = new StringBuffer(2 * n);
