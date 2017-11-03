@@ -17,7 +17,7 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 @Configuration
-@PropertySource(value = "${conf.protocol:classpath}:conf/${spring.profiles.active}/cache.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "${spring.config.custom-path:classpath:}conf/${spring.profiles.active}/cache.properties", ignoreResourceNotFound = true)
 public class CacheConfig {
 
 	public final Logger logger = LoggerFactory.getLogger(getClass());
@@ -35,12 +35,12 @@ public class CacheConfig {
 			@Value("${spring.redis.password}") String password) {
 		JedisPool jedisPool = null;
 		if (connect) {
-			logger.info("JedisPool注入成功！！");
-			logger.info("redis地址：" + host + ":" + port);
 			JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
 			jedisPoolConfig.setMaxIdle(maxIdle);
 			jedisPoolConfig.setMaxWaitMillis(maxWaitMillis);
 			jedisPool = new JedisPool(jedisPoolConfig, host, port, timeout, password);
+			logger.info("JedisPool注入成功！！");
+			logger.info("redis地址：" + host + ":" + port);
 		}
 		return jedisPool;
 	}
