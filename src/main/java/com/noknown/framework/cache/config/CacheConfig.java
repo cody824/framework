@@ -17,7 +17,7 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 @Configuration
-@PropertySource(value = "classpath:conf/${spring.profiles.active}/cache.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "${conf.protocol:classpath}:conf/${spring.profiles.active}/cache.properties", ignoreResourceNotFound = true)
 public class CacheConfig {
 
 	public final Logger logger = LoggerFactory.getLogger(getClass());
