@@ -39,6 +39,10 @@ public class AuthcodServiceImpl  implements AuthcodeService {
 	@Value("${security.authcode.email.subject:验证码}")
 	private String mailSubject;
 
+	@Value("${security.authcode.sms.tpl:}")
+	private String smsTpl;
+
+
 	@Override
 	public String generateAuthCode(String to, int len, int timeout) throws ServiceException {
 		//生成验证码 : 全部为数字
@@ -69,8 +73,15 @@ public class AuthcodServiceImpl  implements AuthcodeService {
 		
 		String authcode = generateAuthCode(to, len, timeout);
 		if("phone".equals(type)){
-			String sms = "您本次操作需要的验证码是:"+authcode+"，" + timeout + "分钟内有效，请尽快操作。";
-			sendAuthCodeSms(to, sms);
+			if (StringUtil.isNotBlank(smsTpl)) {
+				Map<String, String> params = new HashMap<>();
+				params.put("code", authcode);
+				params.put("timeout", timeout + "");
+				sendAuthCodeSms(to, smsTpl, params);
+			} else {
+				String sms = "您本次操作需要的验证码是:"+authcode+"，" + timeout + "分钟内有效，请尽快操作。";
+				sendAuthCodeSms(to, sms);
+			}
 		}else if("email".equals(type)){
 			sendAuthCodeMail(to, authcode, timeout);
 		}else{
@@ -103,6 +114,15 @@ public class AuthcodServiceImpl  implements AuthcodeService {
 	private boolean sendAuthCodeSms(String to, String msg) {
 		try {
 			return smsProvider.send(to, msg);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	private boolean sendAuthCodeSms(String to, String tpl, Map<String, String> tplParams) {
+		try {
+			return smsProvider.send(to, tpl, tplParams);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;

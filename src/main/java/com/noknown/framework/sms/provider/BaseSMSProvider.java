@@ -1,10 +1,7 @@
 package com.noknown.framework.sms.provider;
 
 import java.io.BufferedReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -150,6 +147,9 @@ public abstract class BaseSMSProvider implements SMSProvider {
     }
 
     public static String getErrorNameByCode(String errorCode) {
+        String errorMsg = errorCodeNameMap.get(errorCode);
+        if (errorMsg == null)
+            return errorCode;
         return errorCodeNameMap.get(errorCode);
     }
 
@@ -174,14 +174,20 @@ public abstract class BaseSMSProvider implements SMSProvider {
 
     public Boolean send(String mobileNo, String templateCode,
                         Map<String, String> vars) throws Exception {
-        logger.error(String.format("发送短消息失败，【%s】不支持模板模式的短信发送！", name));
-        return false;
+        List<String> phones = new ArrayList<String>();
+        phones.add(mobileNo);
+        return send(phones, templateCode, vars);
     }
 
     public Boolean send(List<String> mobileNos, String templateCode,
                         Map<String, String> vars) throws Exception {
-        logger.error(String.format("发送短消息失败，【%s】不支持模板模式的短信发送！", name));
-        return false;
+        List<List<String>> list = transitionPhoneGroup(mobileNos);
+
+        for (List<String> list2 : list) {
+            SMS sms = new SMS(this.name, list2, templateCode, vars);
+            msgQueue.offer(sms);
+        }
+        return true;
     }
 
     public void doProcessSMSByTxt(SMS sms) {
@@ -205,7 +211,23 @@ public abstract class BaseSMSProvider implements SMSProvider {
     }
 
     public void doProcessSMSByTemplate(SMS sms) throws Exception {
-        logger.error(String.format("发送短消息失败，【%s】不支持模板模式的短信发送！", name));
+        try {
+
+            String toUrl = this.getSMSUrl(sms);
+
+            HttpRequest request = HttpRequest.get(toUrl);
+            BufferedReader in =request.bufferedReader();
+            String line;
+            StringBuffer buffer = new StringBuffer();
+            while ((line = in.readLine()) != null)
+                buffer.append(line);
+            checkResult(buffer.toString(),sms.getPhones().toString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(String.format("发送短消息失败，手机号码:%s", transitionPhones(sms.getPhones())));
+
+        }
     }
 
     public class SMSSendThread implements Runnable {

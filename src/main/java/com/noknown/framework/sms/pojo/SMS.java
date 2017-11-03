@@ -43,7 +43,6 @@ public class SMS {
      * 文本模式构造器
      * @param provider
      * @param phones
-     * @param type
      * @param content
      */
 	public SMS(String provider, List<String> phones, String content) {
@@ -59,7 +58,6 @@ public class SMS {
 	 * 模板模式构造器
 	 * @param provider
 	 * @param phones
-	 * @param type
 	 * @param tempCode
 	 * @param vars
 	 */
