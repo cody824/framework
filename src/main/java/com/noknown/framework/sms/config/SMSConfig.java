@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource(value = "${conf.protocol:classpath}:conf/${spring.profiles.active}/sms.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "${spring.config.custom-path:classpath:}conf/${spring.profiles.active}/sms.properties", ignoreResourceNotFound = true)
 public class SMSConfig {
 
     public final Logger logger = LoggerFactory.getLogger(getClass());

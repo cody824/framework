@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource(value = "${conf.protocol:classpath}:conf/${spring.profiles.active}/mail.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "${spring.config.custom-path:classpath:}conf/${spring.profiles.active}/mail.properties", ignoreResourceNotFound = true)
 public class MailConfig {
 
 	public final Logger logger = LoggerFactory.getLogger(getClass());

@@ -4,6 +4,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration("frameworkSecurityConfig")
-@PropertySource(value = "${conf.protocol:classpath}:conf/${spring.profiles.active}/security.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "${spring.config.custom-path:classpath:}conf/${spring.profiles.active}/security.properties", ignoreResourceNotFound = true)
 public class SecurityConfig {
 }
