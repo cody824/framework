@@ -17,6 +17,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import libs.fastjson.com.alibaba.fastjson.annotation.JSONField;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -61,7 +62,11 @@ public class User implements Serializable, Authentication, UserDetails {
 	@Transient
 	private boolean isAuth;
 
+	@Transient
+	private Object details;
+
 	@ManyToMany(cascade = { CascadeType.REFRESH }, fetch = FetchType.EAGER)
+	@JSONField(serialize = false)
 	private List<Role> roles = new ArrayList<>();
 
 
@@ -206,7 +211,8 @@ public class User implements Serializable, Authentication, UserDetails {
 	
 	public void addRole(Role role) {
 		if (roles == null) roles = new ArrayList<>();
-		roles.add(role);
+		if (!roles.contains(role))
+			roles.add(role);
 	}
 	
 	public void removeRole(Role role) {
@@ -241,11 +247,14 @@ public class User implements Serializable, Authentication, UserDetails {
 
 	@Override
 	@JsonIgnore
-	public Object getDetails() {
-		return this;
+	public  Object getDetails() {
+		return details;
 	}
 
 
+	public void setDetails(Object details) {
+		this.details = details;
+	}
 
 	@Override
 	public Object getPrincipal() {

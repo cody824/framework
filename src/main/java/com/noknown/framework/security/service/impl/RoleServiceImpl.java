@@ -2,10 +2,13 @@ package com.noknown.framework.security.service.impl;
 
 import java.util.List;
 
+import com.noknown.framework.common.base.BaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Service;
 
 import com.noknown.framework.common.exception.DAOException;
@@ -17,7 +20,7 @@ import com.noknown.framework.security.model.User;
 import com.noknown.framework.security.service.RoleService;
 
 @Service
-public  class RoleServiceImpl implements RoleService {
+public  class RoleServiceImpl extends BaseServiceImpl<Role, Integer> implements RoleService {
 
 	@Autowired
 	private UserDao userDao;
@@ -74,7 +77,7 @@ public  class RoleServiceImpl implements RoleService {
 
 	@Override
 	public void attachRoleForUser(Integer userId, Integer roleId) throws DAOException, ServiceException {
-		User user = userDao.findOne(roleId);
+		User user = userDao.findOne(userId);
 		if (user == null)
 			throw new ServiceException("用户不存在");
 		
@@ -88,8 +91,22 @@ public  class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
+	public void attachRoleForUser(Integer userId, String roleName) throws DAOException, ServiceException {
+		User user = userDao.findOne(userId);
+		if (user == null)
+			throw new ServiceException("用户不存在");
+
+		Role role = roleDao.findByName(roleName);
+		if (role == null)
+			throw new ServiceException("角色不存在");
+
+		user.addRole(role);
+		userDao.save(user);
+	}
+
+	@Override
 	public void detachRoleFromUser(Integer userId, Integer roleId) throws DAOException, ServiceException {
-		User user = userDao.findOne(roleId);
+		User user = userDao.findOne(userId);
 		if (user == null)
 			throw new ServiceException("用户不存在");
 		
@@ -102,6 +119,28 @@ public  class RoleServiceImpl implements RoleService {
 		
 	}
 
+	@Override
+	public void detachRoleFromUser(Integer userId, String roleName) throws DAOException, ServiceException {
+		User user = userDao.findOne(userId);
+		if (user == null)
+			throw new ServiceException("用户不存在");
+
+		Role role = roleDao.findByName(roleName);
+		if (role == null)
+			throw new ServiceException("角色不存在");
+
+		user.removeRole(role);
+		userDao.save(user);
+	}
 
 
+	@Override
+	public JpaRepository<Role, Integer> getRepository() {
+		return roleDao;
+	}
+
+	@Override
+	public JpaSpecificationExecutor<Role> getSpecificationExecutor() {
+		return roleDao;
+	}
 }

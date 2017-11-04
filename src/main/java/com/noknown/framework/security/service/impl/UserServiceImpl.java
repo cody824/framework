@@ -334,7 +334,26 @@ public abstract class UserServiceImpl extends BaseServiceImpl<User, Integer> imp
 		
 		return pageData;
 	}
-	
+
+
+	@Override
+	public void resetUserPasswd(String identity, String password) throws ServiceException {
+		User user = null;
+		boolean isMobile = RegexValidateUtil.checkMobile(identity);
+		boolean isEmail = RegexValidateUtil.checkEmail(identity);
+		if (isMobile) {
+			user = userDao.findByMobile(identity);
+		} else if(isEmail) {
+			user = userDao.findByEmail(identity);
+		} else {
+			user = userDao.findByNick(identity);
+		}
+		if (user == null) {
+			throw new UsernameNotFoundException(String.format("用户%s找不到", identity));
+		}
+		user.setPassword(pswdEncoder.encode(password));
+		userDao.save(user);
+	}
 
 	@Override
 	public void resetUsersPasswd(List<Integer> userIds) throws ServiceException {

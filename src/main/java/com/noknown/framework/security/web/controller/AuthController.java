@@ -180,6 +180,19 @@ public class AuthController  extends BaseController {
 		UserDetails udDetails  = userService.addUser(user);
 		return ResponseEntity.ok(udDetails);
 	}
+
+	@RequestMapping(value = "/auth/resetpsd/mobile", method = RequestMethod.POST)
+	public ResponseEntity<?>  resetPsdFromMobile(@RequestParam(required = false) String clientId, @RequestParam String authcode, @RequestParam String mobile, @RequestParam String password) throws Exception {
+		if (StringUtil.isBlank(mobile) ||  !RegexValidateUtil.checkMobile(mobile)){
+			throw new WebException("请输入正确的手机号");
+		}
+		boolean	checkOk = authcodeService.checkAuthCode(mobile, authcode);
+		if (!checkOk){
+			throw new WebException("验证码错误");
+		}
+		userService.resetUserPasswd(mobile, password);
+		return ResponseEntity.ok(okRet);
+	}
 	
 	@RequestMapping(value = "/auth/register/email", method = RequestMethod.POST, consumes = "application/json")
 	public ResponseEntity<?>  registerFromEmail(@RequestParam String clientId, @RequestParam String authcode, @RequestBody User user) throws Exception {

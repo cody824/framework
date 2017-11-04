@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.noknown.framework.common.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -236,7 +237,6 @@ public class UserMgtController extends BaseController {
      *
      * @param request
      * @param response
-     * @param name     用户名
      * @return
      * @throws Exception
      */
@@ -255,7 +255,6 @@ public class UserMgtController extends BaseController {
      *
      * @param request
      * @param response
-     * @param name     用户名
      * @return
      * @throws Exception
      */
@@ -307,9 +306,13 @@ public class UserMgtController extends BaseController {
     Object addUsersToRole(HttpServletRequest request,
                           HttpServletResponse response,
                           @PathVariable("userId") Integer userId,
+                          @RequestParam(required = false) String roleName,
                           @RequestBody List<Integer> roleIds) throws Exception {
         for (Integer roleId : roleIds) {
             roleService.attachRoleForUser(userId, roleId);
+        }
+        if (StringUtil.isNotBlank(roleName)){
+            roleService.attachRoleForUser(userId, roleName);
         }
         return outActionReturn(null, HttpStatus.OK);
     }
@@ -331,9 +334,13 @@ public class UserMgtController extends BaseController {
     Object removeRoleByUserId(HttpServletRequest request,
                               HttpServletResponse response,
                               @PathVariable("userId") Integer userId,
+                              @RequestParam(required = false) String roleName,
                               @RequestBody List<Integer> roleIds) throws Exception {
         for (Integer roleId : roleIds) {
             roleService.detachRoleFromUser(userId, roleId);
+        }
+        if (StringUtil.isNotBlank(roleName)){
+            roleService.detachRoleFromUser(userId, roleName);
         }
         return outActionReturn(null, HttpStatus.OK);
     }

@@ -41,6 +41,12 @@
 			<optional>true</optional>
 		</dependency>
 
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.39</version>
+		</dependency>
+
 		<!-- for mail -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

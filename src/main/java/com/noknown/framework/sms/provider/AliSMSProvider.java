@@ -111,7 +111,7 @@ public class AliSMSProvider extends BaseSMSProvider implements SMSProvider  {
         String retCode = (String) res.get("Code");
         String message = (String) res.get("Message");
 
-        switch (code) {
+        switch (retCode) {
             case "OK":
                 sendSuccess();
                 break;

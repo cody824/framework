@@ -138,7 +138,6 @@ public interface UserService extends UserDetailsService, BaseService<User, Integ
 	/**
 	 * 根据openId获取微信第三方绑定账号
 	 * 
-	 * @param wxId
 	 * @param openId
 	 * @return
 	 * @throws ServiceException
@@ -182,7 +181,6 @@ public interface UserService extends UserDetailsService, BaseService<User, Integ
 	/**
 	 * 根据userId获取微信第三方绑定账号
 	 * 
-	 * @param wxId
 	 * @param userId
 	 * @return
 	 * @throws ServiceException
@@ -242,6 +240,13 @@ public interface UserService extends UserDetailsService, BaseService<User, Integ
 	 */
 	List<ThirdPartyAccount> getThirdPartyList(Integer userId) throws DAOException, ServiceException;
 
+	/**
+	 * 修改密码
+	 * @param identity nick/mobile/email
+	 * @param password
+	 */
+	void resetUserPasswd(String identity, String password)throws DAOException, ServiceException;
+
 	void resetUsersPasswd(List<Integer> userIds) throws DAOException, ServiceException;
 
 	void deleteUsersByName(List<String> userNames)throws DAOException, ServiceException;
@@ -257,7 +262,5 @@ public interface UserService extends UserDetailsService, BaseService<User, Integ
 	void updateUserPasswd(Integer userId, String oldPassword, String newPassword)throws DAOException, ServiceException;
 
 	void updateNick(Integer userId, String name)throws DAOException, ServiceException;
-
-
 
 }

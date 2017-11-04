@@ -11,9 +11,18 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.noknown.framework.common.web.model.ErrorMsg;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class BaseController {
 	
 	public final Logger logger = LoggerFactory.getLogger(getClass());
+
+	public static Map<String, Object> okRet = new HashMap<>();
+
+	static {
+		okRet.put("success", true);
+	}
 	
 	@Value("${ajaxHttpStatus:true}")
 	private boolean httpStatus = true;
