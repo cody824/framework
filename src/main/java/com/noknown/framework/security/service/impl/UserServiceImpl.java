@@ -9,6 +9,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +45,12 @@ public abstract class UserServiceImpl extends BaseServiceImpl<User, Integer> imp
 	
 	@Autowired
 	private PasswordEncoder pswdEncoder;
+	
+	@Value("${security.auth.email:true}")
+	private boolean emailAuth;
+	
+	@Value("${security.auth.mobile:true}")
+	private boolean mobileAuth;
 	
 	public JpaRepository<User, Integer> getRepository() {
 		return userDao;
@@ -140,9 +147,9 @@ public abstract class UserServiceImpl extends BaseServiceImpl<User, Integer> imp
 		User user = null;
 		boolean isMobile = RegexValidateUtil.checkMobile(name);
 		boolean isEmail = RegexValidateUtil.checkEmail(name);
-		if (isMobile) {
+		if (isMobile && mobileAuth) {
 			user = userDao.findByMobile(name);
-		} else if(isEmail) {
+		} else if(isEmail && emailAuth) {
 			user = userDao.findByEmail(name);
 		} else {
 			user = userDao.findByNick(name);

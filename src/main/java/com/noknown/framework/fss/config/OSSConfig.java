@@ -1,10 +1,9 @@
 package com.noknown.framework.fss.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
-
 import java.util.Properties;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix="ali.oss")

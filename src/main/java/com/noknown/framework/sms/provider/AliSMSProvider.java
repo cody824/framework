@@ -1,13 +1,12 @@
 package com.noknown.framework.sms.provider;
 
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
+
 import com.alibaba.media.utils.JSONUtil;
 import com.noknown.framework.common.util.JsonUtil;
 import com.noknown.framework.sms.pojo.SMS;
-import org.springframework.beans.factory.annotation.Value;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Map;
 
 public class AliSMSProvider extends BaseSMSProvider implements SMSProvider  {
 
@@ -90,7 +89,8 @@ public class AliSMSProvider extends BaseSMSProvider implements SMSProvider  {
     public static String specialUrlEncode(String value) throws Exception {
         return java.net.URLEncoder.encode(value, "UTF-8").replace("+", "%20").replace("*", "%2A").replace("%7E", "~");
     }
-    public static String sign(String accessSecret, String stringToSign) throws Exception {
+    @SuppressWarnings("restriction")
+	public static String sign(String accessSecret, String stringToSign) throws Exception {
         javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA1");
         mac.init(new javax.crypto.spec.SecretKeySpec(accessSecret.getBytes("UTF-8"), "HmacSHA1"));
         byte[] signData = mac.doFinal(stringToSign.getBytes("UTF-8"));
