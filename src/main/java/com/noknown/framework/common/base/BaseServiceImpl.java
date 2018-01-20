@@ -15,6 +15,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 
+import com.noknown.framework.common.util.JsonUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -57,15 +58,11 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 	public abstract JpaSpecificationExecutor<T> getSpecificationExecutor();
 
 	@Override
-	public PageData<T> find(SQLFilter filter, int start, int limit) throws ServiceException, DAOException {
+	public PageData<T> find(SQLFilter filter, int start, int limit) {
 		Pageable pageable = new PageRequest(start / limit, limit);
-		Specification<T> spec = new Specification<T>(){
-
-			@Override
-			public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				Predicate predicate = JpaUtil.sqlFilterToPredicate(clazz, root, query, cb, filter);
-				return predicate;
-			}} ;
+		Specification<T> spec = (root, query, cb) -> {
+			return JpaUtil.sqlFilterToPredicate(clazz, root, query, cb, filter);
+        };
 		Page<T> pd = getSpecificationExecutor().findAll(spec , pageable);
 		
 		PageData<T> pageData = new PageData<>();
@@ -85,7 +82,7 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public T get(String attrName, Object attrValue) throws DAOException, ServiceException {
+	public T get(String attrName, Object attrValue) {
 		T t = null;
 		Field f;
 		try {
@@ -112,30 +109,30 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 		return t;
 	}
 	@Override
-	public void delete(@SuppressWarnings("unchecked") ID ... entityids) throws DAOException, ServiceException {
+	public void delete(@SuppressWarnings("unchecked") ID ... entityids) {
 		for (ID id : entityids) {
 			getRepository().delete(id);
 		}
 	}
 
 	@Override
-	public void delete(Collection<T> objs) throws DAOException, ServiceException {
+	public void delete(Collection<T> objs) {
 		getRepository().delete(objs);
 	}
 
 	@Override
-	public void delete(T obj) throws DAOException, ServiceException {
+	public void delete(T obj)  {
 		getRepository().delete(obj);
 	}
 
 	@Override
-	public void update(T obj) throws DAOException, ServiceException {
+	public void update(T obj) {
 		getRepository().save(obj);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Collection<T> find(String attrName, Object attrValue) throws DAOException, ServiceException {
+	public Collection<T> find(String attrName, Object attrValue) {
 		Collection<T> col = null;
 		Field f;
 		try {
@@ -163,24 +160,23 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 	}
 
 	@Override
-	public Collection<T> find() throws DAOException, ServiceException {
+	public Collection<T> find() {
 		return getRepository().findAll();
 	}
 
 	@Override
-	public Collection<T> find(SQLFilter filter) throws DAOException, ServiceException {
+	public Collection<T> find(SQLFilter filter) {
 		Specification<T> spec = new Specification<T>(){
 
 			@Override
 			public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				Predicate predicate = JpaUtil.sqlFilterToPredicate(clazz, root, query, cb, filter);
-				return predicate;
+				return JpaUtil.sqlFilterToPredicate(clazz, root, query, cb, filter);
 			}} ;
 		return getSpecificationExecutor().findAll(spec);
 	}
 
 	@Override
-	public PageData<T> find(int start, int limit) throws DAOException, ServiceException {
+	public PageData<T> find(int start, int limit) {
 		Pageable pageable = new PageRequest(start / limit, limit);
 	
 		Page<T> pd = getRepository().findAll(pageable);
@@ -200,8 +196,7 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 
 			@Override
 			public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				Predicate predicate = JpaUtil.sqlFilterToPredicate(clazz, root, query, cb, filter);
-				return predicate;
+				return JpaUtil.sqlFilterToPredicate(clazz, root, query, cb, filter);
 			}} ;
 		return getSpecificationExecutor().count(spec);
 	}

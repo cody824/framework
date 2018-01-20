@@ -22,8 +22,8 @@ public abstract class ObjectStoreJSONFileDaoImpl implements ObjectStoreDao{
 
 	@Override
 	public Object getObjectByKey(String path, String key, Class<?> clazz) throws DAOException {
-		Object object = null;
-		String filePath = getBasePath() + File.separator + path
+		Object object;
+		String filePath = getDefaultBasePath() + File.separator + path
 				+ File.separator + key;
 		try {
 			object = JsonFileUtil.readObjectFromJsonFile(filePath, clazz);
@@ -34,20 +34,22 @@ public abstract class ObjectStoreJSONFileDaoImpl implements ObjectStoreDao{
 	}
 
 	@Override
-	public List<Object> getObjectList(String path, Class<?> c) throws DAOException {
-		List<Object> list = new ArrayList<Object>();
-		Object object = null;
-		String filePath = getBasePath() + File.separator + path
+	public List<Object> getObjectList(String path, Class<?> c) {
+		List<Object> list = new ArrayList<>();
+		Object object;
+		String filePath = getDefaultBasePath() + File.separator + path
 				+ File.separator;
 		File dir = new File(filePath);
 		if (dir.exists() && dir.isDirectory()) {
 			File[] files = dir.listFiles();
-			for (File file : files) {
-				try {
-					object = JsonFileUtil.readObjectFromJsonFile(file.getPath(), c);
-					list.add(object);
-				} catch (Exception e) {
-					logger.warn(e.getLocalizedMessage());
+			if (files != null){
+				for (File file : files) {
+					try {
+						object = JsonFileUtil.readObjectFromJsonFile(file.getPath(), c);
+						list.add(object);
+					} catch (Exception e) {
+						logger.warn(e.getLocalizedMessage());
+					}
 				}
 			}
 		}
@@ -56,7 +58,7 @@ public abstract class ObjectStoreJSONFileDaoImpl implements ObjectStoreDao{
 
 	@Override
 	public String saveObject(String path, String key, Object obj) throws DAOException {
-		String filePath = getBasePath() + File.separator + path
+		String filePath = getDefaultBasePath() + File.separator + path
 				+ File.separator + key;
 		try {
 			JsonFileUtil.writeToJsonFile(filePath, obj);
@@ -67,8 +69,8 @@ public abstract class ObjectStoreJSONFileDaoImpl implements ObjectStoreDao{
 	}
 
 	@Override
-	public boolean removeObject(String path, String key) throws DAOException {
-		String filePath = getBasePath() + File.separator + path
+	public boolean removeObject(String path, String key) {
+		String filePath = getDefaultBasePath() + File.separator + path
 				+ File.separator + key;
 		boolean ret = false;
 		File file = new File(filePath);
@@ -78,6 +80,6 @@ public abstract class ObjectStoreJSONFileDaoImpl implements ObjectStoreDao{
 		return ret;
 	}
 	
-	public abstract String getBasePath();
+	public abstract String getDefaultBasePath();
 
 }
