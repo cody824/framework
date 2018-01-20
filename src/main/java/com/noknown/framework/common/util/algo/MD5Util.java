@@ -50,7 +50,7 @@ public class MD5Util {
 	/**
 	 * 获取File文件的MD5值
 	 * 
-	 * @param file
+	 * @param bytes
 	 * @return
 	 * @throws InvalidKeyException
 	 * @throws NoSuchAlgorithmException

@@ -37,7 +37,7 @@ public class Base16 {
     
     /**
      * 对Base16编码的字符串进行解码。
-     * @param src 源字串
+     * @param hexString 源字串
      * @return 解码后的字节数组
      */
     public  static byte[] decode(String hexString){

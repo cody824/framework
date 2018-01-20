@@ -183,7 +183,7 @@ public class FileUtil {
      *  
      * @param srcFileName 
      *            待复制的文件名 
-     * @param descFileName 
+     * @param destFileName
      *            目标文件名 
      * @param overlay 
      *            如果目标文件存在，是否覆盖 
