@@ -1,17 +1,15 @@
 package com.noknown.framework.cache.service.impl.memcached;
 
-import java.util.Date;
-import java.util.concurrent.TimeoutException;
-
+import com.noknown.framework.cache.service.CacheService;
+import net.rubyeye.xmemcached.MemcachedClient;
+import net.rubyeye.xmemcached.exception.MemcachedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.noknown.framework.cache.service.CacheService;
-
-import net.rubyeye.xmemcached.MemcachedClient;
-import net.rubyeye.xmemcached.exception.MemcachedException;
+import java.util.Date;
+import java.util.concurrent.TimeoutException;
 
 public class XMemcachedCacheServiceImpl implements CacheService {
 	

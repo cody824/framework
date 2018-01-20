@@ -1,10 +1,9 @@
 package com.noknown.framework.security.dao;
 
-import java.util.List;
-
+import com.noknown.framework.security.model.ThirdPartyAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.noknown.framework.security.model.ThirdPartyAccount;
+import java.util.List;
 
 
 public interface TpaDao extends JpaRepository<ThirdPartyAccount, Integer>{

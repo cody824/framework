@@ -1,11 +1,11 @@
 package com.noknown.framework.common.web.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.noknown.framework.common.util.StringUtil;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.noknown.framework.common.util.StringUtil;
 
 /**
  * 进行查询的表达式集合，SQL类型，包括排序方式

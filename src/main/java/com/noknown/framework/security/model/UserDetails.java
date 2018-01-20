@@ -1,13 +1,12 @@
 package com.noknown.framework.security.model;
 
-import java.io.Serializable;
-import java.util.Date;
+import org.springframework.context.annotation.Lazy;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-
-import org.springframework.context.annotation.Lazy;
+import java.io.Serializable;
+import java.util.Date;
 
 
 @MappedSuperclass

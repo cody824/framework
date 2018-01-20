@@ -1,5 +1,10 @@
 package com.noknown.framework.security.authentication.service.impl;
 
+import com.noknown.framework.security.authentication.SureUsernamePasswordAuthenticationToken;
+import com.noknown.framework.security.authentication.service.TokenAuthService;
+import com.noknown.framework.security.authentication.util.JwtTokenUtil;
+import com.noknown.framework.security.model.User;
+import com.noknown.framework.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -7,12 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
-import com.noknown.framework.security.authentication.SureUsernamePasswordAuthenticationToken;
-import com.noknown.framework.security.authentication.service.TokenAuthService;
-import com.noknown.framework.security.authentication.util.JwtTokenUtil;
-import com.noknown.framework.security.model.User;
-import com.noknown.framework.security.service.UserService;
 
 @Service
 public class TokenAuthServiceImpl implements TokenAuthService {

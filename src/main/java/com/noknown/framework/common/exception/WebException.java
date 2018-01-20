@@ -1,8 +1,7 @@
 package com.noknown.framework.common.exception;
 
-import org.springframework.http.HttpStatus;
-
 import com.noknown.framework.common.web.model.ErrorMsg;
+import org.springframework.http.HttpStatus;
 
 /**
  * @(#)WebException.java 

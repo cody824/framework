@@ -1,17 +1,10 @@
 package com.noknown.framework.email.processor.impl;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingDeque;
-
-import javax.annotation.PostConstruct;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
 import com.noknown.framework.common.util.StringUtil;
+import com.noknown.framework.email.model.MailMessage;
+import com.noknown.framework.email.processor.MailProcessor;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +15,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
-import com.noknown.framework.email.model.MailMessage;
-import com.noknown.framework.email.processor.MailProcessor;
-
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
+import javax.annotation.PostConstruct;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingDeque;
 
 @Component
 public class MailProcessorImpl implements MailProcessor {

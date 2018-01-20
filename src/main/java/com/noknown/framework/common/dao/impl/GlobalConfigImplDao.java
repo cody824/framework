@@ -1,20 +1,19 @@
 package com.noknown.framework.common.dao.impl;
 
-import java.io.File;
-import java.util.Map;
-import java.util.Properties;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import com.noknown.framework.common.dao.GlobalConfigDao;
 import com.noknown.framework.common.exception.UtilException;
 import com.noknown.framework.common.model.ConfigRepo;
 import com.noknown.framework.common.model.GlobalConfig;
 import com.noknown.framework.common.util.BaseUtil;
 import com.noknown.framework.common.util.OrderProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.util.Map;
+import java.util.Properties;
 
 
 @Component

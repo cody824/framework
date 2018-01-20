@@ -1,16 +1,8 @@
 package com.noknown.framework.security.authentication.oauth2.handler;
 
-import java.util.Properties;
-
-import com.noknown.framework.common.util.StringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.stereotype.Component;
-
 import com.noknown.framework.common.config.AppInfo;
 import com.noknown.framework.common.service.GlobalConfigService;
+import com.noknown.framework.common.util.StringUtil;
 import com.noknown.framework.security.authentication.oauth2.Oauth2Handler;
 import com.noknown.framework.security.model.ThirdPartyAccount;
 import com.noknown.framework.security.service.UserService;
@@ -19,6 +11,13 @@ import com.qq.connect.api.qzone.UserInfo;
 import com.qq.connect.javabeans.AccessToken;
 import com.qq.connect.utils.http.HttpClient;
 import com.qq.connect.utils.http.PostParameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.stereotype.Component;
+
+import java.util.Properties;
 
 
 @Component("QQOauth2Handler")

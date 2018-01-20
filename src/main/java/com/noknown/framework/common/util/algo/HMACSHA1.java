@@ -11,11 +11,10 @@
  */
 package com.noknown.framework.common.util.algo;
 
-import java.security.InvalidKeyException;  
-import java.security.NoSuchAlgorithmException;  
-  
-import javax.crypto.Mac;  
-import javax.crypto.spec.SecretKeySpec;  
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
   
 public class HMACSHA1 {  
   

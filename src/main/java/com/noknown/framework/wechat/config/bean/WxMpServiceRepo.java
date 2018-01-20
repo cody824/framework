@@ -1,22 +1,19 @@
 package com.noknown.framework.wechat.config.bean;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.noknown.framework.cache.service.CacheService;
 import com.noknown.framework.common.config.AppInfo;
 import com.noknown.framework.common.model.ConfigRepo;
 import com.noknown.framework.common.service.GlobalConfigService;
 import com.noknown.framework.wechat.config.CacheStorage;
 import com.noknown.framework.wechat.config.SureWxMpService;
-
 import me.chanjar.weixin.mp.api.WxMpService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 @Component
 public class WxMpServiceRepo {

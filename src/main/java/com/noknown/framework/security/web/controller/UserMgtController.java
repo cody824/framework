@@ -1,26 +1,8 @@
 package com.noknown.framework.security.web.controller;
 
-import java.util.Arrays;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.noknown.framework.common.util.StringUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.util.HtmlUtils;
-
 import com.noknown.framework.common.base.BaseController;
-import com.noknown.framework.common.exception.DAOException;
 import com.noknown.framework.common.util.JsonUtil;
+import com.noknown.framework.common.util.StringUtil;
 import com.noknown.framework.common.web.model.PageData;
 import com.noknown.framework.common.web.model.SQLExpression;
 import com.noknown.framework.common.web.model.SQLFilter;
@@ -28,6 +10,16 @@ import com.noknown.framework.common.web.model.SQLOrder;
 import com.noknown.framework.security.model.User;
 import com.noknown.framework.security.service.RoleService;
 import com.noknown.framework.security.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.HtmlUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.List;
 
 @Controller
 @RequestMapping(value = "/security/")
@@ -90,7 +82,6 @@ public class UserMgtController extends BaseController {
      * @param userId
      * @return
      * @throws Exception
-     * @throws DAOException
      */
     @RequestMapping(value = "/user/{userId}/password/reset", method = RequestMethod.PUT)
     public

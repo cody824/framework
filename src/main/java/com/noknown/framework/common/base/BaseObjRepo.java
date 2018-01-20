@@ -1,12 +1,7 @@
 package com.noknown.framework.common.base;
 
 import com.noknown.framework.common.exception.DAOException;
-import com.noknown.framework.common.exception.ServiceException;
-import com.noknown.framework.common.web.model.PageData;
-import com.noknown.framework.common.web.model.SQLFilter;
 
-import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 
 public interface BaseObjRepo<T extends BaseObj> {

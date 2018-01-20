@@ -1,19 +1,17 @@
 package com.noknown.framework.wechat.config.bean;
 
 
-import me.chanjar.weixin.common.bean.WxAccessToken;
-import me.chanjar.weixin.mp.api.WxMpInMemoryConfigStorage;
-
-import com.noknown.framework.common.util.StringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.noknown.framework.cache.service.CacheService;
 import com.noknown.framework.common.config.AppInfo;
 import com.noknown.framework.common.service.GlobalConfigService;
 import com.noknown.framework.common.util.FileUtil;
+import com.noknown.framework.common.util.StringUtil;
+import me.chanjar.weixin.common.bean.WxAccessToken;
+import me.chanjar.weixin.mp.api.WxMpInMemoryConfigStorage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.File;

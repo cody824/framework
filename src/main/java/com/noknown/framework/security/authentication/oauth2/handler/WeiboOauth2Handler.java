@@ -1,19 +1,17 @@
 package com.noknown.framework.security.authentication.oauth2.handler;
 
+import com.noknown.framework.common.config.AppInfo;
+import com.noknown.framework.common.service.GlobalConfigService;
 import com.noknown.framework.common.util.StringUtil;
+import com.noknown.framework.security.authentication.oauth2.Oauth2Handler;
+import com.noknown.framework.security.model.ThirdPartyAccount;
+import com.noknown.framework.security.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
-
-import com.noknown.framework.common.config.AppInfo;
-import com.noknown.framework.common.service.GlobalConfigService;
-import com.noknown.framework.security.authentication.oauth2.Oauth2Handler;
-import com.noknown.framework.security.model.ThirdPartyAccount;
-import com.noknown.framework.security.service.UserService;
-
 import weibo4j.util.WeiboConfig;
 
 @Component("WeiboOauth2Handler")

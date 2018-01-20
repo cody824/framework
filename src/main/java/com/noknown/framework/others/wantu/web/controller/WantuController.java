@@ -1,20 +1,5 @@
 package com.noknown.framework.others.wantu.web.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.alibaba.media.MediaDir;
 import com.alibaba.media.MediaException;
 import com.alibaba.media.MediaFile;
@@ -27,8 +12,17 @@ import com.noknown.framework.common.base.BaseController;
 import com.noknown.framework.common.exception.WebException;
 import com.noknown.framework.common.util.StringUtil;
 import com.noknown.framework.others.wantu.utils.WantuRepo;
-
 import libs.fastjson.com.alibaba.fastjson.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping(value="/wantuapi")
@@ -161,15 +155,7 @@ public class WantuController extends BaseController {
 		}
 		return outActionReturn(resoult, HttpStatus.OK);
 	}
-	
-	/**
-	 * 
-	 * @param session
-	 * @param request
-	 * @param taobaoApi
-	 * @return
-	 * @throws Exception
-	 */
+
 	@RequestMapping(value = "/manage/security/{api}", method = {RequestMethod.GET, RequestMethod.POST}, headers = "Accept=application/json")
 	public @ResponseBody
 	Object doSecurityApi(

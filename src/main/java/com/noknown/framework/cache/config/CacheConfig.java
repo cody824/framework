@@ -1,18 +1,16 @@
 package com.noknown.framework.cache.config;
 
+import com.noknown.framework.cache.service.CacheService;
+import com.noknown.framework.cache.service.impl.memcached.XMemcachedCacheServiceImpl;
+import com.noknown.framework.cache.service.impl.redis.JedisCacheServiceImpl;
+import net.rubyeye.xmemcached.MemcachedClient;
+import net.rubyeye.xmemcached.utils.XMemcachedClientFactoryBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-
-import com.noknown.framework.cache.service.CacheService;
-import com.noknown.framework.cache.service.impl.memcached.XMemcachedCacheServiceImpl;
-import com.noknown.framework.cache.service.impl.redis.JedisCacheServiceImpl;
-
-import net.rubyeye.xmemcached.MemcachedClient;
-import net.rubyeye.xmemcached.utils.XMemcachedClientFactoryBean;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 

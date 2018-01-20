@@ -1,14 +1,13 @@
 package com.noknown.framework.wechat.config;
 
-import java.io.StringReader;
-
 import com.google.gson.JsonElement;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
-
 import me.chanjar.weixin.common.exception.WxErrorException;
 import me.chanjar.weixin.common.util.http.SimplePostRequestExecutor;
 import me.chanjar.weixin.mp.api.WxMpServiceImpl;
+
+import java.io.StringReader;
 
 public class SureWxMpService extends WxMpServiceImpl {
 

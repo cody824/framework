@@ -1,27 +1,11 @@
 package com.noknown.framework.security.web.controller;
 
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import com.noknown.framework.common.util.StringUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.noknown.framework.common.base.BaseController;
 import com.noknown.framework.common.exception.WebException;
 import com.noknown.framework.common.util.BaseUtil;
 import com.noknown.framework.common.util.JsonUtil;
 import com.noknown.framework.common.util.RegexValidateUtil;
+import com.noknown.framework.common.util.StringUtil;
 import com.noknown.framework.security.authentication.JwtAuthenticationRequest;
 import com.noknown.framework.security.authentication.JwtAuthenticationResponse;
 import com.noknown.framework.security.authentication.service.TokenAuthService;
@@ -30,6 +14,15 @@ import com.noknown.framework.security.model.User;
 import com.noknown.framework.security.model.UserDetails;
 import com.noknown.framework.security.service.AuthcodeService;
 import com.noknown.framework.security.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/security")

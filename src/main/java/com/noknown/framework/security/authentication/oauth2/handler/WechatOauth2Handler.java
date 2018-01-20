@@ -1,23 +1,21 @@
 package com.noknown.framework.security.authentication.oauth2.handler;
 
+import com.noknown.framework.common.config.AppInfo;
+import com.noknown.framework.common.service.GlobalConfigService;
 import com.noknown.framework.common.util.StringUtil;
+import com.noknown.framework.security.authentication.oauth2.Oauth2Handler;
+import com.noknown.framework.security.model.ThirdPartyAccount;
+import com.noknown.framework.security.service.UserService;
+import com.noknown.framework.wechat.config.bean.WxMpServiceRepo;
+import me.chanjar.weixin.mp.api.WxMpService;
+import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
+import me.chanjar.weixin.mp.bean.result.WxMpUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
-
-import com.noknown.framework.common.config.AppInfo;
-import com.noknown.framework.common.service.GlobalConfigService;
-import com.noknown.framework.security.authentication.oauth2.Oauth2Handler;
-import com.noknown.framework.security.model.ThirdPartyAccount;
-import com.noknown.framework.security.service.UserService;
-import com.noknown.framework.wechat.config.bean.WxMpServiceRepo;
-
-import me.chanjar.weixin.mp.api.WxMpService;
-import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
-import me.chanjar.weixin.mp.bean.result.WxMpUser;
 
 @Component("WechatOauth2Handler")
 public class WechatOauth2Handler implements Oauth2Handler {

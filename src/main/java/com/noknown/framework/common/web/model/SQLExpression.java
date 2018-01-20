@@ -1,9 +1,9 @@
 package com.noknown.framework.common.web.model;
 
-import java.io.Serializable;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.noknown.framework.common.util.StringUtil;
+
+import java.io.Serializable;
 
 
 

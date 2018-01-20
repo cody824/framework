@@ -1,8 +1,8 @@
 package com.noknown.framework.common.dao;
 
-import java.util.List;
-
 import com.noknown.framework.common.exception.DAOException;
+
+import java.util.List;
 
 public interface ObjectStoreDao {
 	

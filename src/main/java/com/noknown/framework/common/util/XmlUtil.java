@@ -1,22 +1,13 @@
 package com.noknown.framework.common.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
-
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.noknown.framework.common.exception.UtilException;
+import java.io.*;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 
 public class XmlUtil {
 
@@ -29,14 +20,10 @@ public class XmlUtil {
 	 *            文件路径
 	 * @param obj
 	 *            对象
-	 * @throws IOException
-	 * @throws JsonMappingException
-	 * @throws JsonGenerationException
-	 * @throws UtilException
-	 *             工具类异常
+	 * @throws IOException 工具类异常
 	 */
 	public static void writeToXmlFile(String path, Object obj)
-			throws JsonGenerationException, JsonMappingException, IOException {
+			throws IOException {
 		File file = new File(path);
 		if (!file.exists()) {
 			File parentFile = file.getParentFile();
@@ -214,12 +201,9 @@ public class XmlUtil {
 	 *            类
 	 * @return 读取的对象
 	 * @throws IOException 
-	 * @throws JsonMappingException 
-	 * @throws JsonParseException 
-	 * @throws UtilException
 	 *             工具类异常
 	 */
-	public static Object readObjectFromXmlString(String str, Class<?> c) throws JsonParseException, JsonMappingException, IOException {
+	public static Object readObjectFromXmlString(String str, Class<?> c) throws IOException {
 		XmlMapper xmlMapper = new XmlMapper();
 		Object obj = xmlMapper.readValue(str, c);
 		return obj;
@@ -234,12 +218,9 @@ public class XmlUtil {
 	 *            类
 	 * @return 读取的对象
 	 * @throws IOException 
-	 * @throws JsonMappingException 
-	 * @throws JsonParseException 
-	 * @throws UtilException
 	 *             工具类异常
 	 */
-	public static Object readObjectFromXmlFile(String path, Class<?> c) throws JsonParseException, JsonMappingException, IOException {
+	public static Object readObjectFromXmlFile(String path, Class<?> c) throws IOException {
 		FileInputStream is = null;
 		FileChannel channel = null;
 		FileLock lock = null;

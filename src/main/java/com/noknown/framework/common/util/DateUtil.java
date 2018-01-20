@@ -10,20 +10,13 @@
  */
 package com.noknown.framework.common.util;
 
-import java.sql.Timestamp;
-import java.text.ChoiceFormat;
-import java.text.DateFormat;
-import java.text.MessageFormat;
-import java.text.ParseException;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
-import com.noknown.framework.common.util.StringUtil;
+import com.noknown.framework.common.util.base.ValidateHelper;
 import org.springframework.util.StringUtils;
 
-import com.noknown.framework.common.util.base.ValidateHelper;
+import java.sql.Timestamp;
+import java.text.*;
+import java.util.Calendar;
+import java.util.Date;
 
 public class DateUtil {
 

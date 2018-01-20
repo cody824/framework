@@ -1,9 +1,9 @@
 package com.noknown.framework.common.dao;
 
-import java.util.Properties;
-
 import com.noknown.framework.common.model.ConfigRepo;
 import com.noknown.framework.common.model.GlobalConfig;
+
+import java.util.Properties;
 
 
 public interface GlobalConfigDao {
@@ -53,7 +53,7 @@ public interface GlobalConfigDao {
 	 * @param configs domain对应的配置
 	 * @return
 	 */
-	void updateProperties(String cofnigType, String domain, Properties configs);
+	void updateProperties(String configType, String domain, Properties configs);
 	
 	/**
 	 * 更新配置库下的domain对应的配置
@@ -63,7 +63,7 @@ public interface GlobalConfigDao {
 	 * @param value 配置值
 	 * @return
 	 */
-	void updateValue(String cofnigType, String domain, String key, String value);
+	void updateValue(String configType, String domain, String key, String value);
 	
 	/**
 	 * 删除配置库下的domain对应的配置
@@ -72,7 +72,7 @@ public interface GlobalConfigDao {
 	 * @param key 配置名称
 	 * @return
 	 */
-	void deleteValue(String cofnigType, String domain, String key);
+	void deleteValue(String configType, String domain, String key);
 	
 	/**
 	 * 删除configType类型的配置库

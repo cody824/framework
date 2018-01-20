@@ -1,8 +1,21 @@
 package com.noknown.framework.security.web.controller;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
+import com.noknown.framework.cache.service.CacheService;
+import com.noknown.framework.common.base.BaseController;
+import com.noknown.framework.common.exception.ServiceException;
+import com.noknown.framework.common.exception.WebException;
+import com.noknown.framework.common.util.RegexValidateUtil;
+import com.noknown.framework.common.util.StringUtil;
+import com.noknown.framework.security.service.AuthcodeService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -10,28 +23,6 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
-
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.noknown.framework.common.util.StringUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.noknown.framework.cache.service.CacheService;
-import com.noknown.framework.common.base.BaseController;
-import com.noknown.framework.common.exception.DAOException;
-import com.noknown.framework.common.exception.ServiceException;
-import com.noknown.framework.common.exception.WebException;
-import com.noknown.framework.common.util.RegexValidateUtil;
-import com.noknown.framework.security.service.AuthcodeService;
 
 @Controller("messageAuthCodeController")
 @RequestMapping(value = "/security")
@@ -93,8 +84,7 @@ public class AuthcodeController extends BaseController {
 	 * @param authcode 验证码
 	 * @param clientId 客户id
 	 * @return
-	 * @throws ServiceException 
-	 * @throws DAOException 
+	 * @throws Exception
 	 */
 	@RequestMapping(value = "/authcode", method = RequestMethod.POST)
 	public @ResponseBody

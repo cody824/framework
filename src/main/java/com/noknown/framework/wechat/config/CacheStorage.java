@@ -1,20 +1,18 @@
 package com.noknown.framework.wechat.config;
 
-import java.io.File;
-import java.util.Date;
-import java.util.Properties;
-
+import com.noknown.framework.cache.service.CacheService;
+import com.noknown.framework.common.util.FileUtil;
 import com.noknown.framework.common.util.StringUtil;
+import me.chanjar.weixin.common.bean.WxAccessToken;
+import me.chanjar.weixin.mp.api.WxMpInMemoryConfigStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.noknown.framework.cache.service.CacheService;
-import com.noknown.framework.common.util.FileUtil;
-
-import me.chanjar.weixin.common.bean.WxAccessToken;
-import me.chanjar.weixin.mp.api.WxMpInMemoryConfigStorage;
+import java.io.File;
+import java.util.Date;
+import java.util.Properties;
 
 @Component
 public class CacheStorage  extends WxMpInMemoryConfigStorage {

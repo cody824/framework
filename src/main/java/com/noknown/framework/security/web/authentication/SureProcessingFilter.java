@@ -1,12 +1,11 @@
 package com.noknown.framework.security.web.authentication;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
+import com.noknown.framework.common.util.StringUtil;
+import com.noknown.framework.security.Constants;
+import com.noknown.framework.security.authentication.SureAuthenticationInfo;
+import com.noknown.framework.security.authentication.SureOauthToken;
+import com.noknown.framework.security.authentication.SurePhoteAuthToken;
+import com.noknown.framework.security.authentication.SureUsernamePasswordAuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -18,12 +17,11 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.noknown.framework.common.util.StringUtil;
-import com.noknown.framework.security.Constants;
-import com.noknown.framework.security.authentication.SureAuthenticationInfo;
-import com.noknown.framework.security.authentication.SureOauthToken;
-import com.noknown.framework.security.authentication.SurePhoteAuthToken;
-import com.noknown.framework.security.authentication.SureUsernamePasswordAuthenticationToken;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 @Component
 public class SureProcessingFilter  extends AbstractAuthenticationProcessingFilter {

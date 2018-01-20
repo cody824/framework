@@ -1,10 +1,10 @@
 
 package com.noknown.framework.sms.provider;
 
+import com.noknown.framework.sms.pojo.SMS;
+
 import java.util.List;
 import java.util.Map;
-
-import com.noknown.framework.sms.pojo.SMS;
 
 public interface SMSProvider {
 

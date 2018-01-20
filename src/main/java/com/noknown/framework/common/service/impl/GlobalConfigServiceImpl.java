@@ -1,16 +1,15 @@
 package com.noknown.framework.common.service.impl;
 
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.noknown.framework.common.dao.GlobalConfigDao;
 import com.noknown.framework.common.model.ConfigRepo;
 import com.noknown.framework.common.model.GlobalConfig;
 import com.noknown.framework.common.service.GlobalConfigService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 @Service
 public class GlobalConfigServiceImpl implements GlobalConfigService {

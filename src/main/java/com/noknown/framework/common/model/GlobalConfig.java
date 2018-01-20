@@ -1,10 +1,6 @@
 package com.noknown.framework.common.model;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 public class GlobalConfig {
 	

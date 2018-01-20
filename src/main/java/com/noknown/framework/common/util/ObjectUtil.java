@@ -3,16 +3,10 @@
  */
 package com.noknown.framework.common.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.RandomAccessFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -20,9 +14,6 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ObjectUtil {
 	
@@ -39,7 +30,6 @@ public class ObjectUtil {
 	 * @param obj
 	 *            对象
 	 * @throws IOException 
-	 * @throws UtilException
 	 *             工具类异常
 	 */
 	public static void writeToFile(String path, Object obj) throws IOException {
@@ -97,11 +87,8 @@ public class ObjectUtil {
 	 * 
 	 * @param path
 	 *            文件路径
-	 * @param c
-	 *            类
 	 * @return 读取的对象
 	 * @throws IOException 
-	 * @throws UtilException
 	 *             工具类异常
 	 */
 	public static Object readObjectFromFile(String path) throws IOException {

@@ -1,11 +1,15 @@
 package com.noknown.framework.security.authentication;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.noknown.framework.common.exception.DAOException;
+import com.noknown.framework.common.exception.ServiceException;
 import com.noknown.framework.common.util.StringUtil;
+import com.noknown.framework.security.authentication.oauth2.Oauth2Handler;
+import com.noknown.framework.security.model.Role;
+import com.noknown.framework.security.model.ThirdPartyAccount;
+import com.noknown.framework.security.model.User;
+import com.noknown.framework.security.model.UserDetails;
+import com.noknown.framework.security.service.UserDetailsService;
+import com.noknown.framework.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -15,15 +19,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import com.noknown.framework.common.exception.DAOException;
-import com.noknown.framework.common.exception.ServiceException;
-import com.noknown.framework.security.authentication.oauth2.Oauth2Handler;
-import com.noknown.framework.security.model.Role;
-import com.noknown.framework.security.model.ThirdPartyAccount;
-import com.noknown.framework.security.model.User;
-import com.noknown.framework.security.model.UserDetails;
-import com.noknown.framework.security.service.UserDetailsService;
-import com.noknown.framework.security.service.UserService;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 第三方登录（oauth2）登录处理器

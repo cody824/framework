@@ -1,13 +1,7 @@
 package com.noknown.framework.security.web.authentication;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.noknown.framework.common.util.JsonUtil;
+import com.noknown.framework.common.web.model.ErrorMsg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,8 +11,12 @@ import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import com.noknown.framework.common.util.JsonUtil;
-import com.noknown.framework.common.web.model.ErrorMsg;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 @Component
 public class AjaxLoginUrlAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint{

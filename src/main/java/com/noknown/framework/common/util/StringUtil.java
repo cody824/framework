@@ -11,21 +11,19 @@
  */
 package com.noknown.framework.common.util;
 
-import java.util.Collection;
-import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang.StringUtils;
-
 import com.noknown.framework.common.util.algo.Encrypt;
-
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
 import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
 import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.Collection;
+import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -107,7 +105,7 @@ public class StringUtil extends StringUtils {
 	/**
 	 * 去除String中的特殊字符和不可见字符
 	 * 
-	 * @param s
+	 * @param in
 	 * @return
 	 */
 	public static String cleanString(String in) {

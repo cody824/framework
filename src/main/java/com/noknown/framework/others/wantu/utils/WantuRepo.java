@@ -1,11 +1,11 @@
 package com.noknown.framework.others.wantu.utils;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.alibaba.media.client.MediaClient;
 import com.alibaba.media.upload.UploadPolicy;
 import com.alibaba.media.upload.UploadTokenClient;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class WantuRepo {
 

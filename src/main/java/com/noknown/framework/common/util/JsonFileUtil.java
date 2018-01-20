@@ -11,22 +11,16 @@
  */
 package com.noknown.framework.common.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.noknown.framework.common.exception.UtilException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 
 public class JsonFileUtil {
 
@@ -39,9 +33,7 @@ public class JsonFileUtil {
 	 *            文件路径
 	 * @param obj
 	 *            对象
-	 * @throws IOException 
-	 * @throws UtilException
-	 *             工具类异常
+	 * @throws IOException 工具类异常
 	 */
 	public static void writeToJsonFile(String path, Object obj) throws IOException {
 		File file = new File(path);
@@ -94,11 +86,7 @@ public class JsonFileUtil {
 	 * @param c
 	 *            类
 	 * @return 读取的对象
-	 * @throws IOException 
-	 * @throws JsonMappingException 
-	 * @throws JsonParseException 
-	 * @throws UtilException
-	 *             工具类异常
+	 * @throws IOException 工具类异常
 	 */
 	public static Object readObjectFromJsonFile(String path, Class<?> c) throws JsonParseException, JsonMappingException, IOException {
 		FileInputStream is = null;

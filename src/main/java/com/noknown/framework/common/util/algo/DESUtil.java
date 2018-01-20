@@ -11,11 +11,11 @@
  */
 package com.noknown.framework.common.util.algo;
 
-import java.security.*;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
+import java.security.SecureRandom;
 
 /**
  * 字符串工具集合

@@ -1,9 +1,5 @@
 package com.noknown.framework.security.service;
 
-import java.util.List;
-
-import org.springframework.security.core.userdetails.UserDetailsService;
-
 import com.noknown.framework.common.base.BaseService;
 import com.noknown.framework.common.exception.DAOException;
 import com.noknown.framework.common.exception.ServiceException;
@@ -12,6 +8,9 @@ import com.noknown.framework.common.web.model.SQLFilter;
 import com.noknown.framework.security.model.ThirdPartyAccount;
 import com.noknown.framework.security.model.User;
 import com.noknown.framework.security.model.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+
+import java.util.List;
 
 public interface UserService extends UserDetailsService, BaseService<User, Integer>{
 

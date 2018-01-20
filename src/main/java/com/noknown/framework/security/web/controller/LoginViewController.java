@@ -1,17 +1,8 @@
 package com.noknown.framework.security.web.controller;
 
-import java.net.URLEncoder;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
+import com.noknown.framework.common.base.BaseController;
+import com.noknown.framework.common.config.AppInfo;
+import com.noknown.framework.common.service.GlobalConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -19,9 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.noknown.framework.common.base.BaseController;
-import com.noknown.framework.common.config.AppInfo;
-import com.noknown.framework.common.service.GlobalConfigService;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.net.URLEncoder;
+import java.text.MessageFormat;
+import java.util.*;
 
 
 @Controller

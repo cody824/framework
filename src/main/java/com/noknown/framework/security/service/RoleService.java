@@ -1,13 +1,12 @@
 package com.noknown.framework.security.service;
 
-import java.util.List;
-
 import com.noknown.framework.common.base.BaseService;
-import org.springframework.data.domain.Page;
-
 import com.noknown.framework.common.exception.DAOException;
 import com.noknown.framework.common.exception.ServiceException;
 import com.noknown.framework.security.model.Role;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 public interface RoleService extends BaseService<Role, Integer> {
 

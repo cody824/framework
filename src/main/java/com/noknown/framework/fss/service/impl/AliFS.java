@@ -1,11 +1,11 @@
 package com.noknown.framework.fss.service.impl;
 
-import java.io.*;
-
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.OSSObject;
 import com.noknown.framework.fss.config.OSSConfig;
 import com.noknown.framework.fss.service.FileStoreService;
+
+import java.io.*;
 
 public class AliFS implements FileStoreService {
 	

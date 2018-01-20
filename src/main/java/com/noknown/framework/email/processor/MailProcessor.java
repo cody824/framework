@@ -11,9 +11,9 @@
  */
 package com.noknown.framework.email.processor;
 
-import java.util.Map;
-
 import com.noknown.framework.email.model.MailMessage;
+
+import java.util.Map;
 
 
 public interface MailProcessor {

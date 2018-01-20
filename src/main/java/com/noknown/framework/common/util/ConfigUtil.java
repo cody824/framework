@@ -1,19 +1,16 @@
 package com.noknown.framework.common.util;
 
+import com.noknown.framework.common.service.GlobalConfigService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletContext;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-
-import javax.servlet.ServletContext;
-
-import com.noknown.framework.common.util.StringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.noknown.framework.common.service.GlobalConfigService;
 
 
 public class ConfigUtil {

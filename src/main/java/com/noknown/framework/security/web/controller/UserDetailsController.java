@@ -1,20 +1,15 @@
 package com.noknown.framework.security.web.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.noknown.framework.common.base.BaseController;
 import com.noknown.framework.common.exception.ServiceException;
 import com.noknown.framework.common.exception.WebException;
 import com.noknown.framework.security.model.UserDetails;
 import com.noknown.framework.security.model.factory.UserDetailsFactory;
 import com.noknown.framework.security.service.UserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/security")

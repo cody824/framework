@@ -1,8 +1,8 @@
 package com.noknown.framework.fss.config;
 
-import com.noknown.framework.fss.service.impl.AliFS;
 import com.noknown.framework.fss.service.FileStoreService;
 import com.noknown.framework.fss.service.FileStoreServiceRepo;
+import com.noknown.framework.fss.service.impl.AliFS;
 import com.noknown.framework.fss.service.impl.FileFS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

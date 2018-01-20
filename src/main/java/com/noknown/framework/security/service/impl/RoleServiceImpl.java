@@ -1,8 +1,13 @@
 package com.noknown.framework.security.service.impl;
 
-import java.util.List;
-
 import com.noknown.framework.common.base.BaseServiceImpl;
+import com.noknown.framework.common.exception.DAOException;
+import com.noknown.framework.common.exception.ServiceException;
+import com.noknown.framework.security.dao.RoleDao;
+import com.noknown.framework.security.dao.UserDao;
+import com.noknown.framework.security.model.Role;
+import com.noknown.framework.security.model.User;
+import com.noknown.framework.security.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,13 +16,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Service;
 
-import com.noknown.framework.common.exception.DAOException;
-import com.noknown.framework.common.exception.ServiceException;
-import com.noknown.framework.security.dao.RoleDao;
-import com.noknown.framework.security.dao.UserDao;
-import com.noknown.framework.security.model.Role;
-import com.noknown.framework.security.model.User;
-import com.noknown.framework.security.service.RoleService;
+import java.util.List;
 
 @Service
 public  class RoleServiceImpl extends BaseServiceImpl<Role, Integer> implements RoleService {

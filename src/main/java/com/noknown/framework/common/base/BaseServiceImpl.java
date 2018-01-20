@@ -1,21 +1,10 @@
 package com.noknown.framework.common.base;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
-
-import com.noknown.framework.common.util.JsonUtil;
+import com.noknown.framework.common.exception.DAOException;
+import com.noknown.framework.common.exception.ServiceException;
+import com.noknown.framework.common.util.JpaUtil;
+import com.noknown.framework.common.web.model.PageData;
+import com.noknown.framework.common.web.model.SQLFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,11 +12,14 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import com.noknown.framework.common.exception.DAOException;
-import com.noknown.framework.common.exception.ServiceException;
-import com.noknown.framework.common.util.JpaUtil;
-import com.noknown.framework.common.web.model.PageData;
-import com.noknown.framework.common.web.model.SQLFilter;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
+import java.io.Serializable;
+import java.lang.reflect.*;
+import java.util.Collection;
 
 
 @Transactional

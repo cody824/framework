@@ -1,24 +1,18 @@
 package com.noknown.framework.common.web.controller;
 
-import java.util.Properties;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.noknown.framework.common.base.BaseController;
 import com.noknown.framework.common.config.AppInfo;
 import com.noknown.framework.common.service.GlobalConfigService;
 import com.noknown.framework.common.util.ConfigUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Properties;
 
 @Controller
 public class GlobalConfigController extends BaseController {
@@ -89,7 +83,6 @@ public class GlobalConfigController extends BaseController {
 	 * @param domain         domain名
 	 * @param configType     配置类型
 	 * @param key            配置名称
-	 * @param value          配置别名
 	 * @return
 	 */
 	@RequestMapping(value = "/globalconfig/{configType}/{domain}", method = RequestMethod.DELETE)

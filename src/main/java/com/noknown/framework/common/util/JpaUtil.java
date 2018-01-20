@@ -11,6 +11,16 @@
  */
 package com.noknown.framework.common.util;
 
+import com.noknown.framework.common.web.model.SQLExpression;
+import com.noknown.framework.common.web.model.SQLExpressionSet;
+import com.noknown.framework.common.web.model.SQLFilter;
+import com.noknown.framework.common.web.model.SQLOrder;
+import org.hibernate.criterion.*;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -21,23 +31,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Expression;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.SimpleExpression;
-
-import com.noknown.framework.common.web.model.SQLExpression;
-import com.noknown.framework.common.web.model.SQLExpressionSet;
-import com.noknown.framework.common.web.model.SQLFilter;
-import com.noknown.framework.common.web.model.SQLOrder;
 
 /**
  * Hibernate相关的工具类

@@ -1,13 +1,12 @@
 package com.noknown.framework.others.wantu.config;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-
 import com.alibaba.media.MediaConfiguration;
 import com.alibaba.media.client.impl.DefaultMediaClient;
 import com.alibaba.media.upload.UploadTokenClient;
 import com.alibaba.media.upload.impl.DefaultUploadTokenClient;
 import com.noknown.framework.common.util.StringUtil;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 
 /*@Configuration
 @PropertySource(value = "classpath:conf/${spring.profiles.active}/wantu.properties", ignoreResourceNotFound = true)*/

@@ -1,18 +1,9 @@
 package com.noknown.framework.common.util;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Writer;
+import com.noknown.framework.common.exception.UtilException;
+import com.noknown.framework.common.util.algo.RandomString;
+
+import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.URISyntaxException;
@@ -20,9 +11,6 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.Random;
 import java.util.UUID;
-
-import com.noknown.framework.common.exception.UtilException;
-import com.noknown.framework.common.util.algo.RandomString;
 
 /**
  * 基础工具类
