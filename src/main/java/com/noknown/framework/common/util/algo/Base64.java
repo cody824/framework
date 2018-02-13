@@ -43,6 +43,10 @@ public class Base64 {
 		return out;
 	}
 
+	static private char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
+			.toCharArray();
+
+	static private byte[] codes = new byte[256];
 	static {
 		for (int i = 0; i < 256; i++) {
 			codes[i] = -1;
@@ -60,10 +64,6 @@ public class Base64 {
 		codes['/'] = 63;
 	}
 
-	static private char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
-			.toCharArray();
-
-	static private byte[] codes = new byte[256];
 
 	/**
 	 * 将base64编码的数据解码成原始数据
