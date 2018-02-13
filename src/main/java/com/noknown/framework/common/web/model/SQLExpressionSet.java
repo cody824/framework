@@ -125,9 +125,9 @@ public class SQLExpressionSet implements Serializable {
 			int i = 0;
 			for (SQLExpression se : sel){
 				String seStr = se.toString();
-				if ( i++ == 0)
+				if (i++ == 0) {
 					sb.append(seStr.substring(seStr.indexOf(" ", 1)));
-				else {
+				} else {
 					sb.append(se.toString());
 				}
 			}
@@ -140,17 +140,20 @@ public class SQLExpressionSet implements Serializable {
 	
 	@JsonIgnore
 	public boolean isOk() {
-		if (sel == null || sel.size() == 0)
+		if (sel == null || sel.size() == 0) {
 			return false;
-		else {
+		} else {
 			for(SQLExpression se : sel) {
-				if (se == null)
+				if (se == null) {
 					return false;
-				if (!se.isOk())
+				}
+				if (!se.isOk()) {
 					return false;
+				}
 			}
-			if (sel.get(0).getLogicalOp() != null && sel.get(0).getLogicalOp().equals("or"))
+			if (sel.get(0).getLogicalOp() != null && "or".equals(sel.get(0).getLogicalOp())) {
 				return false;
+			}
 		}
 		return true;
 	}

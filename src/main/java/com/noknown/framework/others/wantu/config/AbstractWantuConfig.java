@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 
 /*@Configuration
 @PropertySource(value = "classpath:conf/${spring.profiles.active}/wantu.properties", ignoreResourceNotFound = true)*/
-public abstract class WantuConfig {
+public abstract class AbstractWantuConfig {
 	
 	private @Value("${wantu.config.ak:}")  String ak;
 	

@@ -17,7 +17,6 @@ public class SMSConfig {
     @Value("${sms.global.provder:noprovder}")
     private String provder;
 
-
     @Bean
     public SMSProvider createSMSProvider() {
         SMSProvider smsProvider = null;

@@ -7,7 +7,7 @@ import com.noknown.framework.fss.service.FileStoreService;
 
 import java.io.*;
 
-public class AliFS implements FileStoreService {
+public class AliFSImpl implements FileStoreService {
 	
 
 	private OSSConfig config;

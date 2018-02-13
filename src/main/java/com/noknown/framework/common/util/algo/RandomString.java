@@ -31,14 +31,14 @@ public class RandomString {
 	 * @param length
 	 * @return
 	 */
-	public final static String RandomStr(int length )
+	public final static String randomStr(int length)
 	{
 		Random random=new Random();
 		
 		StringBuffer sb=new StringBuffer();
 		 for (int i=0;i< length;i++){
-			 String StrRand=String.valueOf(readomSequence[random.nextInt(61)]);
-			 sb.append(StrRand);
+			 String strrand = String.valueOf(readomSequence[random.nextInt(61)]);
+			 sb.append(strrand);
 		 }
 		return sb.toString();
 	}
@@ -48,14 +48,14 @@ public class RandomString {
 	 * @param length
 	 * @return
 	 */
-	public final static String RandomNumber(int length )
+	public final static String randomNumber(int length)
 	{
 		Random random=new Random();
 		
 		StringBuffer sb=new StringBuffer();
 		 for (int i=0;i< length;i++){
-			 String StrRand=String.valueOf(readomNumber[random.nextInt(9)]);
-			 sb.append(StrRand);
+			 String strrand = String.valueOf(readomNumber[random.nextInt(9)]);
+			 sb.append(strrand);
 		 }
 		return sb.toString();
 	}

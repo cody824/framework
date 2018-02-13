@@ -16,32 +16,38 @@ import java.util.*;
 public class OrderProperties extends Properties {
 	private static final long serialVersionUID = -4627607243846121965L;
     private final LinkedHashSet<Object> keys = new LinkedHashSet<Object>();
-    
-    public Enumeration<Object> keys() {
-        return Collections.<Object> enumeration(keys);
-    }
 
-    public Object put(Object key, Object value) {
-    	if (key.toString().indexOf("#") != -1)
-    		return null;
-        keys.add(key);
-        return super.put(key, value);
-    }
-    
-    public synchronized Object remove(Object key) {
-        keys.remove(key);
-        return super.remove(key);
-    }
+	@Override
+	public Enumeration<Object> keys() {
+		return Collections.<Object> enumeration(keys);
+	}
 
-    public Set<Object> keySet() {
-        return keys;
-    }
+	@Override
+	public Object put(Object key, Object value) {
+		if (key.toString().indexOf("#") != -1) {
+			return null;
+		}
+		keys.add(key);
+		return super.put(key, value);
+	}
 
-    public Set<String> stringPropertyNames() {
-        Set<String> set = new LinkedHashSet<String>();
-        for (Object key : this.keys) {
-            set.add((String) key);
-        }
-        return set;
-    }
+	@Override
+	public synchronized Object remove(Object key) {
+		keys.remove(key);
+		return super.remove(key);
+	}
+
+	@Override
+	public Set<Object> keySet() {
+		return keys;
+	}
+
+	@Override
+	public Set<String> stringPropertyNames() {
+		Set<String> set = new LinkedHashSet<String>();
+		for (Object key : this.keys) {
+			set.add((String) key);
+		}
+		return set;
+	}
 }

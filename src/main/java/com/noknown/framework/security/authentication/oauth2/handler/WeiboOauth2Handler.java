@@ -30,7 +30,7 @@ public class WeiboOauth2Handler implements Oauth2Handler {
 
 	@Override
 	public ThirdPartyAccount doAuth(String code, String state) {
-		String openId, avatar, avatar_hd, nickname;
+		String openId, avatar, avatarHd, nickname;
 		ThirdPartyAccount tpa = null;
 
 		String appId = null;
@@ -41,12 +41,14 @@ public class WeiboOauth2Handler implements Oauth2Handler {
 			throw new BadCredentialsException("state参数错误");
 		} else {
 			stateParam = state.split(",");
-			if (stateParam.length < 3)
+			if (stateParam.length < 3) {
 				throw new BadCredentialsException("state参数错误");
+			}
 			appId = stateParam[2];
 		}
-		if (appId == null)
+		if (appId == null) {
 			appId = baseAppIdUtil.getAppId();
+		}
 
 		try {
 			WeiboConfig weiboConfig = new WeiboConfig(gcs.getProperties("weibo", appId, false));
@@ -60,7 +62,7 @@ public class WeiboOauth2Handler implements Oauth2Handler {
 			weibo4j.model.User wUser = weiUser.showUserById(openId);
 			nickname = wUser.getScreenName();
 			avatar = wUser.getProfileImageUrl();
-			avatar_hd = wUser.getAvatarLarge();
+			avatarHd = wUser.getAvatarLarge();
 			tpa = userService.getThirdPartyAccountByOpenId(openId, "weibo");
 			if (tpa == null) {
 				tpa = new ThirdPartyAccount();
@@ -68,13 +70,15 @@ public class WeiboOauth2Handler implements Oauth2Handler {
 			tpa.setOpenId(openId);
 			tpa.setAccountType("weibo");
 			tpa.setAvatar(avatar);
-			tpa.setAvatar_hd(avatar_hd);
+			tpa.setAvatarHd(avatarHd);
 			tpa.setNickname(nickname);
 			return tpa;
 		} catch (Exception e) {
 			String trackStr = gcs.getConfig("runConfig", baseAppIdUtil.getAppId(), "serviceTrack", false);
 			boolean track = !StringUtil.isBlank(trackStr) && Boolean.parseBoolean(trackStr);
-			if (track) e.printStackTrace();
+			if (track) {
+				e.printStackTrace();
+			}
 			logger.error("处理绑定weibo失败, 错误原因:{}", e.getLocalizedMessage());
 			throw new AuthenticationServiceException(e.getLocalizedMessage());
 		} 

@@ -1,10 +1,10 @@
 package com.noknown.framework.security.authentication;
 
 import com.noknown.framework.common.util.StringUtil;
+import com.noknown.framework.security.model.BaseUserDetails;
 import com.noknown.framework.security.model.Role;
 import com.noknown.framework.security.model.ThirdPartyAccount;
 import com.noknown.framework.security.model.User;
-import com.noknown.framework.security.model.UserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -40,7 +40,15 @@ public class SureAuthenticationInfo  implements Serializable, Authentication {
 	public SureAuthenticationInfo() {
 	}
 
-	public SureAuthenticationInfo(String authType, User user, UserDetails ud, List<Role> roleList, List<GrantedAuthority> gaList) {
+	private BaseUserDetails ud;
+
+	private boolean authenticated;
+
+	private Serializable principal;
+
+	private String credentials;
+
+	public SureAuthenticationInfo(String authType, User user, BaseUserDetails ud, List<Role> roleList, List<GrantedAuthority> gaList) {
 		this.loginAuthType = authType;
 		this.user = user;
 		this.ud = ud;
@@ -50,14 +58,6 @@ public class SureAuthenticationInfo  implements Serializable, Authentication {
 		this.principal = user.getId();
 		this.credentials = user.getPassword();
 	}
-
-	private boolean authenticated;
-	
-	private Serializable principal;
-	
-	private String credentials;
-	
-	private UserDetails ud;
 	
 	private User user;
 	
@@ -71,10 +71,12 @@ public class SureAuthenticationInfo  implements Serializable, Authentication {
 
 	@Override
 	public String getName() {
-		if (this.getUd() != null && StringUtil.isNotBlank(this.getUd().getFullName()))
+		if (this.getUd() != null && StringUtil.isNotBlank(this.getUd().getFullName())) {
 			return this.getUd().getFullName();
-		if (this.getUser() != null && StringUtil.isNotBlank(this.getUser().getName()))
+		}
+		if (this.getUser() != null && StringUtil.isNotBlank(this.getUser().getName())) {
 			return this.getUser().getName();
+		}
 		return "";
 	}
 
@@ -112,14 +114,14 @@ public class SureAuthenticationInfo  implements Serializable, Authentication {
 	/**
 	 * @return the ud
 	 */
-	public UserDetails getUd() {
+	public BaseUserDetails getUd() {
 		return ud;
 	}
 
 	/**
 	 * @param ud the ud to set
 	 */
-	public void setUd(UserDetails ud) {
+	public void setUd(BaseUserDetails ud) {
 		this.ud = ud;
 	}
 

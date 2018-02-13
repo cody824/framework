@@ -62,8 +62,9 @@ public class AliSMSProvider extends BaseSMSProvider implements SMSProvider  {
         paras.put("TemplateParam", JSONUtil.toJSONString(sms.getVars()));
         paras.put("TemplateCode", sms.getTempCode());
         // 3. 去除签名关键字Key
-        if (paras.containsKey("Signature"))
-            paras.remove("Signature");
+	    if (paras.containsKey("Signature")) {
+		    paras.remove("Signature");
+	    }
         // 4. 参数KEY排序
         java.util.TreeMap<String, String> sortParas = new java.util.TreeMap<String, String>();
         sortParas.putAll(paras);
@@ -88,7 +89,6 @@ public class AliSMSProvider extends BaseSMSProvider implements SMSProvider  {
     public static String specialUrlEncode(String value) throws Exception {
         return java.net.URLEncoder.encode(value, "UTF-8").replace("+", "%20").replace("*", "%2A").replace("%7E", "~");
     }
-    @SuppressWarnings("restriction")
 	public static String sign(String accessSecret, String stringToSign) throws Exception {
         javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA1");
         mac.init(new javax.crypto.spec.SecretKeySpec(accessSecret.getBytes("UTF-8"), "HmacSHA1"));

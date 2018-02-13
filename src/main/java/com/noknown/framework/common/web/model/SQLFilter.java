@@ -171,8 +171,9 @@ public class SQLFilter implements Serializable {
 	 * @param ses         条件表达式集合
 	 */
 	public void addSQLExpressionSet(SQLExpressionSet ses){
-		if (sesl == null)
+		if (sesl == null) {
 			sesl = new ArrayList<SQLExpressionSet>();
+		}
 		sesl.add(ses);
 	}
 	
@@ -245,8 +246,9 @@ public class SQLFilter implements Serializable {
 	 * @param order		  排序规则
 	 */
 	public void addSQLOrder(SQLOrder order){
-		if (orderList == null)
+		if (orderList == null) {
 			orderList = new ArrayList<SQLOrder>();
+		}
 		orderList.add(order);
 	}
 	
@@ -255,8 +257,9 @@ public class SQLFilter implements Serializable {
 	 * @param property  属性名称
 	 */
 	public void addSQLOrder(String property){
-		if (orderList == null)
+		if (orderList == null) {
 			orderList = new ArrayList<SQLOrder>();
+		}
 		orderList.add(new SQLOrder(property));
 	}
 	
@@ -266,9 +269,27 @@ public class SQLFilter implements Serializable {
 	 * @param direction		排序规则		
 	 */
 	public void addSQLOrder(String property, String direction){
-		if (orderList == null)
+		if (orderList == null) {
 			orderList = new ArrayList<SQLOrder>();
+		}
 		orderList.add(new SQLOrder(property, direction));
+	}
+
+	public List<SQLExpressionSet> contains(String property) {
+		List<SQLExpressionSet> ret = new ArrayList<>(getSesl().size());
+		for (SQLExpressionSet ses : getSesl()) {
+			boolean contain = false;
+			for (SQLExpression se : ses.getSel()) {
+				if (se.getProperty().equals(property)) {
+					contain = true;
+					break;
+				}
+			}
+			if (contain) {
+				ret.add(ses);
+			}
+		}
+		return ret;
 	}
 
 	public List<SQLExpressionSet> getSesl() {	
@@ -285,8 +306,9 @@ public class SQLFilter implements Serializable {
 	}
 
 	public List<SQLOrder> getOrderList() {
-		if (orderList == null)
+		if (orderList == null) {
 			orderList = new ArrayList<SQLOrder>();
+		}
 		return orderList;
 	}
 
@@ -296,18 +318,21 @@ public class SQLFilter implements Serializable {
 
 	@JsonIgnore
 	public boolean isOk(){
-		if (sesl == null || sesl.size() == 0)
+		if (sesl == null || sesl.size() == 0) {
 			return false;
-		else {
+		} else {
 			for(SQLExpressionSet ses : sesl) {
-				if (ses == null)
+				if (ses == null) {
 					return false;
-				if (!ses.isOk())
+				}
+				if (!ses.isOk()) {
 					return false;
+				}
 			}
-			
-			if (sesl.get(0).getLogicalOp() != null && sesl.get(0).getLogicalOp().equals("or"))
+
+			if (sesl.get(0).getLogicalOp() != null && "or".equals(sesl.get(0).getLogicalOp())) {
 				return false;
+			}
 			
 		}
 		return true;
@@ -332,14 +357,16 @@ public class SQLFilter implements Serializable {
 		if (sesl != null && sesl.size() > 0) {
 			StringBuffer sb = new  StringBuffer(" 1 = 1");
 			for (SQLExpressionSet ses : sesl){
-				if (!StringUtil.isBlank(ses.toString()))
+				if (!StringUtil.isBlank(ses.toString())) {
 					sb.append(ses.toString());
+				}
 			}
 			if (orderList != null && orderList.size() > 0) {
 				sb.append(" order by ");
 				for (int i = 0; i < orderList.size(); i++){
-					if (i > 0)
+					if (i > 0) {
 						sb.append(",");
+					}
 					sb.append(orderList.get(i).getProperty() + " " + orderList.get(i).getDirection());
 				}
 			}

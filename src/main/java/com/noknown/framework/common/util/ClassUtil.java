@@ -34,8 +34,9 @@ public class ClassUtil {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (classLoader != null)
-				classLoader.close();
+				if (classLoader != null) {
+					classLoader.close();
+				}
 			} catch (IOException e) {
 			}
 		}
@@ -63,8 +64,9 @@ public class ClassUtil {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (classLoader != null)
-				classLoader.close();
+				if (classLoader != null) {
+					classLoader.close();
+				}
 			} catch (IOException e) {
 			}
 		}

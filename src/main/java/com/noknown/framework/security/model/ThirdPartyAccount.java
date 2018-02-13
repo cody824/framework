@@ -39,9 +39,10 @@ public class ThirdPartyAccount implements Serializable {
 	/**
 	 * 高清头像
 	 */
-	private String avatar_hd;
+	private String avatarHd;
 	
 	/**
+	 * 
 	 * 昵称
 	 */
 	private String nickname;
@@ -135,15 +136,15 @@ public class ThirdPartyAccount implements Serializable {
 	/**
 	 * @return the avatar_hd
 	 */
-	public String getAvatar_hd() {
-		return avatar_hd;
+	public String getAvatarHd() {
+		return avatarHd;
 	}
 
 	/**
-	 * @param avatar_hd the avatar_hd to set
+	 * @param avatarHd the avatar_hd to set
 	 */
-	public void setAvatar_hd(String avatar_hd) {
-		this.avatar_hd = avatar_hd;
+	public void setAvatarHd(String avatarHd) {
+		this.avatarHd = avatarHd;
 	}
 
 	/**

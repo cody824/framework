@@ -37,15 +37,17 @@ public class AjaxLoginUrlAuthenticationEntryPoint extends LoginUrlAuthentication
 	  /**
      * Performs the redirect (or forward) to the login form URL.
      */
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
+	  @Override
+	  public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
             throws IOException, ServletException {
 
         String redirectUrl = null;
         
         boolean isAjax = isAjaxRequest(request);
         if (isAjax) {
-        	if (response401)
-				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+	        if (response401) {
+		        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+	        }
 			ErrorMsg msg = new ErrorMsg();
 			msg.setErrorNum(401);
 			msg.setErrorMsg("对不起，您需要登录");
@@ -94,18 +96,13 @@ public class AjaxLoginUrlAuthenticationEntryPoint extends LoginUrlAuthentication
 		}
 		return check;
 	}
-	
-	/**
-	 * 以JSON格式输出
-	 * 
-	 * @param response
-	 */
+
 	protected void responseOutWithJson(HttpServletResponse response, Object responseObject) {
 		// 将实体对象转换为JSON Object转换
 		String json = JsonUtil.toJson(responseObject);
 		response.setCharacterEncoding("UTF-8");
 		response.setContentType("application/json; charset=utf-8");
-		PrintWriter out = null;
+		PrintWriter out;
 		try {
 			out = response.getWriter();
 			out.append(json);
@@ -127,7 +124,8 @@ public class AjaxLoginUrlAuthenticationEntryPoint extends LoginUrlAuthentication
 	public void setResponse401(boolean response401) {
 		this.response401 = response401;
 	}
-	
+
+	@Override
 	public void setUseForward(@Value("${security.login.userForward:true}") boolean useForward) {
 		super.setUseForward(useForward);
 	}

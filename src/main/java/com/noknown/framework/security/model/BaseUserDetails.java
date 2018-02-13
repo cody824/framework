@@ -11,7 +11,7 @@ import java.util.Date;
 
 @MappedSuperclass
 @Lazy(value = false)
-public abstract class UserDetails implements Serializable {
+public abstract class BaseUserDetails implements Serializable {
 
 	/**
 	 * 

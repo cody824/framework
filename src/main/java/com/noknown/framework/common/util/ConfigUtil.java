@@ -42,12 +42,14 @@ public class ConfigUtil {
 				Object key = entry.getKey();
 				Object value = entry.getValue();
 				sc.setAttribute((String) key, value);
-				if (allConfigs != null)
+				if (allConfigs != null) {
 					allConfigs.put(key, value);
+				}
 				logger.debug("Key --> {} : value --> {}", key, value);
 			}
-			if (allConfigs != null)
+			if (allConfigs != null) {
 				allConfigs.put(config, properties);
+			}
 		} else {
 			logger.error("配置[" + config + "]不存在！");
 			return false;

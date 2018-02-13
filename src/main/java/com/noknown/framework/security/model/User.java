@@ -16,6 +16,8 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
+@NamedEntityGraph(name = "User.role",
+		attributeNodes = @NamedAttributeNode("roles"))
 @Table(name = "security_user")
 @JsonIgnoreProperties({ "handler","hibernateLazyInitializer", "authorities" }) 
 public class User implements Serializable, Authentication, UserDetails {
@@ -29,10 +31,10 @@ public class User implements Serializable, Authentication, UserDetails {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 
-	@Column(length = 32)
+	@Column(length = 128)
 	private String nick;
 
-	@Column(length = 32)
+	@Column(length = 128)
 	private String password;
 
 	private String email;
@@ -199,9 +201,12 @@ public class User implements Serializable, Authentication, UserDetails {
 	}
 	
 	public void addRole(Role role) {
-		if (roles == null) roles = new ArrayList<>();
-		if (!roles.contains(role))
+		if (roles == null) {
+			roles = new ArrayList<>();
+		}
+		if (!roles.contains(role)) {
 			roles.add(role);
+		}
 	}
 	
 	public void removeRole(Role role) {

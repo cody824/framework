@@ -24,14 +24,13 @@ public class RedisUtil {
 	
 	@Value("${redis.util.serializer:fst}")
 	private String serializer;
-	
-	private Serializer g_ser;
+
+	public static final Long R_1L = 1L;
 
 	private static final Logger logger = LoggerFactory.getLogger(RedisUtil.class);
 
 	public static final String R_OK = "OK";
-
-	public static final Long R_1L = 1l;
+	private Serializer gSer;
 
 	/**
 	 * 从连接池中获取jedis连接
@@ -89,20 +88,20 @@ public class RedisUtil {
 		
 		// 序列化
 		if (serializer == null || serializer.isEmpty()) {
-			g_ser = new JavaSerializer();
+			gSer = new JavaSerializer();
 			logger.warn("RedisUtil constructor param serializer is not set.");
 		} else {
 			switch (serializer) {
 			case "java":
-				g_ser = new JavaSerializer();
+				gSer = new JavaSerializer();
 				break;
 			case "fst":
-				g_ser = new FSTSerializer();
+				gSer = new FSTSerializer();
 				break;
 			default:
-				g_ser = new JavaSerializer();
+				gSer = new JavaSerializer();
 			}
-			logger.info("RedisUtil serializer is " + g_ser.name());
+			logger.info("RedisUtil serializer is " + gSer.name());
 		}
 
 		
@@ -119,7 +118,7 @@ public class RedisUtil {
 		Jedis jedis = null;
 		try {
 			jedis = jedisPool.getResource();
-			return jedis.set(key.getBytes(), g_ser.serialize(value));
+			return jedis.set(key.getBytes(), gSer.serialize(value));
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -140,7 +139,7 @@ public class RedisUtil {
 		try {
 			jedis = jedisPool.getResource();
 			byte[] b = jedis.get(key.getBytes());
-			return g_ser.deserialize(b);
+			return gSer.deserialize(b);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -506,7 +505,7 @@ public class RedisUtil {
 			if (member instanceof String) {
 				return jedis.zadd(key, score, (String) member);
 			} else {
-				return jedis.zadd(key.getBytes(), score, g_ser.serialize(member));
+				return jedis.zadd(key.getBytes(), score, gSer.serialize(member));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -610,7 +609,7 @@ public class RedisUtil {
 			Set<byte[]> values = jedis.zrange(key.getBytes(), start, stop);
 			Set<Object> rets = new HashSet<Object>();
 			for (byte[] v : values) {
-				rets.add(g_ser.deserialize(v));
+				rets.add(gSer.deserialize(v));
 			}
 			return rets;
 		} catch (Exception e) {
@@ -799,7 +798,7 @@ public class RedisUtil {
 			if (value instanceof String) {
 				jedis.sadd(key, (String) value);
 			} else {
-				jedis.sadd(key.getBytes(), g_ser.serialize(value));
+				jedis.sadd(key.getBytes(), gSer.serialize(value));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -851,7 +850,7 @@ public class RedisUtil {
 			Set<byte[]> values = jedis.smembers(key.getBytes());
 			Set<Object> rets = new HashSet<Object>();
 			for (byte[] v : values) {
-				rets.add(g_ser.deserialize(v));
+				rets.add(gSer.deserialize(v));
 			}
 			return rets;
 		} catch (Exception e) {

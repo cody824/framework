@@ -82,8 +82,9 @@ public class FileUtil {
     public static String fileUpload(HttpServletRequest request, String fileKeyName,
                                     String basePath, String userName, String module, String fileType) {
         String filePath = "";
-        if (basePath == null || basePath.equals(""))
-            basePath = defaultBasePath;
+	    if (basePath == null || "".equals(basePath)) {
+		    basePath = defaultBasePath;
+	    }
 
         String fileDir = basePath + uploadDir + userName + "/" + module + "/" + fileType + "/";
         String upDir = uploadDir + userName + "/" + module + "/" + fileType + "/";
@@ -92,8 +93,8 @@ public class FileUtil {
         CommonsMultipartFile file = (CommonsMultipartFile) multipartRequest.getFile(fileKeyName);
         String realFileName = file.getOriginalFilename();
         String extension = getFileExtension(realFileName);
-        String file_name = getNewFileName();
-        String newFileName = file_name + extension;
+	    String fileName = getNewFileName();
+	    String newFileName = fileName + extension;
 
         File folder = new File(fileDir);
         if (!folder.exists()) {
@@ -159,8 +160,9 @@ public class FileUtil {
             return false;
         } finally {
             try {
-                if (fs != null)
-                    fs.close();
+	            if (fs != null) {
+		            fs.close();
+	            }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -227,11 +229,13 @@ public class FileUtil {
         } catch (IOException e) {  
             return false;  
         } finally {  
-            try {  
-                if (out != null)  
-                    out.close();  
-                if (in != null)  
-                    in.close();  
+            try {
+	            if (out != null) {
+		            out.close();
+	            }
+	            if (in != null) {
+		            in.close();
+	            }
             } catch (IOException e) {  
                 e.printStackTrace();  
             }  
@@ -287,14 +291,16 @@ public class FileUtil {
             // 复制文件  
             if (files[i].isFile()) {  
                 flag = copyFile(files[i].getAbsolutePath(),  
-                        destDirName + files[i].getName(), overlay);  
-                if (!flag)  
-                    break;  
+                        destDirName + files[i].getName(), overlay);
+	            if (!flag) {
+		            break;
+	            }
             } else if (files[i].isDirectory()) {  
                 flag = copyDirectory(files[i].getAbsolutePath(),  
-                        destDirName + files[i].getName(), overlay);  
-                if (!flag)  
-                    break;  
+                        destDirName + files[i].getName(), overlay);
+	            if (!flag) {
+		            break;
+	            }
             }  
         }  
         if (!flag) {  
@@ -446,8 +452,9 @@ public class FileUtil {
             try {
                 filePath = filePath + file.getOriginalFilename();
                 File saveDir = new File(filePath);
-                if (!saveDir.getParentFile().exists())
-                    saveDir.getParentFile().mkdirs();
+	            if (!saveDir.getParentFile().exists()) {
+		            saveDir.getParentFile().mkdirs();
+	            }
                 // 转存文件
                 file.transferTo(saveDir);
                 return saveDir;

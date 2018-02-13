@@ -37,7 +37,7 @@ public class WechatOauth2Handler implements Oauth2Handler {
 
 	@Override
 	public ThirdPartyAccount doAuth(String code, String state) {
-		String openId, avatar, avatar_hd, nickname;
+		String openId, avatar, avatarHd, nickname;
 		ThirdPartyAccount tpa = null;
 		String appId;
 		String[]  stateParam;
@@ -47,15 +47,17 @@ public class WechatOauth2Handler implements Oauth2Handler {
 			 throw new BadCredentialsException("state参数错误");
 		} else {
 			stateParam = state.split(",");
-			if (stateParam.length < 3)
+			if (stateParam.length < 3) {
 				throw new BadCredentialsException("state参数错误");
+			}
 			appId = stateParam[2];
 		}
 		try {
 			WxMpUser wechatUser = null;
 			WxMpService ws = wxRepo.getService(appId);
-			if (ws == null)
+			if (ws == null) {
 				throw new BadCredentialsException("无效的APPID");
+			}
 			
 			
 			WxMpOAuth2AccessToken accessToken = ws.oauth2getAccessToken(code);
@@ -64,7 +66,7 @@ public class WechatOauth2Handler implements Oauth2Handler {
 			openId = wechatUser.getOpenId();
 			nickname = wechatUser.getNickname();
 			avatar = wechatUser.getHeadImgUrl();
-			avatar_hd = wechatUser.getHeadImgUrl();
+			avatarHd = wechatUser.getHeadImgUrl();
 			tpa = userService.getWxAccoutByOpenId(openId);
 			if (tpa == null) {
 				tpa = new ThirdPartyAccount();
@@ -74,14 +76,16 @@ public class WechatOauth2Handler implements Oauth2Handler {
 			tpa.setAccountType("wechat");
 			tpa.setAppId(appId);
 			tpa.setAvatar(avatar);
-			tpa.setAvatar_hd(avatar_hd);
+			tpa.setAvatarHd(avatarHd);
 			tpa.setNickname(nickname);
 			tpa.setAccessToken(accessToken.getAccessToken());
 			return tpa;
 		} catch (Exception e) {
 			String trackStr = gcs.getConfig("runConfig", baseAppIdUtil.getAppId(), "serviceTrack", false);
 			boolean track = !StringUtil.isBlank(trackStr) && Boolean.parseBoolean(trackStr);
-			if (track) e.printStackTrace();
+			if (track) {
+				e.printStackTrace();
+			}
 			logger.error("处理绑定微信失败, 错误原因:{}", e.getLocalizedMessage());
 			throw new AuthenticationServiceException(e.getLocalizedMessage());
 		} 

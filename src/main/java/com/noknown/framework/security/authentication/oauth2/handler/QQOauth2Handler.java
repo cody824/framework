@@ -36,7 +36,7 @@ public class QQOauth2Handler implements Oauth2Handler {
 
 	@Override
 	public ThirdPartyAccount doAuth(String code, String state) {
-		String openId, avatar, avatar_hd, nickname;
+		String openId, avatar, avatarHd, nickname;
 		try {
 			AccessToken qqAccessToken;
 			HttpClient client = new HttpClient();
@@ -55,7 +55,7 @@ public class QQOauth2Handler implements Oauth2Handler {
 			UserInfo  qqUserInfo = new UserInfo(qqAccessToken.getAccessToken(), openId);
 			nickname = qqUserInfo.getUserInfo().getNickname();
 			avatar = qqUserInfo.getUserInfo().getAvatar().getAvatarURL50();
-			avatar_hd = qqUserInfo.getUserInfo().getAvatar().getAvatarURL100();
+			avatarHd = qqUserInfo.getUserInfo().getAvatar().getAvatarURL100();
 			
 			ThirdPartyAccount tpa = userService.getThirdPartyAccountByOpenId(openId, "qq");
 			if (tpa == null) {
@@ -64,14 +64,16 @@ public class QQOauth2Handler implements Oauth2Handler {
 			tpa.setOpenId(openId);
 			tpa.setAccountType("qq");
 			tpa.setAvatar(avatar);
-			tpa.setAvatar_hd(avatar_hd);
+			tpa.setAvatarHd(avatarHd);
 			tpa.setNickname(nickname);
 			return tpa;
 			
 		} catch (Exception e) {
 			String trackStr = gcs.getConfig("runConfig", baseAppIdUtil.getAppId(), "serviceTrack", false);
 			boolean track = !StringUtil.isBlank(trackStr) && Boolean.parseBoolean(trackStr);
-			if (track) e.printStackTrace();
+			if (track) {
+				e.printStackTrace();
+			}
 			logger.error("处理绑定QQ失败, 错误原因:{}", e.getLocalizedMessage());
 			throw new AuthenticationServiceException(e.getLocalizedMessage());
 		}

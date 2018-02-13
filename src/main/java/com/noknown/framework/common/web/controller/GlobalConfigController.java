@@ -2,6 +2,7 @@ package com.noknown.framework.common.web.controller;
 
 import com.noknown.framework.common.base.BaseController;
 import com.noknown.framework.common.config.AppInfo;
+import com.noknown.framework.common.model.ConfigRepo;
 import com.noknown.framework.common.service.GlobalConfigService;
 import com.noknown.framework.common.util.ConfigUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +15,21 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Properties;
 
+/**
+ * @author guodong
+ */
 @Controller
 public class GlobalConfigController extends BaseController {
-	
-	@Autowired
-	private AppInfo appInfo;
+
+	private final AppInfo appInfo;
+
+	private final GlobalConfigService gcs;
 
 	@Autowired
-	private GlobalConfigService gcs;
+	public GlobalConfigController(AppInfo appInfo, GlobalConfigService gcs) {
+		this.appInfo = appInfo;
+		this.gcs = gcs;
+	}
 
 	/**
 	 * 获取domain对应配置
@@ -52,32 +60,63 @@ public class GlobalConfigController extends BaseController {
 			HttpServletRequest request,
 			@RequestParam(value = "fetch", required = false, defaultValue = "false") String fetch) {
 		boolean isFetch = Boolean.parseBoolean(fetch);
-		if (isFetch)
+		if (isFetch) {
 			serverInitialized(request.getServletContext());
+		}
 		return ResponseEntity.ok(gcs.getGlobalConfig(isFetch));
 	}
-	
+
 	/**
-	 * 更新配置库下的domain对应的配置
-	 * @param domain         domain名
-	 * @param configType     配置类型
-	 * @param key            配置名称
-	 * @param value          配置别名
-	 * @return
+	 * 获取全局配置对象
+	 * @param fetch          是否更新
+	 * @return 全局配置对象
 	 */
-	@RequestMapping(value = "/globalconfig/{configType}/{domain}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/globalconfig/{configType}", method = RequestMethod.GET)
 	public @ResponseBody
-	Object updateBaseConfig(
+	ResponseEntity<?> getConfigRepo(
+			HttpServletRequest request,
+			@PathVariable("configType") String configType,
+			@RequestParam(value = "fetch", required = false, defaultValue = "false") String fetch) {
+		boolean isFetch = Boolean.parseBoolean(fetch);
+		if (isFetch) {
+			serverInitialized(request.getServletContext());
+		}
+		return ResponseEntity.ok(gcs.getConfigRepo(configType, false));
+	}
+
+
+	@RequestMapping(value = "/globalconfig/{configType}/{domain}/{key}", method = RequestMethod.PUT)
+	public @ResponseBody
+	Object updateConfigKey(
 			@PathVariable("domain") String domain,
 			@PathVariable("configType") String configType,
-			@RequestParam(value = "key", required = false) String key,
+			@RequestParam(value = "key") String key,
 			@RequestParam(value = "value", required = false) String value) {
-		if (key != null) {
+		if (value != null) {
 			gcs.updateValue(configType, domain, key, value);
 		}
 		return outActionReturn(HttpStatus.OK, HttpStatus.OK);
 	}
-	
+
+	@RequestMapping(value = "/globalconfig/{configType}/{domain}", method = RequestMethod.PUT)
+	public @ResponseBody
+	Object updateProperties(
+			@PathVariable("domain") String domain,
+			@PathVariable("configType") String configType,
+			@RequestBody Properties properties) {
+		gcs.updateProperties(configType, domain, properties);
+		return outActionReturn(HttpStatus.OK, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/globalconfig/{configType}", method = RequestMethod.PUT)
+	public @ResponseBody
+	Object updateConfigRepo(
+			@PathVariable("configType") String configType,
+			@RequestBody ConfigRepo configRepo) {
+		gcs.updateConfigRepo(configType, configRepo);
+		return outActionReturn(HttpStatus.OK, HttpStatus.OK);
+	}
+
 	/**
 	 * 删除配置库下的domain对应的配置
 	 * @param domain         domain名
@@ -85,59 +124,34 @@ public class GlobalConfigController extends BaseController {
 	 * @param key            配置名称
 	 * @return
 	 */
+	@RequestMapping(value = "/globalconfig/{configType}/{domain}/{key}", method = RequestMethod.DELETE)
+	public @ResponseBody
+	Object deleteConfigKey(
+			@PathVariable String domain,
+			@PathVariable String configType,
+			@PathVariable String key) {
+		gcs.deleteValue(configType, domain, key);
+		return outActionReturn(HttpStatus.OK, HttpStatus.OK);
+	}
+
 	@RequestMapping(value = "/globalconfig/{configType}/{domain}", method = RequestMethod.DELETE)
 	public @ResponseBody
-	Object deleteBaseConfig(
-			@PathVariable("domain") String domain,
-			@PathVariable("configType") String configType,
-			@RequestParam(value = "key", required = false) String key) {
-		if (key != null) {
-			gcs.deleteValue(configType, domain, key);
-		}
+	Object deleteProperties(
+			@PathVariable String domain,
+			@PathVariable String configType) {
+		gcs.deleteProperties(configType, domain);
 		return outActionReturn(HttpStatus.OK, HttpStatus.OK);
 	}
-	
-	/**
-	 * 获取全局配置别名
-	 * @return               全局配置别名
-	 */
-	@RequestMapping(value = "/globalconfig/nameConfig", method = RequestMethod.GET)
+
+	@RequestMapping(value = "/globalconfig/{configType}", method = RequestMethod.DELETE)
 	public @ResponseBody
-	Object getNameConfig() {
-		return outActionReturn(gcs.getNameConfig(), HttpStatus.OK);
-	}
-	
-	/**
-	 * 更新配置库下的配置名称对应的别名
-	 * @param key            配置名称
-	 * @param paramName      配置别名
-	 * @return
-	 */
-	@RequestMapping(value = "/globalconfig/nameConfig", method = RequestMethod.PUT)
-	public @ResponseBody
-	Object updateNameConfig(
-			@RequestParam(value = "key", required = false) String key,
-			@RequestParam(value = "paramName", required = false) String paramName) {
-		if (key != null)
-			gcs.updateNameConfig(key, paramName);
+	Object deleteConfigRepo(
+			@PathVariable String configType) {
+		gcs.deleteConfigRepo(configType);
 		return outActionReturn(HttpStatus.OK, HttpStatus.OK);
 	}
-	
-	/**
-	 * 删除配置库下的配置名称对应的别名
-	 * @param key            配置名称
-	 * @return
-	 */
-	@RequestMapping(value = "/globalconfig/nameConfig", method = RequestMethod.DELETE)
-	public @ResponseBody
-	Object deleteNameConfig(
-			@RequestParam(value = "key", required = false) String key) {
-		if (key != null)
-			gcs.deleteNameConfig(key);
-		return outActionReturn(HttpStatus.OK, HttpStatus.OK);
-	}
-	
-	
+
+
 	private void serverInitialized(ServletContext sc) {
 		String appid =  appInfo.getAppId();
 		String warProject = appInfo.getWarProject();

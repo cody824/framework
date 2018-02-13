@@ -21,13 +21,14 @@ public class Base16 {
      * @param src 源字节数组
      * @return 编码后的字符串
      */
-    public static String encode(byte src[]){
+    public static String encode(byte[] src) {
         StringBuffer strbuf = new StringBuffer(src.length * 2);
         int i;
 
         for (i = 0; i < src.length; i++) {
-            if (((int) src[i] & 0xff) < 0x10)
-                strbuf.append("0");
+	        if (((int) src[i] & 0xff) < 0x10) {
+		        strbuf.append("0");
+	        }
 
             strbuf.append(Long.toString((int) src[i] & 0xff, 16));
         }

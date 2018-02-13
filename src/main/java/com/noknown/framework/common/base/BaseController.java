@@ -1,6 +1,9 @@
 package com.noknown.framework.common.base;
 
+import com.noknown.framework.common.util.JsonUtil;
 import com.noknown.framework.common.web.model.ErrorMsg;
+import com.noknown.framework.common.web.model.SQLFilter;
+import com.noknown.framework.common.web.model.SQLOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,8 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.util.HtmlUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class BaseController {
@@ -50,8 +55,9 @@ public class BaseController {
      */
 	public ResponseEntity<?> outActionError(String msg, HttpStatus status) {
 		HttpStatus sendStatus = HttpStatus.OK;
-        if (httpStatus)
-        	sendStatus = status;
+		if (httpStatus) {
+			sendStatus = status;
+		}
         ErrorMsg errorMsg = new ErrorMsg(msg, false);
         return new ResponseEntity<Object>(errorMsg, sendStatus);
 	}
@@ -64,10 +70,10 @@ public class BaseController {
 	 */
 	public ResponseEntity<?> outActionReturn(Object obj, HttpStatus status) {
 		HttpStatus sendStatus = HttpStatus.OK;
-        if (httpStatus)
-        	sendStatus = status;
-	        
-        return new ResponseEntity<Object>(obj, sendStatus);
+		if (httpStatus) {
+			sendStatus = status;
+		}
+		return new ResponseEntity<>(obj, sendStatus);
 	}
 	
 	
@@ -80,5 +86,27 @@ public class BaseController {
         }
         return outActionReturn(obj, sendStatus);
     }
+
+	public SQLFilter buildFilter(String filter, String sort) {
+		filter = HtmlUtils.htmlUnescape(filter);
+		sort = HtmlUtils.htmlUnescape(sort);
+		SQLFilter sqlFilter = null;
+		if (filter != null) {
+			sqlFilter = JsonUtil.toObject(filter, SQLFilter.class);
+		}
+		if (sort != null) {
+			if (sqlFilter == null) {
+				sqlFilter = new SQLFilter();
+			}
+			List<SQLOrder> sortL = JsonUtil.toList(sort, SQLOrder.class);
+			for (SQLOrder order : sortL) {
+				sqlFilter.addSQLOrder(order);
+			}
+		}
+		if (sqlFilter == null) {
+			sqlFilter = new SQLFilter();
+		}
+		return sqlFilter;
+	}
 
 }

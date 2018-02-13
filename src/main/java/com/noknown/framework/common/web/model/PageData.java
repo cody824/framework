@@ -69,14 +69,16 @@ public class PageData<T> implements Serializable {
     }
 
 	public int getPageNum() {
-		if (limit != 0)
+		if (limit != 0) {
 			pageNum = (start+limit)/limit;
+		}
 		return pageNum;
 	}
 
 	public int getTotalPage() {
-		if (limit != 0)
+		if (limit != 0) {
 			totalPage = (int) (total/limit);
+		}
 		int num = totalPage*limit;
 		if(num < total){
 			totalPage += 1;

@@ -168,11 +168,13 @@ public class DESUtil {
 
 			if (stmp.length() == 1)
 
+			{
 				hs = hs + "0" + stmp;
+			} else
 
-			else
-
+			{
 				hs = hs + stmp;
+			}
 
 		}
 
@@ -184,7 +186,9 @@ public class DESUtil {
 
 		if ((b.length % 2) != 0)
 
+		{
 			throw new IllegalArgumentException("长度不是偶数");
+		}
 
 		byte[] b2 = new byte[b.length / 2];
 

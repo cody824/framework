@@ -17,12 +17,12 @@ public class SQLOrder implements Serializable{
 	/**
 	 * 升序排列
 	 */
-	public static final String asc = "asc";
+	public static final String ASC = "asc";
 	
 	/**
 	 * 降序排列
 	 */
-	public static final String desc = "desc";
+	public static final String DESC = "desc";
 	/**
 	 * 要排序的属性
 	 *
@@ -44,7 +44,7 @@ public class SQLOrder implements Serializable{
 	 */
 	public SQLOrder(String property) {
 		this.property = property;
-		this.direction = SQLOrder.desc;
+		this.direction = SQLOrder.DESC;
 	}
 	
 	/**

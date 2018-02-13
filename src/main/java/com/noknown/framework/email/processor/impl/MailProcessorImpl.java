@@ -1,5 +1,6 @@
 package com.noknown.framework.email.processor.impl;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.noknown.framework.common.util.StringUtil;
 import com.noknown.framework.email.model.MailMessage;
 import com.noknown.framework.email.processor.MailProcessor;
@@ -20,10 +21,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.*;
 
 @Component
 public class MailProcessorImpl implements MailProcessor {
@@ -41,16 +39,29 @@ public class MailProcessorImpl implements MailProcessor {
 	@Value("${mail.fromUser:noknown@163.com}")
 	private String fromUser;
 
+	@Value("${mail.sendTreadNum:1}")
+	private int sendTreadNum;
+
+	@Value("${mail.waitSecond:0}")
+	private int waitSecond;
+
 	public BlockingQueue<MimeMessage> msgQueue = new LinkedBlockingDeque<>(1000);
 
 	@PostConstruct
 	void runEmailThread() {
 
-		int cpuNums = Runtime.getRuntime().availableProcessors();
-		// 获取当前系统的CPU 数目
-		ExecutorService executorService = Executors.newFixedThreadPool(cpuNums);
-		for (int i = 0; i < cpuNums; i++)
-			executorService.execute(new EmailSendThread());
+
+		ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
+				.setNameFormat("email-sender-%d").build();
+
+		//Common Thread Pool
+		ExecutorService pool = new ThreadPoolExecutor(sendTreadNum, 200,
+				0L, TimeUnit.MILLISECONDS,
+				new LinkedBlockingQueue<Runnable>(1024), namedThreadFactory, new ThreadPoolExecutor.AbortPolicy());
+
+		for (int i = 0; i < sendTreadNum; i++) {
+			pool.execute(new EmailSendThread());
+		}
 
 	}
 
@@ -61,10 +72,11 @@ public class MailProcessorImpl implements MailProcessor {
 			MimeMessageHelper helper = new MimeMessageHelper(msg, false, "UTF-8");
 			helper.setSubject(subject);
 
-			if (from != null)
+			if (from != null) {
 				helper.setFrom(from);
-			else
+			} else {
 				helper.setFrom(fromUser);
+			}
 			helper.setTo(to);
 			helper.setText(content, true);
 		} catch (MessagingException e) {
@@ -99,10 +111,11 @@ public class MailProcessorImpl implements MailProcessor {
 		String tpl = mailMessage.getTpl();
 		Map<String, String> tplData = mailMessage.getTplData();
 
-		if (StringUtil.isBlank(content))
+		if (StringUtil.isBlank(content)) {
 			return this.sendMail(from, to, subject, tpl, tplData, async);
-		else
+		} else {
 			return this.sendMail(from, to, subject, content, async);
+		}
 	}
 
 	public String getFromUser() {
@@ -149,7 +162,9 @@ public class MailProcessorImpl implements MailProcessor {
 				do {
 					MimeMessage message = msgQueue.take();
 					sender.send(message);
-					
+					if (waitSecond > 0) {
+						Thread.sleep(1000 * waitSecond);
+					}
 				} while (true);
 			} catch (Exception e) {
 				e.printStackTrace();

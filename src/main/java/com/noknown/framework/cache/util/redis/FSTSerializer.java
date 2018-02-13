@@ -31,17 +31,20 @@ public class FSTSerializer implements Serializer {
 			fout.writeObject(obj);
 			return out.toByteArray();
 		} finally {
-			if(fout != null)
-			try {
-				fout.close();
-			} catch (IOException e) {}
+			if (fout != null) {
+				try {
+					fout.close();
+				} catch (IOException e) {
+				}
+			}
 		}
 	}
 
 	@Override
 	public Object deserialize(byte[] bytes) throws IOException {
-		if(bytes == null || bytes.length == 0)
+		if (bytes == null || bytes.length == 0) {
 			return null;
+		}
 		FSTObjectInput in = null;
 		try {
 			in = new FSTObjectInput(new ByteArrayInputStream(bytes));
@@ -49,10 +52,12 @@ public class FSTSerializer implements Serializer {
 		} catch (ClassNotFoundException e) {
 			throw new IOException(e);
 		} finally {
-			if(in != null)
-			try {
-				in.close();
-			} catch (IOException e) {}
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+				}
+			}
 		}
 	}
 

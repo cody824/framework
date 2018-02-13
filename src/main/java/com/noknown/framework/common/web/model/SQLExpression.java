@@ -147,65 +147,77 @@ public class SQLExpression implements Serializable {
 		String lop = StringUtil.isBlank(logicalOp) ? "and" : logicalOp;
 		StringBuffer sb = new StringBuffer(" " + lop + " " + property + " " + matchMode + " ");
 		if (matchMode.equals(SQLExpression.between)) {
-			if (ignoreCase)
+			if (ignoreCase) {
 				sb.append("Upper(?) and (?)");
-			else
+			} else {
 				sb.append("? and ?");
+			}
 		} else if (matchMode.equals(SQLExpression.in)) {
 			sb.append("(");
 			for (int i = 0; i < value.length; i++){
 				if (value[i] != null && i < value.length - 1) {
-					if (ignoreCase)
+					if (ignoreCase) {
 						sb.append("Upper(?),");
-					else
+					} else {
 						sb.append("?,");
+					}
 				} else {
-					if (ignoreCase)
+					if (ignoreCase) {
 						sb.append("Upper(?)");
-					else
+					} else {
 						sb.append("?");
+					}
 				}
 			}
 			sb.append(")");
 		} else if (matchMode.equals(SQLExpression.isnull) || matchMode.equals(SQLExpression.isnotnul)) {
 			//do nothing
 		} else {
-			if (ignoreCase)
+			if (ignoreCase) {
 				sb.append("Upper(?)");
-			else
+			} else {
 				sb.append("?");
+			}
 		}
 		return sb.toString();
 	}
 
 	@JsonIgnore
 	public boolean isOk() {
-		if (StringUtil.isBlank(property) || StringUtil.isBlank(matchMode))
+		if (StringUtil.isBlank(property) || StringUtil.isBlank(matchMode)) {
 			return false;
+		}
 		
 		if (matchMode.equals(SQLExpression.between)) {
-			if (this.value == null || value.length != 2)
+			if (this.value == null || value.length != 2) {
 				return false;
+			}
 			for(Object o : value){
-				if (o == null)
+				if (o == null) {
 					return false;
+				}
 			}
 		}  else if (matchMode.equals(SQLExpression.isnull) || matchMode.equals(SQLExpression.isnotnul)) {
-			if (value != null && value.length > 0)
+			if (value != null && value.length > 0) {
 				return false;
+			}
 		} else if (matchMode.equals(SQLExpression.in))  {
-			if (value == null || value.length <= 0)
+			if (value == null || value.length <= 0) {
 				return false;
+			}
 			for(Object o : value){
-				if (o == null)
+				if (o == null) {
 					return false;
+				}
 			}
 		} else {
-			if (value == null || value.length != 1)
+			if (value == null || value.length != 1) {
 				return false;
+			}
 			for(Object o : value){
-				if (o == null)
+				if (o == null) {
 					return false;
+				}
 			}
 		}
 		return true;

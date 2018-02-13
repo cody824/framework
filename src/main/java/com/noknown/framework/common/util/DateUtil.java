@@ -10,7 +10,6 @@
  */
 package com.noknown.framework.common.util;
 
-import com.noknown.framework.common.util.base.ValidateHelper;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
@@ -193,12 +192,6 @@ public class DateUtil {
 
     public static final long ONE_DAY = 24 * 60 * 60 * 1000;
 
-    public static final SimpleDateFormat _defDateTimeFmt =
-            new SimpleDateFormat(DEFAULT_DATETIME_FORMAT);
-
-    public static final SimpleDateFormat _defDateFmt =
-            new SimpleDateFormat(DEFAULT_DATE_FORMAT);
-
     public static String toString(Date date, String format) {
 
         SimpleDateFormat formatter;
@@ -228,10 +221,11 @@ public class DateUtil {
         if (date1 == null && date2 == null) {
             return true;
         }
-        if (date1 == null || date2 == null)
-            return false;
-        else
-            return date1.getTime() == date2.getTime();
+	    if (date1 == null || date2 == null) {
+		    return false;
+	    } else {
+		    return date1.getTime() == date2.getTime();
+	    }
     }
 
     public static Date toDate(String str) {
@@ -253,11 +247,15 @@ public class DateUtil {
     }
 
     public static String curDateStr() {
-        return _defDateFmt.format(new Date());
+	    SimpleDateFormat format =
+			    new SimpleDateFormat(DEFAULT_DATE_FORMAT);
+	    return format.format(new Date());
     }
 
     public static String curDateTimeStr() {
-        return _defDateTimeFmt.format(new Date());
+	    SimpleDateFormat format =
+			    new SimpleDateFormat(DEFAULT_DATETIME_FORMAT);
+	    return format.format(new Date());
     }
 
     public static String formatElapsedTime(long millis) {
@@ -275,7 +273,9 @@ public class DateUtil {
      * @return
      */
     public static String getFirstDateOfMonth(int year, int month) {
-        if (year < 0 || month > 12 || month < 1) return null;
+	    if (year < 0 || month > 12 || month < 1) {
+		    return null;
+	    }
         return year + (month < 10 ? ("0" + month) : ("" + month)) + "01";
     }
 
@@ -286,7 +286,9 @@ public class DateUtil {
      * @return
      */
     public static String getLastDateOfMonth(int year, int month) {
-        if (year < 0 || month > 12 || month < 1) return null;
+	    if (year < 0 || month > 12 || month < 1) {
+		    return null;
+	    }
 
         java.util.Calendar cal = java.util.Calendar.getInstance();
         cal.set(year, month, 1);  //下个月的第一天
@@ -384,9 +386,11 @@ public class DateUtil {
         int year = Integer.parseInt(date.substring(0, 4));
         int month = Integer.parseInt(date.substring(4, 6));
         int day = 0;
-        if (date.length() == 8)
-            day = Integer.parseInt(date.substring(6, 8));
-        else day = Integer.parseInt("01");
+	    if (date.length() == 8) {
+		    day = Integer.parseInt(date.substring(6, 8));
+	    } else {
+		    day = Integer.parseInt("01");
+	    }
 
         int[] result = findYearMonth(year, month, day, -1);
         return result[0] + (result[1] < 10 ? ("0" + result[1]) : ("" + result[1])) + (result[2] < 10 ? ("0" + result[2]) : ("" + result[2]));
@@ -503,37 +507,37 @@ public class DateUtil {
     public static String fromToday(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        long ONE_MINUTE = 60;
-        long ONE_HOUR = 3600;
-        long ONE_DAY = 86400;
-        long ONE_MONTH = 2592000;
-        long ONE_YEAR = 31104000;
+	    long oneMinute = 60;
+	    long oneHour = 3600;
+	    long oneDay = 86400;
+	    long oneMonth = 2592000;
+	    long oneYear = 31104000;
         long time = date.getTime() / 1000;
-        long now = new Date().getTime() / 1000;
+	    long now = System.currentTimeMillis() / 1000;
         long ago = now - time;
-        if (ago <= ONE_HOUR)
-            return ago / ONE_MINUTE + "分钟前";
-        else if (ago <= ONE_DAY)
-            return ago / ONE_HOUR + "小时" + (ago % ONE_HOUR / ONE_MINUTE)
-                    + "分钟前";
-        else if (ago <= ONE_DAY * 2)
-            return "昨天" + calendar.get(Calendar.HOUR_OF_DAY) + "点"
-                    + calendar.get(Calendar.MINUTE) + "分";
-        else if (ago <= ONE_DAY * 3)
-            return "前天" + calendar.get(Calendar.HOUR_OF_DAY) + "点"
-                    + calendar.get(Calendar.MINUTE) + "分";
-        else if (ago <= ONE_MONTH) {
-            long day = ago / ONE_DAY;
+	    if (ago <= oneHour) {
+		    return ago / oneMinute + "分钟前";
+	    } else if (ago <= oneDay) {
+		    return ago / oneHour + "小时" + (ago % oneHour / oneMinute)
+				    + "分钟前";
+	    } else if (ago <= oneDay * 2) {
+		    return "昨天" + calendar.get(Calendar.HOUR_OF_DAY) + "点"
+				    + calendar.get(Calendar.MINUTE) + "分";
+	    } else if (ago <= oneDay * 3) {
+		    return "前天" + calendar.get(Calendar.HOUR_OF_DAY) + "点"
+				    + calendar.get(Calendar.MINUTE) + "分";
+	    } else if (ago <= oneMonth) {
+		    long day = ago / oneDay;
             return day + "天前" + calendar.get(Calendar.HOUR_OF_DAY) + "点"
                     + calendar.get(Calendar.MINUTE) + "分";
-        } else if (ago <= ONE_YEAR) {
-            long month = ago / ONE_MONTH;
-            long day = ago % ONE_MONTH / ONE_DAY;
+	    } else if (ago <= oneYear) {
+		    long month = ago / oneMonth;
+		    long day = ago % oneMonth / oneDay;
             return month + "个月" + day + "天前"
                     + calendar.get(Calendar.HOUR_OF_DAY) + "点"
                     + calendar.get(Calendar.MINUTE) + "分";
         } else {
-            long year = ago / ONE_YEAR;
+		    long year = ago / oneYear;
             int month = calendar.get(Calendar.MONTH) + 1;// JANUARY which is 0 so month+1
             return year + "年前" + month + "月" + calendar.get(Calendar.DATE)
                     + "日";
@@ -598,8 +602,9 @@ public class DateUtil {
      */
     public static String stringFormat(String value) {
         String sReturn = "";
-        if (value == null || "".equals(value))
-            return sReturn;
+	    if (value == null || "".equals(value)) {
+		    return sReturn;
+	    }
         if (value.length() == 14) {   //长度为14格式转换成yyyy-mm-dd hh:mm:ss
             sReturn = value.substring(0, 4) + "-" + value.substring(4, 6) + "-" + value.substring(6, 8) + " "
                     + value.substring(8, 10) + ":" + value.substring(10, 12) + ":" + value.substring(12, 14);
@@ -902,7 +907,7 @@ public class DateUtil {
      * @throws ParseException
      */
     public static String formatDate(String date,String format) throws Exception{
-        if(ValidateHelper.isEmpty(date) || ValidateHelper.isEmpty(format)){
+	    if (StringUtil.isBlank(date) || StringUtil.isBlank(format)) {
             return "";
         }
         Date dt = null;
@@ -910,11 +915,13 @@ public class DateUtil {
         SimpleDateFormat outFmt = null;
         ParsePosition pos = new ParsePosition(0);
         date = date.replace("-", "").replace(":", "");
-        if ((date == null) || ("".equals(date.trim())))
-            return "";
+	    if ((date == null) || ("".equals(date.trim()))) {
+		    return "";
+	    }
         try {
-            if (Long.parseLong(date) == 0L)
-                return "";
+	        if (Long.parseLong(date) == 0L) {
+		        return "";
+	        }
         } catch (Exception nume) {
             return date;
         }
@@ -942,8 +949,9 @@ public class DateUtil {
                 default:
                     return date;
             }
-            if ((dt = inFmt.parse(date, pos)) == null)
-                return date;
+	        if ((dt = inFmt.parse(date, pos)) == null) {
+		        return date;
+	        }
             if ((format == null) || ("".equals(format.trim()))) {
                 outFmt = new SimpleDateFormat("yyyy年MM月dd日");
             } else {

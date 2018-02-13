@@ -4,40 +4,33 @@ import com.noknown.framework.common.base.BaseServiceImpl;
 import com.noknown.framework.common.exception.DAOException;
 import com.noknown.framework.common.exception.ServiceException;
 import com.noknown.framework.common.util.BaseUtil;
-import com.noknown.framework.common.util.JpaUtil;
+import com.noknown.framework.common.util.ObjectUtil;
 import com.noknown.framework.common.util.RegexValidateUtil;
-import com.noknown.framework.common.web.model.PageData;
-import com.noknown.framework.common.web.model.SQLFilter;
+import com.noknown.framework.common.util.StringUtil;
 import com.noknown.framework.security.dao.TpaDao;
 import com.noknown.framework.security.dao.UserDao;
+import com.noknown.framework.security.model.BaseUserDetails;
 import com.noknown.framework.security.model.ThirdPartyAccount;
 import com.noknown.framework.security.model.User;
+import com.noknown.framework.security.pojo.UserWarpForReg;
 import com.noknown.framework.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.util.Date;
 import java.util.List;
 
 
-public abstract class UserServiceImpl extends BaseServiceImpl<User, Integer> implements UserService {
+public abstract class AbstractUserServiceImpl extends BaseServiceImpl<User, Integer> implements UserService {
 
 	@Autowired
 	private UserDao userDao;
-	
+
 	@Autowired
 	private TpaDao tpaDao;
 	
@@ -49,12 +42,14 @@ public abstract class UserServiceImpl extends BaseServiceImpl<User, Integer> imp
 	
 	@Value("${security.auth.mobile:true}")
 	private boolean mobileAuth;
-	
+
+	@Override
 	public JpaRepository<User, Integer> getRepository() {
 		return userDao;
 	}
-	
-	public JpaSpecificationExecutor<User> getSpecificationExecutor() { 
+
+	@Override
+	public JpaSpecificationExecutor<User> getSpecificationExecutor() {
 		return userDao;
 	}
 
@@ -62,12 +57,12 @@ public abstract class UserServiceImpl extends BaseServiceImpl<User, Integer> imp
 	public User findByNick(String nick) {
 		return userDao.findByNick(nick);
 	}
-	
+
 	@Override
-	public User findById(Integer id) {
-		return userDao.findOne(id);
+	public User findByEmail(String email) {
+		return userDao.findByEmail(email);
 	}
-	
+
 
 	@Override
 	public User loginAuth(String userName, String password) throws ServiceException {
@@ -81,54 +76,75 @@ public abstract class UserServiceImpl extends BaseServiceImpl<User, Integer> imp
 	}
 
 
-	@Override
-	public com.noknown.framework.security.model.UserDetails addUser(User userToAdd) throws ServiceException{
+	protected BaseUserDetails addUser(UserWarpForReg userToAdd, Class<? extends BaseUserDetails> clazz) throws ServiceException {
+		User user = new User();
 		final String username = userToAdd.getUsername();
+		BaseUserDetails udDetails = null;
         if(userDao.findByNick(username)!=null) {
             throw new ServiceException("用户名已经存在，请更换用户名");
         }
+		user.setNick(username);
         final String mobile = userToAdd.getMobile();
         if (mobile != null && userDao.findByMobile(mobile) != null){
         	throw new ServiceException("手机号码已经被绑定，请更换手机号");
         }
+		user.setMobile(mobile);
         final String email = userToAdd.getEmail();
         if (email != null && userDao.findByEmail(email) != null){
         	throw new ServiceException("邮箱已经被绑定，请更换邮箱");
         }
+		user.setEmail(email);
         final String rawPassword = userToAdd.getPassword();
-        userToAdd.setPassword(pswdEncoder.encode(rawPassword));
-        userToAdd.setLastPasswordResetDate(new Date());
-        userToAdd.setCreateDate(new Date());
-        userToAdd = userDao.save(userToAdd);
-		return null;
+		user.setPassword(pswdEncoder.encode(rawPassword));
+		user.setLastPasswordResetDate(new Date());
+		user.setCreateDate(new Date());
+		userDao.save(user);
+
+		try {
+			udDetails = clazz.newInstance();
+			udDetails.setId(user.getId());
+			udDetails.setNick(user.getNick());
+			if (StringUtil.isNotBlank(user.getMobile())) {
+				udDetails.setMobile(user.getMobile());
+			}
+			if (StringUtil.isNotBlank(user.getEmail())) {
+				udDetails.setEmail(user.getEmail());
+			}
+			if (userToAdd.getParams() != null) {
+				ObjectUtil.assignByMap(udDetails, userToAdd.getParams());
+			}
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		return udDetails;
 	}
-	
-	protected User addUserFromTpaBase(String tpaType, String tpaId, String avatar, String avatar_hd,
-			String nickname) throws ServiceException, DAOException {
+
+	protected BaseUserDetails addUserFromTpaBase(String tpaType, String tpaId, String avatar, String avatarHd,
+	                                             String nickname, Class<? extends BaseUserDetails> clazz) {
 		User user = new User();
 		user.setNick(tpaType + BaseUtil.getUUID());
 		user.setCreateDate(new Date());
 		user.setPassword(pswdEncoder.encode(tpaId));
 		user.setLastPasswordResetDate(new Date());
 		user = userDao.save(user);
-		this.bindTpaAccout(user.getId(), tpaType, tpaId, avatar, avatar_hd, nickname);
-		return user;
+		ThirdPartyAccount tpa = this.bindTpaAccout(user.getId(), tpaType, tpaId, avatar, avatarHd, nickname);
+		return buildUD(user, tpa, clazz);
 	}
-	
-	protected User addUserFromWxBase(String wxId, String unionId, String openId, String avatar,
-			String avatar_hd, String nickname) throws ServiceException, DAOException {
+
+	protected BaseUserDetails addUserFromWxBase(String wxId, String unionId, String openId, String avatar,
+	                                            String avatarHd, String nickname, Class<? extends BaseUserDetails> clazz) {
 		User user = new User();
 		user.setNick("wechat" + BaseUtil.getUUID());
 		user.setCreateDate(new Date());
 		user.setPassword(pswdEncoder.encode(openId));
 		user.setLastPasswordResetDate(new Date());
 		user = userDao.save(user);
-		this.bindWxAccout(user.getId(), wxId, unionId, openId, avatar, avatar_hd, nickname);
-		return user;
+		ThirdPartyAccount tpa = this.bindWxAccout(user.getId(), wxId, unionId, openId, avatar, avatarHd, nickname);
+		return buildUD(user, tpa, clazz);
 	}
-	
 
-	protected User addUserFromTpaBase(ThirdPartyAccount tpa) {
+
+	protected BaseUserDetails addUserFromTpaBase(ThirdPartyAccount tpa, Class<? extends BaseUserDetails> clazz) {
 		User user = new User();
 		user.setNick(tpa.getAccountType() + BaseUtil.getUUID());
 		user.setCreateDate(new Date());
@@ -137,12 +153,33 @@ public abstract class UserServiceImpl extends BaseServiceImpl<User, Integer> imp
 		user = userDao.save(user);
 		tpa.setUserId(user.getId());
 		tpaDao.save(tpa);
-		return user;
+		return buildUD(user, tpa, clazz);
+	}
+
+	private BaseUserDetails buildUD(User user, ThirdPartyAccount tpa, Class<? extends BaseUserDetails> clazz) {
+		BaseUserDetails udDetails = null;
+		try {
+			udDetails = clazz.newInstance();
+			udDetails.setId(user.getId());
+			udDetails.setNick(user.getNick());
+			if (StringUtil.isNotBlank(user.getMobile())) {
+				udDetails.setMobile(user.getMobile());
+			}
+			if (StringUtil.isNotBlank(user.getEmail())) {
+				udDetails.setEmail(user.getEmail());
+			}
+			udDetails.setAvatar(tpa.getAvatar());
+			udDetails.setAvatarHd(tpa.getAvatarHd());
+			udDetails.setFullName(tpa.getNickname());
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		return udDetails;
 	}
 
 	@Override
 	public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
-		User user = null;
+		User user;
 		boolean isMobile = RegexValidateUtil.checkMobile(name);
 		boolean isEmail = RegexValidateUtil.checkEmail(name);
 		if (isMobile && mobileAuth) {
@@ -161,11 +198,13 @@ public abstract class UserServiceImpl extends BaseServiceImpl<User, Integer> imp
 	@Override
 	public void bindEmail(Integer userId, String email) throws DAOException, ServiceException {
 		User user = userDao.getOne(userId);
-		if (user == null)
+		if (user == null) {
 			throw new ServiceException("用户[" + userId + "]不存在");
+		}
 		User user2 = userDao.findByEmail(email);
-		if (user2 != null && !user2.getId().equals(user.getId()))
+		if (user2 != null && !user2.getId().equals(user.getId())) {
 			throw new ServiceException("电子邮箱[" + email + "]已经被其他账户绑定，请尝试其他邮箱或者通过找回密码功能找回绑定账户密码!");
+		}
 		user.setEmail(email);
 		userDao.save(user);
 	}
@@ -173,8 +212,9 @@ public abstract class UserServiceImpl extends BaseServiceImpl<User, Integer> imp
 	@Override
 	public void unbindEmail(Integer userId) throws DAOException, ServiceException {
 		User user = userDao.getOne(userId);
-		if (user == null)
+		if (user == null) {
 			throw new ServiceException("用户[" + userId + "]不存在");
+		}
 		user.setEmail(null);
 		userDao.save(user);
 		
@@ -183,11 +223,13 @@ public abstract class UserServiceImpl extends BaseServiceImpl<User, Integer> imp
 	@Override
 	public void bindMobile(Integer userId, String mobile) throws DAOException, ServiceException {
 		User user = userDao.getOne(userId);
-		if (user == null)
+		if (user == null) {
 			throw new ServiceException("用户[" + userId + "]不存在");
+		}
 		User user2 = userDao.findByMobile(mobile);
-		if (user2 != null && !user2.getId().equals(user.getId()))
+		if (user2 != null && !user2.getId().equals(user.getId())) {
 			throw new ServiceException("手机号[" + mobile + "]已经被其他账户绑定，请尝试其他手机号或者通过找回密码功能找回绑定账户密码!");
+		}
 		user.setMobile(mobile);
 		userDao.save(user);
 	}
@@ -195,16 +237,17 @@ public abstract class UserServiceImpl extends BaseServiceImpl<User, Integer> imp
 	@Override
 	public void unbindMobile(Integer userId) throws DAOException, ServiceException {
 		User user = userDao.getOne(userId);
-		if (user == null)
+		if (user == null) {
 			throw new ServiceException("用户[" + userId + "]不存在");
+		}
 		user.setMobile(null);
 		userDao.save(user);
 	}
 
 	@Override
 	public ThirdPartyAccount bindTpaAccout(Integer userId, String tpaType, String tpaId, String avatar,
-			String avatar_hd, String nickname) throws ServiceException, DAOException {
-		ThirdPartyAccount tpa = null;
+	                                       String avatarHd, String nickname) {
+		ThirdPartyAccount tpa;
 		tpa = getThirdPartyAccount(userId, tpaType);
 		if (tpa == null) {
 			tpa = new ThirdPartyAccount();
@@ -213,7 +256,7 @@ public abstract class UserServiceImpl extends BaseServiceImpl<User, Integer> imp
 		tpa.setAccountType(tpaType);
 		tpa.setUserId(userId);
 		tpa.setAvatar(avatar);
-		tpa.setAvatar_hd(avatar_hd);
+		tpa.setAvatarHd(avatarHd);
 		tpa.setNickname(nickname);
 		tpaDao.save(tpa);
 		return tpa;
@@ -221,8 +264,8 @@ public abstract class UserServiceImpl extends BaseServiceImpl<User, Integer> imp
 
 	@Override
 	public ThirdPartyAccount bindWxAccout(Integer userId, String wxId, String unionId, String openId, String avatar,
-			String avatar_hd, String nickname) throws ServiceException, DAOException {
-		ThirdPartyAccount tpa = null;
+	                                      String avatarHd, String nickname) {
+		ThirdPartyAccount tpa;
 		tpa = this.getWxAccoutByOpenId(openId);
 		if (tpa == null) {
 			tpa = new ThirdPartyAccount();
@@ -233,51 +276,48 @@ public abstract class UserServiceImpl extends BaseServiceImpl<User, Integer> imp
 		tpa.setAppId(wxId);
 		tpa.setUserId(userId);
 		tpa.setAvatar(avatar);
-		tpa.setAvatar_hd(avatar_hd);
+		tpa.setAvatarHd(avatarHd);
 		tpa.setNickname(nickname);
 		tpaDao.save(tpa);
 		return tpa;
 	}
 
 	@Override
-	public ThirdPartyAccount getWxAccoutByOpenId(String openId) throws ServiceException, DAOException {
-		ThirdPartyAccount tpa = tpaDao.findByOpenIdAndAccountType(openId, "wechat");
-		return tpa;
+	public ThirdPartyAccount getWxAccoutByOpenId(String openId) {
+		return tpaDao.findByOpenIdAndAccountType(openId, "wechat");
 	}
 
 	@Override
-	public ThirdPartyAccount getWxAccoutByUnionId(String wxId, String unionId) throws ServiceException, DAOException {
+	public ThirdPartyAccount getWxAccoutByUnionId(String wxId, String unionId) {
 		return tpaDao.findByAppIdAndUnionId(wxId, unionId);
 	}
 
 	@Override
-	public ThirdPartyAccount getWxAccoutByUserId(String wxId, Integer userId) throws ServiceException, DAOException {
+	public ThirdPartyAccount getWxAccoutByUserId(String wxId, Integer userId) {
 		return tpaDao.findByAppIdAndUserId(wxId, userId);
 	}
 	
 
 	@Override
-	public List<ThirdPartyAccount> getWxAccoutByUserId(Integer userId) throws ServiceException, DAOException {
+	public List<ThirdPartyAccount> getWxAccoutByUserId(Integer userId) {
 		return tpaDao.findByUserIdAndAccountType(userId, "wechat");
 	}
 
 	@Override
-	public List<ThirdPartyAccount> getWxAcountByUnionId(String unionId) throws ServiceException, DAOException {
+	public List<ThirdPartyAccount> getWxAcountByUnionId(String unionId) {
 		return tpaDao.findByUnionId(unionId);
 	}
 
 	@Override
-	public void unbindTpaAccout(Integer userId, String tpaType) throws DAOException, ServiceException {
-		ThirdPartyAccount tpa = null;
-
-		tpa = getThirdPartyAccount(userId, tpaType);
+	public void unbindTpaAccout(Integer userId, String tpaType) {
+		ThirdPartyAccount tpa = getThirdPartyAccount(userId, tpaType);
 		if (tpa != null) {
 			tpaDao.delete(tpa);
 		}
 	}
 
 	@Override
-	public ThirdPartyAccount getThirdPartyAccount(Integer userId, String type) throws DAOException, ServiceException {
+	public ThirdPartyAccount getThirdPartyAccount(Integer userId, String type) {
 		List<ThirdPartyAccount> list = tpaDao.findByUserIdAndAccountType(userId, type);
 		if (list != null && list.size() > 0){
 			return list.get(0);
@@ -286,20 +326,19 @@ public abstract class UserServiceImpl extends BaseServiceImpl<User, Integer> imp
 	}
 	
 	@Override
-	public ThirdPartyAccount getThirdPartyAccountByOpenId(String openId, String tpaType) throws ServiceException, DAOException {
+	public ThirdPartyAccount getThirdPartyAccountByOpenId(String openId, String tpaType) {
 		return tpaDao.findByOpenIdAndAccountType(openId, tpaType);
 	}
 
 	@Override
-	public List<ThirdPartyAccount> getThirdPartyList(Integer userId) throws DAOException, ServiceException {
+	public List<ThirdPartyAccount> getThirdPartyList(Integer userId) {
 		return tpaDao.findByUserId(userId);
 	}
 
 
 	@Override
-	public void unbindTpaAccoutByOpenId(String openId, String tpaType) throws DAOException, ServiceException {
-		ThirdPartyAccount tpa = null;
-		tpa = tpaDao.findByOpenIdAndAccountType(openId, tpaType);
+	public void unbindTpaAccoutByOpenId(String openId, String tpaType) {
+		ThirdPartyAccount tpa = tpaDao.findByOpenIdAndAccountType(openId, tpaType);
 		if (tpa != null) {
 			tpaDao.delete(tpa);
 		}
@@ -312,38 +351,13 @@ public abstract class UserServiceImpl extends BaseServiceImpl<User, Integer> imp
 	}
 
 	@Override
-	public void updateTpa(ThirdPartyAccount tpa) throws ServiceException, DAOException {
+	public void updateTpa(ThirdPartyAccount tpa) {
 		tpaDao.save(tpa);
 	}
 
-
 	@Override
-	public PageData<User> findBySQLFilter(SQLFilter sqlFilter, int start, int limit)
-			throws ServiceException, DAOException {
-		Pageable pageable = new PageRequest(start / limit, limit);
-		Specification<User> spec = new Specification<User>(){
-
-			@Override
-			public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				Predicate predicate = JpaUtil.sqlFilterToPredicate(User.class, root, query, cb, sqlFilter);
-				return predicate;
-			}} ;
-		Page<User> pd = userDao.findAll(spec , pageable);
-		
-		PageData<User> pageData = new PageData<>();
-		pageData.setTotal(pd.getTotalElements());
-		pageData.setTotalPage(pd.getTotalPages());
-		pageData.setData(pd.getContent());
-		pageData.setStart(start);
-		pageData.setLimit(limit);
-		
-		return pageData;
-	}
-
-
-	@Override
-	public void resetUserPasswd(String identity, String password) throws ServiceException {
-		User user = null;
+	public void resetUserPasswd(String identity, String password) {
+		User user;
 		boolean isMobile = RegexValidateUtil.checkMobile(identity);
 		boolean isEmail = RegexValidateUtil.checkEmail(identity);
 		if (isMobile) {
@@ -368,8 +382,8 @@ public abstract class UserServiceImpl extends BaseServiceImpl<User, Integer> imp
 				throw new ServiceException("用户ID:" + userId + " 对应的用户不存在");
 			}
 
-			String Password = pswdEncoder.encode("123456");
-			user.setPassword(Password);
+			String password = pswdEncoder.encode("123456");
+			user.setPassword(password);
 			userDao.save(user);
 		}
 		
@@ -377,7 +391,7 @@ public abstract class UserServiceImpl extends BaseServiceImpl<User, Integer> imp
 
 	@Override
 	public void deleteUsersByName(List<String> userNames) throws ServiceException {
-		User user = null;
+		User user;
 		for (String name : userNames) {
 			user = userDao.findByNick(name);
 			if (user == null) {
@@ -459,11 +473,17 @@ public abstract class UserServiceImpl extends BaseServiceImpl<User, Integer> imp
 			throw new ServiceException("昵称只能修改一次，您不可以再修改昵称");
 		}
 		User existUser = userDao.findByNick(name);
-		if (existUser != null)
+		if (existUser != null) {
 			throw new ServiceException(name + "已经被使用，请换一个昵称");
+		}
 		
 		user.setNick(name);
 		userDao.save(user);
+	}
+
+	@Override
+	public List<User> findUserByRoleName(String roleName) {
+		return userDao.findAllByRoles_Name(roleName);
 	}
 
 

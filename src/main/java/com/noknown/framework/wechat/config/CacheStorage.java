@@ -72,7 +72,7 @@ public class CacheStorage  extends WxMpInMemoryConfigStorage {
     @Override
     public synchronized void updateAccessToken(String accessToken, int expiresInSeconds) {
         this.accessToken = accessToken;
-        this.expiresTime = System.currentTimeMillis() + (expiresInSeconds - 200) * 1000l;
+	    this.expiresTime = System.currentTimeMillis() + (expiresInSeconds - 200) * 1000L;
 
         cacheService.set(WX_ACCESS_TOKEN, accessToken, new Date(expiresTime));
     }
@@ -95,7 +95,7 @@ public class CacheStorage  extends WxMpInMemoryConfigStorage {
     public synchronized void updateJsapiTicket(String jsapiTicket, int expiresInSeconds) {
         this.jsapiTicket = jsapiTicket;
         // 预留200秒的时间
-        this.jsapiTicketExpiresTime = System.currentTimeMillis() + (expiresInSeconds - 200) * 1000l;
+	    this.jsapiTicketExpiresTime = System.currentTimeMillis() + (expiresInSeconds - 200) * 1000L;
 
         cacheService.set(WX_JSAPI_TICKET, jsapiTicket, new Date(jsapiTicketExpiresTime));
     }

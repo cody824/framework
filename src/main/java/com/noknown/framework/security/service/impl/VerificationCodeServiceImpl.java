@@ -5,7 +5,7 @@ import com.noknown.framework.common.exception.ServiceException;
 import com.noknown.framework.common.util.StringUtil;
 import com.noknown.framework.common.util.algo.RandomString;
 import com.noknown.framework.email.processor.MailProcessor;
-import com.noknown.framework.security.service.AuthcodeService;
+import com.noknown.framework.security.service.VerificationCodeService;
 import com.noknown.framework.sms.provider.SMSProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,18 +19,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class AuthcodServiceImpl  implements AuthcodeService {
+public class VerificationCodeServiceImpl implements VerificationCodeService {
 	
 	public final Logger logger = LoggerFactory.getLogger(getClass());
-	
-	@Autowired
-	private CacheService cacheService;
-	
-	@Autowired
-	private SMSProvider smsProvider;
-	
-	@Autowired
-	private MailProcessor MailProcessor;
+
+	private final CacheService cacheService;
+
+	private final SMSProvider smsProvider;
+
+	private final MailProcessor mailProcessor;
 	
 	@Value("${security.authcode.email.tpl:}")
 	private String tpl;
@@ -41,11 +38,18 @@ public class AuthcodServiceImpl  implements AuthcodeService {
 	@Value("${security.authcode.sms.tpl:}")
 	private String smsTpl;
 
+	@Autowired
+	public VerificationCodeServiceImpl(CacheService cacheService, SMSProvider smsProvider, MailProcessor mailProcessor) {
+		this.cacheService = cacheService;
+		this.smsProvider = smsProvider;
+		this.mailProcessor = mailProcessor;
+	}
+
 
 	@Override
-	public String generateAuthCode(String to, int len, int timeout) throws ServiceException {
+	public String generate(String to, int len, int timeout) throws ServiceException {
 		//生成验证码 : 全部为数字
-		String authcode = RandomString.RandomNumber(len);
+		String authcode = RandomString.randomNumber(len);
 		
 		//存到cache中
 		Date now = new Date();
@@ -58,7 +62,7 @@ public class AuthcodServiceImpl  implements AuthcodeService {
 	}
 
 	@Override
-	public boolean checkAuthCode(String to, String authcode)
+	public boolean check(String to, String authcode)
 			throws ServiceException {
 		
 		String key = "authcode:" + to;
@@ -68,9 +72,9 @@ public class AuthcodServiceImpl  implements AuthcodeService {
 	}
 
 	@Override
-	public void sendAuthCode(String type, String to, int len, int timeout) throws ServiceException {
-		
-		String authcode = generateAuthCode(to, len, timeout);
+	public void send(String type, String to, int len, int timeout) throws ServiceException {
+
+		String authcode = generate(to, len, timeout);
 		if("phone".equals(type)){
 			if (StringUtil.isNotBlank(smsTpl)) {
 				Map<String, String> params = new HashMap<>();
@@ -89,7 +93,7 @@ public class AuthcodServiceImpl  implements AuthcodeService {
 	}
 
 	@Override
-	public void expireAuthCode(String type, String to) throws ServiceException {
+	public void expire(String type, String to) throws ServiceException {
 
 		String key = "authcode:" + to;
 		cacheService.delete(key);
@@ -99,13 +103,13 @@ public class AuthcodServiceImpl  implements AuthcodeService {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH点mm分ss秒");
 		if (StringUtil.isBlank(tpl)) {
 			String msg = "您本次操作需要的验证码是:"+authcode+"，" + timeout + "分钟内有效，请尽快操作。";
-			MailProcessor.sendMail(null, to, mailSubject, msg, true);
+			mailProcessor.sendMail(null, to, mailSubject, msg, true);
 		} else {
 			Map<String, String> tplData = new HashMap<>();
 			tplData.put("authcode", authcode);
 			tplData.put("timeout", Integer.toString(timeout));
 			tplData.put("time", sdf.format(new Date()));
-			MailProcessor.sendMail(null, to, mailSubject, tpl, tplData, true);
+			mailProcessor.sendMail(null, to, mailSubject, tpl, tplData, true);
 		}
 		return true;
 	}

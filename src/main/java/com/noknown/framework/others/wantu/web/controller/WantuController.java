@@ -104,50 +104,59 @@ public class WantuController extends BaseController {
 		if ("existsFile".equals(api)) {
 			String dir = request.getParameter("dir");
 			String name = request.getParameter("name");
-			if (StringUtil.isBlank(dir) || StringUtil.isBlank(name))
+			if (StringUtil.isBlank(dir) || StringUtil.isBlank(name)) {
 				throw new WebException("api参数不正确", HttpStatus.BAD_REQUEST);
+			}
 			resoult = mediaClient.existsFile(dir, name);
 		} else if ("existsDir".equals(api)) {
 			String dir = request.getParameter("dir");
-			if (StringUtil.isBlank(dir))
+			if (StringUtil.isBlank(dir)) {
 				throw new WebException("api参数不正确", HttpStatus.BAD_REQUEST);
+			}
 			resoult = mediaClient.existsDir(dir);
 		} else if ("getFile".equals(api)) {
 			String dir = request.getParameter("dir");
 			String name = request.getParameter("name");
-			if (StringUtil.isBlank(dir) || StringUtil.isBlank(name))
+			if (StringUtil.isBlank(dir) || StringUtil.isBlank(name)) {
 				throw new WebException("api参数不正确", HttpStatus.BAD_REQUEST);
+			}
 			resoult = mediaClient.getFile(dir, name);
 		} else if ("listDirs".equals(api)) {
 			String dir = request.getParameter("dir");
 			String pageStr = request.getParameter("page");
 			String pageSizeStr = request.getParameter("pageSize");
-			if (StringUtil.isBlank(dir))
+			if (StringUtil.isBlank(dir)) {
 				throw new WebException("api参数不正确", HttpStatus.BAD_REQUEST);
+			}
 			int page = 1, pageSize = 100;
 			try {
-				if (StringUtil.isNotBlank(pageStr) )
+				if (StringUtil.isNotBlank(pageStr)) {
 					page = Integer.parseInt(pageStr);
+				}
 			} catch (Exception e) {}
 			try {
-				if (StringUtil.isNotBlank(pageSizeStr) )
+				if (StringUtil.isNotBlank(pageSizeStr)) {
 					pageSize = Integer.parseInt(pageSizeStr);
+				}
 			} catch (Exception e) {}
 			resoult = mediaClient.listDirs(dir, page, pageSize);
 		} else if ("listFiles".equals(api)) {
 			String dir = request.getParameter("dir");
 			String pageStr = request.getParameter("page");
 			String pageSizeStr = request.getParameter("pageSize");
-			if (StringUtil.isBlank(dir))
+			if (StringUtil.isBlank(dir)) {
 				throw new WebException("api参数不正确", HttpStatus.BAD_REQUEST);
+			}
 			int page = 1, pageSize = 100;
 			try {
-				if (StringUtil.isNotBlank(pageStr) )
+				if (StringUtil.isNotBlank(pageStr)) {
 					page = Integer.parseInt(pageStr);
+				}
 			} catch (Exception e) {}
 			try {
-				if (StringUtil.isNotBlank(pageSizeStr) )
+				if (StringUtil.isNotBlank(pageSizeStr)) {
 					pageSize = Integer.parseInt(pageSizeStr);
+				}
 			} catch (Exception e) {}
 			resoult = mediaClient.listFiles(dir, page, pageSize);
 		}  else {
@@ -171,58 +180,67 @@ public class WantuController extends BaseController {
 		if ("existsFile".equals(api)) {
 			String dir = request.getParameter("dir");
 			String name = request.getParameter("name");
-			if (StringUtil.isBlank(dir) || StringUtil.isBlank(name))
+			if (StringUtil.isBlank(dir) || StringUtil.isBlank(name)) {
 				throw new WebException("api参数不正确", HttpStatus.BAD_REQUEST);
+			}
 			resoult = mediaClient.existsFile(dir, name);
 		} else if ("existsDir".equals(api)) {
 			String dir = request.getParameter("dir");
-			if (StringUtil.isBlank(dir))
+			if (StringUtil.isBlank(dir)) {
 				throw new WebException("api参数不正确", HttpStatus.BAD_REQUEST);
+			}
 			resoult = mediaClient.existsDir(dir);
 		} else if ("getFile".equals(api)) {
 			String dir = request.getParameter("dir");
 			String name = request.getParameter("name");
-			if (StringUtil.isBlank(dir) || StringUtil.isBlank(name))
+			if (StringUtil.isBlank(dir) || StringUtil.isBlank(name)) {
 				throw new WebException("api参数不正确", HttpStatus.BAD_REQUEST);
+			}
 			resoult = mediaClient.getFile(dir, name);
 		} else if ("listDirs".equals(api)) {
 			String dir = request.getParameter("dir");
 			String pageStr = request.getParameter("page");
 			String pageSizeStr = request.getParameter("pageSize");
-			if (StringUtil.isBlank(dir))
+			if (StringUtil.isBlank(dir)) {
 				throw new WebException("api参数不正确", HttpStatus.BAD_REQUEST);
+			}
 			int page = 1, pageSize = 100;
 			try {
-				if (StringUtil.isNotBlank(pageStr) )
+				if (StringUtil.isNotBlank(pageStr)) {
 					page = Integer.parseInt(pageStr);
+				}
 			} catch (Exception e) {}
 			try {
-				if (StringUtil.isNotBlank(pageSizeStr) )
+				if (StringUtil.isNotBlank(pageSizeStr)) {
 					pageSize = Integer.parseInt(pageSizeStr);
+				}
 			} catch (Exception e) {}
 			resoult = mediaClient.listDirs(dir, page, pageSize);
 		} else if ("listFiles".equals(api)) {
 			String dir = request.getParameter("dir");
 			String pageStr = request.getParameter("page");
 			String pageSizeStr = request.getParameter("pageSize");
-			if (StringUtil.isBlank(dir))
+			if (StringUtil.isBlank(dir)) {
 				throw new WebException("api参数不正确", HttpStatus.BAD_REQUEST);
+			}
 			int page = 1, pageSize = 100;
 			try {
-				if (StringUtil.isNotBlank(pageStr) )
+				if (StringUtil.isNotBlank(pageStr)) {
 					page = Integer.parseInt(pageStr);
+				}
 			} catch (Exception e) {}
 			try {
-				if (StringUtil.isNotBlank(pageSizeStr) )
+				if (StringUtil.isNotBlank(pageSizeStr)) {
 					pageSize = Integer.parseInt(pageSizeStr);
+				}
 			} catch (Exception e) {}
 			resoult = mediaClient.listFiles(dir, page, pageSize);
 		} else if ("deleteDir".equals(api)) {
 			String dir = request.getParameter("dir");
 			String force = request.getParameter("force");
-			if (StringUtil.isBlank(force) || "false".equalsIgnoreCase(force))
+			if (StringUtil.isBlank(force) || "false".equalsIgnoreCase(force)) {
 				resoult = mediaClient.deleteDir(dir);
-			else {
+			} else {
 				resoult = deleteDir(dir, mediaClient);
 			}
 		} else {

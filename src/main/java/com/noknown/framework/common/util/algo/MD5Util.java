@@ -13,8 +13,8 @@ import java.security.NoSuchAlgorithmException;
 
 public class MD5Util {
 
-	protected static char hexDigits[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e',
-			'f' };
+	protected static char[] hexDigits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e',
+			'f'};
 
 	/**
 	 * 获取File文件的MD5值
@@ -38,11 +38,12 @@ public class MD5Util {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			if (in != null)
+			if (in != null) {
 				try {
 					in.close();
 				} catch (IOException e) {
 				}
+			}
 		}
 		return null;
 	}
@@ -61,7 +62,7 @@ public class MD5Util {
 			return bufferToHex(md.digest());
 	}
 
-	private static String bufferToHex(byte bytes[], int m, int n) {
+	private static String bufferToHex(byte[] bytes, int m, int n) {
 		StringBuffer stringbuffer = new StringBuffer(2 * n);
 		int k = m + n;
 		for (int l = m; l < k; l++) {
@@ -77,7 +78,7 @@ public class MD5Util {
 		stringbuffer.append(c1);
 	}
 
-	private static String bufferToHex(byte bytes[]) {
+	private static String bufferToHex(byte[] bytes) {
 		return bufferToHex(bytes, 0, bytes.length);
 	}
 }

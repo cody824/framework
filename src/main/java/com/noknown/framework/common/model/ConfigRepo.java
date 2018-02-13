@@ -53,8 +53,9 @@ public class ConfigRepo implements Cloneable{
 	}
 
 	public Map<String, Properties> getConfigs() {
-		if (configs == null)
+		if (configs == null) {
 			configs = new HashMap<String, Properties>();
+		}
 		return configs;
 	}
 
@@ -72,16 +73,17 @@ public class ConfigRepo implements Cloneable{
 	public void setKeySets(Map<String, Set<String>> keySets) {
 		this.keySets = keySets;
 	}
-	
+
+	@Override
 	public ConfigRepo clone(){
 		ConfigRepo o = null;
-        try{
-            o = (ConfigRepo)super.clone();
-        }catch(CloneNotSupportedException e){
-            e.printStackTrace();
-        }
-        return o;
-    }
+		try{
+			o = (ConfigRepo)super.clone();
+		}catch(CloneNotSupportedException e){
+			e.printStackTrace();
+		}
+		return o;
+	}
 
 	@Override
 	public String toString() {
@@ -89,6 +91,6 @@ public class ConfigRepo implements Cloneable{
 				+ configDesc + ", configId=" + configId + ", configs="
 				+ configs + "]";
 	}
-	
-	
+
+
 }

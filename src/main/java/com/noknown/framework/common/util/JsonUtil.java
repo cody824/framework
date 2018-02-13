@@ -179,21 +179,37 @@ public class JsonUtil {
 				//FIXME obj == null
 				attrType = fields.get(i).getType();
 				if (attrType.equals(long.class) || attrType.equals(Long.class)) {
-					if (obj != null) obj = Long.parseLong(obj.toString());
+					if (obj != null) {
+						obj = Long.parseLong(obj.toString());
+					}
 				} else if (attrType.equals(BigDecimal.class)) {
-					if (obj != null) obj = new BigDecimal(obj.toString());
+					if (obj != null) {
+						obj = new BigDecimal(obj.toString());
+					}
 				} else if (attrType.equals(BigInteger.class)) {
-					if (obj != null) obj = new BigInteger(obj.toString());
+					if (obj != null) {
+						obj = new BigInteger(obj.toString());
+					}
 				} else if (attrType.equals(Double.class) || attrType.equals(double.class)) {
-					if (obj != null) obj = Double.parseDouble(obj.toString());
+					if (obj != null) {
+						obj = Double.parseDouble(obj.toString());
+					}
 				} else if (attrType.equals(Float.class) || attrType.equals(float.class)) {
-					if (obj != null) obj = Float.parseFloat(obj.toString());
+					if (obj != null) {
+						obj = Float.parseFloat(obj.toString());
+					}
 				} else if (attrType.equals(Boolean.class) || attrType.equals(boolean.class)) {
-					if (obj != null) obj = Boolean.parseBoolean(obj.toString());
+					if (obj != null) {
+						obj = Boolean.parseBoolean(obj.toString());
+					}
 				} else if (attrType.equals(Integer.class) || attrType.equals(int.class)) {
-					if (obj != null) obj = Integer.parseInt(obj.toString());
+					if (obj != null) {
+						obj = Integer.parseInt(obj.toString());
+					}
 				} else if (attrType.equals(Boolean.class) || attrType.equals(boolean.class)) {
-					if (obj != null) obj = Boolean.parseBoolean(obj.toString());
+					if (obj != null) {
+						obj = Boolean.parseBoolean(obj.toString());
+					}
 				} 
 				try {
 					method = type.getMethod(

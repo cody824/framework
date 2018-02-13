@@ -48,7 +48,7 @@ public class JpaUtil {
 	public static Predicate sqlFilterToPredicate(Class<?> c, Root<?> root,  
             CriteriaQuery<?> query, CriteriaBuilder cb, SQLFilter filter) {
 		Predicate predicate = null;
-		if (filter != null && filter.getSesl() != null) {
+		if (filter != null) {
 			// 拼装查询条件时用到，查询属性的类型由查询的实体属性类型决定(当前只处理BigDecimal等带小数的属性)；2014.12.11
 			cls = c;
 			
@@ -59,10 +59,11 @@ public class JpaUtil {
 			List<javax.persistence.criteria.Order> list = new ArrayList<>();
 			for (SQLOrder order : sol) {
 				if (order.getDirection() == null
-						|| order.getDirection().equalsIgnoreCase(SQLOrder.asc))
+						|| order.getDirection().equalsIgnoreCase(SQLOrder.ASC)) {
 					list.add(cb.asc(root.get(order.getProperty())));
-				else
+				} else {
 					list.add(cb.desc(root.get(order.getProperty())));
+				}
 			}
 			query = query.orderBy(list);
 		}
@@ -81,20 +82,21 @@ public class JpaUtil {
 		Predicate predicate = null;
 		List<SQLExpressionSet> sel = filter.getSesl();
 		for (SQLExpressionSet se : sel) {
-			if (se.getLogicalOp() == null)
+			if (se.getLogicalOp() == null) {
 				se.setLogicalOp("and");
+			}
 
 			if (predicate == null) {
 				predicate = sqlFilterToPredicate(root, query, cb, se);
-				if (se.getLogicalOp().equals("not")) {
+				if ("not".equals(se.getLogicalOp())) {
 					predicate = cb.not(predicate);
 				}
 			} else {
-				if (se.getLogicalOp().equals("and")) {
+				if ("and".equals(se.getLogicalOp())) {
 					predicate = cb.and(predicate, sqlFilterToPredicate(root, query, cb, se));
-				} else if (se.getLogicalOp().equals("or")) {
+				} else if ("or".equals(se.getLogicalOp())) {
 					predicate = cb.or(predicate, sqlFilterToPredicate(root, query, cb, se));
-				} else if (se.getLogicalOp().equals("not")) {
+				} else if ("not".equals(se.getLogicalOp())) {
 					predicate = cb.and(predicate, cb.not(sqlFilterToPredicate(root, query, cb, se)));
 				}
 			}
@@ -114,20 +116,21 @@ public class JpaUtil {
 		Predicate predicate = null;
 		List<SQLExpression> sel = ses.getSel();
 		for (SQLExpression se : sel) {
-			if (se.getLogicalOp() == null)
+			if (se.getLogicalOp() == null) {
 				se.setLogicalOp("and");
+			}
 
 			if (predicate == null) {
 				predicate = sqlFilterToPredicate(root, query, cb, se);
-				if (se.getLogicalOp().equals("not")) {
+				if ("not".equals(se.getLogicalOp())) {
 					predicate = cb.not(predicate);
 				}
 			} else {
-				if (se.getLogicalOp().equals("and")) {
+				if ("and".equals(se.getLogicalOp())) {
 					predicate = cb.and(predicate, sqlFilterToPredicate(root, query, cb, se));
-				} else if (se.getLogicalOp().equals("or")) {
+				} else if ("or".equals(se.getLogicalOp())) {
 					predicate = cb.or(predicate, sqlFilterToPredicate(root, query, cb, se));
-				} else if (se.getLogicalOp().equals("not")) {
+				} else if ("not".equals(se.getLogicalOp())) {
 					predicate = cb.and(predicate, cb.not(sqlFilterToPredicate(root, query, cb, se)));
 				}
 			}
@@ -146,7 +149,7 @@ public class JpaUtil {
             CriteriaQuery<?> query, CriteriaBuilder cb, SQLExpression se) {
 		Predicate predicate = null;
 		int i = 0;
-		Object[] value_array = se.getValue();
+		Object[] valueArray = se.getValue();
 		Boolean isNeedIgnoreCase = se.getIgnoreCase();// 默认原有的判断条件，如果当前为false，就不会按照参数传递来的是否忽略大小写处理。忽略大小写会将参数转化为字符串。
 		// 处理BigDecimal和long，double带小数的属性
 		Field f = null;
@@ -158,30 +161,30 @@ public class JpaUtil {
 			type = f.getType();
 		} catch (NoSuchFieldException | SecurityException e1) {
 		}
-		if (value_array != null) {
-			for (int j = 0; j < value_array.length; j++){
-				type = type == null || "Serializable".equals(type.getSimpleName()) ? value_array[j].getClass() : type;
+		if (valueArray != null) {
+			for (int j = 0; j < valueArray.length; j++) {
+				type = type == null || "Serializable".equals(type.getSimpleName()) ? valueArray[j].getClass() : type;
 				if (type.equals(long.class) || type.equals(Long.class)) {
 					isNeedIgnoreCase = false;
-					value_array[j] = Long.parseLong(value_array[j].toString());
+					valueArray[j] = Long.parseLong(valueArray[j].toString());
 				} else if (type.equals(BigDecimal.class)) {
 					isNeedIgnoreCase = false;
-					value_array[j] = new BigDecimal(value_array[j].toString());
+					valueArray[j] = new BigDecimal(valueArray[j].toString());
 				} else if (type.equals(BigInteger.class)) {
 					isNeedIgnoreCase = false;
-					value_array[j] = new BigInteger(value_array[j].toString());
+					valueArray[j] = new BigInteger(valueArray[j].toString());
 				} else if (type.equals(Double.class) || type.equals(double.class)) {
 					isNeedIgnoreCase = false;
-					value_array[j] = Double.parseDouble(value_array[j].toString());
+					valueArray[j] = Double.parseDouble(valueArray[j].toString());
 				} else if (type.equals(Float.class) || type.equals(float.class)) {
 					isNeedIgnoreCase = false;
-					value_array[j] = Float.parseFloat(value_array[j].toString());
+					valueArray[j] = Float.parseFloat(valueArray[j].toString());
 				} else if (type.equals(Integer.class) || type.equals(int.class)) {
 					isNeedIgnoreCase = false;
-					value_array[j] = Integer.parseInt(value_array[j].toString());
+					valueArray[j] = Integer.parseInt(valueArray[j].toString());
 				} else if (type.equals(Boolean.class) || type.equals(boolean.class)) {
 					isNeedIgnoreCase = false;
-					value_array[j] = Boolean.parseBoolean(value_array[j].toString());
+					valueArray[j] = Boolean.parseBoolean(valueArray[j].toString());
 				}
 			}
 			
@@ -204,69 +207,69 @@ public class JpaUtil {
 						str = str.replaceAll("T", " ");
 						try {
 							Date date = formatDate.parse(str);
-							value_array[i++] = date;
+							valueArray[i++] = date;
 							isDate = true;
 						} catch (ParseException e) {
 							System.out.println(e.getLocalizedMessage());
-							value_array[i++] = obj;
+							valueArray[i++] = obj;
 							isString = true;
 						}
 					} else {
 						if (dateFlag1) {
 							try {
 								Date date = formatDate.parse(str);
-								value_array[i++] = date;
+								valueArray[i++] = date;
 								isDate = true;
 							} catch (ParseException e) {
 								System.out.println(e.getLocalizedMessage());
-								value_array[i++] = obj;
+								valueArray[i++] = obj;
 								isString = true;
 							}
 						} else {
-							value_array[i++] = obj;
+							valueArray[i++] = obj;
 							isString = true;
 						}
 					}
 				}
 			}
 		}
-	
-		
 
-		if (se.getMatchMode().equals("=")) {
+
+		if ("=".equals(se.getMatchMode())) {
 			if (isString && isNeedIgnoreCase) {
-				predicate = cb.equal(cb.upper(root.get(se.getProperty()).as(String.class)), value_array[0].toString().toUpperCase());
+				predicate = cb.equal(cb.upper(root.get(se.getProperty()).as(String.class)), valueArray[0].toString().toUpperCase());
 			} else {
-				predicate = cb.equal(root.get(se.getProperty()).as(type), value_array[0]);
+				predicate = cb.equal(root.get(se.getProperty()).as(type), valueArray[0]);
 			}
-			
-		} else if (se.getMatchMode().equals(">")) {
-			predicate = cb.gt(root.get(se.getProperty()).as(Number.class), (Number)value_array[0]);
-		} else if (se.getMatchMode().equals(">=")) {
-			predicate = cb.ge(root.get(se.getProperty()).as(Number.class), (Number)value_array[0]);
-		} else if (se.getMatchMode().equals("<")) {
-			predicate = cb.lt(root.get(se.getProperty()).as(Number.class), (Number)value_array[0]);
-		} else if (se.getMatchMode().equals("<=")) {
-			predicate = cb.le(root.get(se.getProperty()).as(Number.class), (Number)value_array[0]);
-		} else if (se.getMatchMode().equals("<>")) {
-			predicate = cb.notEqual(root.get(se.getProperty()).as(type), value_array[0]);
-		} else if (se.getMatchMode().equals("between")) {
+
+		} else if (">".equals(se.getMatchMode())) {
+			predicate = cb.gt(root.get(se.getProperty()).as(Number.class), (Number) valueArray[0]);
+		} else if (">=".equals(se.getMatchMode())) {
+			predicate = cb.ge(root.get(se.getProperty()).as(Number.class), (Number) valueArray[0]);
+		} else if ("<".equals(se.getMatchMode())) {
+			predicate = cb.lt(root.get(se.getProperty()).as(Number.class), (Number) valueArray[0]);
+		} else if ("<=".equals(se.getMatchMode())) {
+			predicate = cb.le(root.get(se.getProperty()).as(Number.class), (Number) valueArray[0]);
+		} else if ("<>".equals(se.getMatchMode())) {
+			predicate = cb.notEqual(root.get(se.getProperty()).as(type), valueArray[0]);
+		} else if ("between".equals(se.getMatchMode())) {
 			if (isDate) {
-				predicate = cb.between(root.get(se.getProperty()).as(Date.class), Date.class.cast(value_array[0]), Date.class.cast(value_array[1]));
-			} 
-		} else if (se.getMatchMode().equals("like")) {
+				predicate = cb.between(root.get(se.getProperty()).as(Date.class), Date.class.cast(valueArray[0]), Date.class.cast(valueArray[1]));
+			}
+		} else if ("like".equals(se.getMatchMode())) {
 			if (isNeedIgnoreCase){
-				predicate = cb.like(cb.upper(root.get(se.getProperty()).as(String.class)), ((String)value_array[0]).toUpperCase()); 
-			} else 
-				predicate = cb.like(root.get(se.getProperty()).as(String.class), (String)value_array[0]);
-		} else if (se.getMatchMode().equals("in")) {
-			predicate = root.get(se.getProperty()).in(value_array);
+				predicate = cb.like(cb.upper(root.get(se.getProperty()).as(String.class)), ((String) valueArray[0]).toUpperCase());
+			} else {
+				predicate = cb.like(root.get(se.getProperty()).as(String.class), (String) valueArray[0]);
+			}
+		} else if ("in".equals(se.getMatchMode())) {
+			predicate = root.get(se.getProperty()).in(valueArray);
 		} else if (se.getMatchMode().equals(SQLExpression.isnull)) {
 			predicate = root.get(se.getProperty()).isNull();
 		}  else if (se.getMatchMode().equals(SQLExpression.isnotnul)) {
 			predicate = root.get(se.getProperty()).isNotNull();
 		} else {
-			predicate = cb.equal(root.get(se.getProperty()).as(type), value_array[0]);
+			predicate = cb.equal(root.get(se.getProperty()).as(type), valueArray[0]);
 		}
 		return predicate;
 	}
@@ -309,15 +312,17 @@ public class JpaUtil {
 			// 创建关联查询别名
 			sqlAliasToDc(dc, filter);
 			Criterion criterion = sqlFilterToDc(filter);
-			if (criterion != null)
+			if (criterion != null) {
 				dc.add(criterion);
+			}
 			List<SQLOrder> sol = filter.getOrderList();
 			for (SQLOrder order : sol) {
 				if (order.getDirection() == null
-						|| order.getDirection().equalsIgnoreCase(SQLOrder.asc))
+						|| order.getDirection().equalsIgnoreCase(SQLOrder.ASC)) {
 					dc.addOrder(Order.asc(order.getProperty()));
-				else
+				} else {
 					dc.addOrder(Order.desc(order.getProperty()));
+				}
 			}
 		}
 		return dc;
@@ -334,20 +339,21 @@ public class JpaUtil {
 		Criterion criterion = null;
 		List<SQLExpressionSet> sel = filter.getSesl();
 		for (SQLExpressionSet se : sel) {
-			if (se.getLogicalOp() == null)
+			if (se.getLogicalOp() == null) {
 				se.setLogicalOp("and");
+			}
 
 			if (criterion == null) {
 				criterion = sqlFilterToDc(se);
-				if (se.getLogicalOp().equals("not")) {
+				if ("not".equals(se.getLogicalOp())) {
 					criterion = Restrictions.not(criterion);
 				}
 			} else {
-				if (se.getLogicalOp().equals("and")) {
+				if ("and".equals(se.getLogicalOp())) {
 					criterion = Restrictions.and(criterion, sqlFilterToDc(se));
-				} else if (se.getLogicalOp().equals("or")) {
+				} else if ("or".equals(se.getLogicalOp())) {
 					criterion = Restrictions.or(criterion, sqlFilterToDc(se));
-				} else if (se.getLogicalOp().equals("not")) {
+				} else if ("not".equals(se.getLogicalOp())) {
 					criterion = Restrictions.and(criterion,
 							Restrictions.not(sqlFilterToDc(se)));
 				}
@@ -367,20 +373,21 @@ public class JpaUtil {
 		Criterion criterion = null;
 		List<SQLExpression> sel = ses.getSel();
 		for (SQLExpression se : sel) {
-			if (se.getLogicalOp() == null)
+			if (se.getLogicalOp() == null) {
 				se.setLogicalOp("and");
+			}
 
 			if (criterion == null) {
 				criterion = sqlFilterToDc(se);
-				if (se.getLogicalOp().equals("not")) {
+				if ("not".equals(se.getLogicalOp())) {
 					criterion = Restrictions.not(criterion);
 				}
 			} else {
-				if (se.getLogicalOp().equals("and")) {
+				if ("and".equals(se.getLogicalOp())) {
 					criterion = Restrictions.and(criterion, sqlFilterToDc(se));
-				} else if (se.getLogicalOp().equals("or")) {
+				} else if ("or".equals(se.getLogicalOp())) {
 					criterion = Restrictions.or(criterion, sqlFilterToDc(se));
-				} else if (se.getLogicalOp().equals("not")) {
+				} else if ("not".equals(se.getLogicalOp())) {
 					criterion = Restrictions.and(criterion,
 							Restrictions.not(sqlFilterToDc(se)));
 				}
@@ -400,7 +407,7 @@ public class JpaUtil {
 		Criterion criterion = null;
 		SimpleExpression exp = null;
 		int i = 0;
-		Object[] value_array = se.getValue();
+		Object[] valueArray = se.getValue();
 		Boolean isNeedIgnoreCase = true;// 默认原有的判断条件，如果当前为false，就不会按照参数传递来的是否忽略大小写处理。忽略大小写会将参数转化为字符串。
 		// 处理BigDecimal和long，double带小数的属性
 		Field f = null;
@@ -410,33 +417,33 @@ public class JpaUtil {
 			type = f.getType();
 		} catch (NoSuchFieldException | SecurityException e1) {
 		}
-		if (value_array != null) {
-			for (int j = 0; j < value_array.length; j++){
-				type = type == null || "Serializable".equals(type.getSimpleName()) ? value_array[j].getClass() : type;
+		if (valueArray != null) {
+			for (int j = 0; j < valueArray.length; j++) {
+				type = type == null || "Serializable".equals(type.getSimpleName()) ? valueArray[j].getClass() : type;
 				if (type.equals(long.class) || type.equals(Long.class)) {
 					isNeedIgnoreCase = false;
-					value_array[j] = Long.parseLong(value_array[j].toString());
+					valueArray[j] = Long.parseLong(valueArray[j].toString());
 				} else if (type.equals(BigDecimal.class)) {
 					isNeedIgnoreCase = false;
-					value_array[j] = new BigDecimal(value_array[j].toString());
+					valueArray[j] = new BigDecimal(valueArray[j].toString());
 				} else if (type.equals(BigInteger.class)) {
 					isNeedIgnoreCase = false;
-					value_array[j] = new BigInteger(value_array[j].toString());
+					valueArray[j] = new BigInteger(valueArray[j].toString());
 				} else if (type.equals(Double.class) || type.equals(double.class)) {
 					isNeedIgnoreCase = false;
-					value_array[j] = Double.parseDouble(value_array[j].toString());
+					valueArray[j] = Double.parseDouble(valueArray[j].toString());
 				} else if (type.equals(Float.class) || type.equals(float.class)) {
 					isNeedIgnoreCase = false;
-					value_array[j] = Float.parseFloat(value_array[j].toString());
+					valueArray[j] = Float.parseFloat(valueArray[j].toString());
 				} else if (type.equals(Boolean.class) || type.equals(boolean.class)) {
 					isNeedIgnoreCase = false;
-					value_array[j] = Boolean.parseBoolean(value_array[j].toString());
+					valueArray[j] = Boolean.parseBoolean(valueArray[j].toString());
 				} else if (type.equals(Integer.class) || type.equals(int.class)) {
 					isNeedIgnoreCase = false;
-					value_array[j] = Integer.parseInt(value_array[j].toString());
+					valueArray[j] = Integer.parseInt(valueArray[j].toString());
 				} else if (type.equals(Boolean.class) || type.equals(boolean.class)) {
 					isNeedIgnoreCase = false;
-					value_array[j] = Boolean.parseBoolean(value_array[j].toString());
+					valueArray[j] = Boolean.parseBoolean(valueArray[j].toString());
 				}
 			}
 			
@@ -459,56 +466,56 @@ public class JpaUtil {
 						str = str.replaceAll("T", " ");
 						try {
 							Date date = formatDate.parse(str);
-							value_array[i++] = date;
+							valueArray[i++] = date;
 						} catch (ParseException e) {
 							System.out.println(e.getLocalizedMessage());
-							value_array[i++] = obj;
+							valueArray[i++] = obj;
 						}
 					} else {
 
 						if (dateFlag1) {
 							try {
 								Date date = formatDate.parse(str);
-								value_array[i++] = date;
+								valueArray[i++] = date;
 							} catch (ParseException e) {
 								System.out.println(e.getLocalizedMessage());
-								value_array[i++] = obj;
+								valueArray[i++] = obj;
 							}
 						} else {
 
-							value_array[i++] = obj;
+							valueArray[i++] = obj;
 						}
 					}
 				}
 			}
 		}
-	
 
-		if (se.getMatchMode().equals("=")) {
-			exp = Expression.eq(se.getProperty(), value_array[0]);
-		} else if (se.getMatchMode().equals(">")) {
-			exp = Expression.gt(se.getProperty(), value_array[0]);
-		} else if (se.getMatchMode().equals(">=")) {
-			exp = Expression.ge(se.getProperty(), value_array[0]);
-		} else if (se.getMatchMode().equals("<")) {
-			exp = Expression.lt(se.getProperty(), value_array[0]);
-		} else if (se.getMatchMode().equals("<=")) {
-			exp = Expression.le(se.getProperty(), value_array[0]);
-		} else if (se.getMatchMode().equals("<>")) {
-			exp = Expression.ne(se.getProperty(), value_array[0]);
-		} else if (se.getMatchMode().equals("between")) {
-			criterion = Expression.between(se.getProperty(), value_array[0],
-					value_array[1]);
-		} else if (se.getMatchMode().equals("like")) {
-			exp = Expression.like(se.getProperty(), value_array[0]);
-		} else if (se.getMatchMode().equals("in")) {
-			criterion = Expression.in(se.getProperty(), value_array);
+
+		if ("=".equals(se.getMatchMode())) {
+			exp = Expression.eq(se.getProperty(), valueArray[0]);
+		} else if (">".equals(se.getMatchMode())) {
+			exp = Expression.gt(se.getProperty(), valueArray[0]);
+		} else if (">=".equals(se.getMatchMode())) {
+			exp = Expression.ge(se.getProperty(), valueArray[0]);
+		} else if ("<".equals(se.getMatchMode())) {
+			exp = Expression.lt(se.getProperty(), valueArray[0]);
+		} else if ("<=".equals(se.getMatchMode())) {
+			exp = Expression.le(se.getProperty(), valueArray[0]);
+		} else if ("<>".equals(se.getMatchMode())) {
+			exp = Expression.ne(se.getProperty(), valueArray[0]);
+		} else if ("between".equals(se.getMatchMode())) {
+			criterion = Expression.between(se.getProperty(), valueArray[0],
+					valueArray[1]);
+		} else if ("like".equals(se.getMatchMode())) {
+			exp = Expression.like(se.getProperty(), valueArray[0]);
+		} else if ("in".equals(se.getMatchMode())) {
+			criterion = Expression.in(se.getProperty(), valueArray);
 		} else if (se.getMatchMode().equals(SQLExpression.isnull)) {
 			criterion = Expression.isNull(se.getProperty());
 		}  else if (se.getMatchMode().equals(SQLExpression.isnotnul)) {
 			criterion = Expression.isNotNull(se.getProperty());
 		} else {
-			exp = Expression.eq(se.getProperty(), value_array[0]);
+			exp = Expression.eq(se.getProperty(), valueArray[0]);
 		}
 		if (exp != null) {
 			if (isNeedIgnoreCase) {
@@ -520,13 +527,7 @@ public class JpaUtil {
 		
 		return criterion;
 	}
-	
-	/**
-	 * 根据SQLFilter数据， 创建DetachedCriteria 关联查询的相关别名
-	 * 
-	 * @param criteria
-	 * @param filter
-	 */
+
 	private static void sqlAliasToPredicate(Root<?> root, SQLFilter filter) {
 		// a.b.c.para==>a别名a a.b别名b b.c别名c ===》查询属性修改为c.para
 		// 每个级别的别名都为对应点的前一个值
@@ -549,7 +550,7 @@ public class JpaUtil {
 			}
 		}
 		// 修改查询属性，替换成由别名指向查询属性
-		ConverPara(filter);
+		converpara(filter);
 	}
 
 	/**
@@ -579,10 +580,10 @@ public class JpaUtil {
 			}
 		}
 		// 修改查询属性，替换成由别名指向查询属性
-		ConverPara(filter);
+		converpara(filter);
 	}
 
-	private static void ConverPara(SQLFilter filter) {
+	private static void converpara(SQLFilter filter) {
 		List<SQLExpressionSet> sel = filter.getSesl();
 		for (SQLExpressionSet sqlExpressionSet : sel) {
 			List<SQLExpression> selEx = sqlExpressionSet.getSel();
@@ -616,47 +617,47 @@ public class JpaUtil {
 		for (SQLExpressionSet sqlExpressionSet : sel) {
 			List<SQLExpression> selEx = sqlExpressionSet.getSel();
 			for (SQLExpression sqlExpression : selEx) {
-				CheckProperty(lis, sqlExpression.getProperty());
+				checkProperty(lis, sqlExpression.getProperty());
 			}
 		}
 		List<SQLOrder> orders = filter.getOrderList();
 		for (SQLOrder sqlOrder : orders) {
-			CheckProperty(lis, sqlOrder.getProperty());
+			checkProperty(lis, sqlOrder.getProperty());
 		}
 
 		return lis;
 	}
 
-	private static void CheckProperty(List<List<String>> lis, String name) {
+	private static void checkProperty(List<List<String>> lis, String name) {
 		int ind = 0;
 		String[] level = name.split("\\.");
 		ind = level.length - 1;
 		for (int i = 0; i < ind; i++) {
 			// 当前的lis中包含了几个级别的关联 别名
-			int lis_nub = lis.size();
-			if (lis_nub < i + 1) {
+			int lisNub = lis.size();
+			if (lisNub < i + 1) {
 				// 当lis中的保持的关联级别少于当前的查询属性时，创建关联级别
-				List<String> new_L = new ArrayList<String>();
-				lis.add(new_L);
+				List<String> newL = new ArrayList<String>();
+				lis.add(newL);
 			}
 
 			// 当前关联级别 的别名
-			String name_b = "";
+			String nameB = "";
 			if (i == 0) {
-				name_b = level[i];
+				nameB = level[i];
 			} else {
-				name_b = level[i - 1] + "." + level[i];
+				nameB = level[i - 1] + "." + level[i];
 			}
 			// lis中 当前关联级别的别名中是否有 满足当前查询属性的别名，没有就创建
 			Boolean hasExist = false;
-			List<String> lis_i = lis.get(i);
-			for (String map : lis_i) {
-				if (map.contains(name_b)) {
+			List<String> lisI = lis.get(i);
+			for (String map : lisI) {
+				if (map.contains(nameB)) {
 					hasExist = true;
 				}
 			}
-			if (!hasExist && name_b != "") {
-				lis.get(i).add(name_b);
+			if (!hasExist && nameB != "") {
+				lis.get(i).add(nameB);
 			}
 
 		}

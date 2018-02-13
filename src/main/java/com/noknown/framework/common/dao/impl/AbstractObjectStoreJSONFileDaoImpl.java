@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ObjectStoreJSONFileDaoImpl implements ObjectStoreDao{
+public abstract class AbstractObjectStoreJSONFileDaoImpl implements ObjectStoreDao {
 
 	private  final Logger logger = LoggerFactory.getLogger(getClass());
 

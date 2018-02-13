@@ -28,8 +28,9 @@ public class GlobalConfig {
 	 */
 	public Properties getProperties(String configType, String domain) {
 		ConfigRepo cr = this.getConfigRepo(configType);
-		if (cr == null)
+		if (cr == null) {
 			return null;
+		}
 		Properties p = cr.getConfigs().get(domain);
 		return p;
 	}
@@ -43,15 +44,17 @@ public class GlobalConfig {
 	 */
 	public String getConfig(String configType, String domain, String key) {
 		Properties p = this.getProperties(configType, domain);
-		if (p == null)
+		if (p == null) {
 			return null;
+		}
 		return p.getProperty(key);
 	}
 	
 	
 	public Set<String> getSupportConfigTypes() {
-		if (supportConfigTypes == null)
+		if (supportConfigTypes == null) {
 			supportConfigTypes = new HashSet<String>();
+		}
 		return supportConfigTypes;
 	}
 	
@@ -60,13 +63,22 @@ public class GlobalConfig {
 	}
 
 	public Map<String, ConfigRepo> getConfigRepos() {
-		if (configRepos == null)
+		if (configRepos == null) {
 			configRepos = new HashMap<String, ConfigRepo>();
+		}
 		return configRepos;
 	}
 
 	public void setConfigRepos(Map<String, ConfigRepo> configRepos) {
 		this.configRepos = configRepos;
+	}
+
+	public Map<String, Map<String, Properties>> toMap() {
+		Map<String, Map<String, Properties>> map = new HashMap<>();
+		this.getConfigRepos().forEach((key, repo) -> {
+			map.put(key, repo.getConfigs());
+		});
+		return map;
 	}
 
 	@Override

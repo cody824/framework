@@ -26,8 +26,9 @@ public class SureUrlAuthenticationFailureHandler extends SimpleUrlAuthentication
      * If redirecting or forwarding, {@code saveException} will be called to cache the exception for use in
      * the target view.
      */
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-            AuthenticationException exception) throws IOException, ServletException {
+	   @Override
+	   public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
+	                                       AuthenticationException exception) throws IOException, ServletException {
 
     	String failureUrl = determineTargetUrl(request, response);
     	
@@ -126,6 +127,7 @@ public class SureUrlAuthenticationFailureHandler extends SimpleUrlAuthentication
      *
      * @param defaultFailureUrl the failure URL, for example "/loginFailed.jsp".
      */
+    @Override
     public void setDefaultFailureUrl(String defaultFailureUrl) {
         Assert.isTrue(UrlUtils.isValidRedirectUrl(defaultFailureUrl),
                 "'" + defaultFailureUrl + "' is not a valid redirect URL");

@@ -4,13 +4,13 @@ import com.noknown.framework.common.exception.DAOException;
 import com.noknown.framework.common.exception.ServiceException;
 import com.noknown.framework.common.util.StringUtil;
 import com.noknown.framework.security.exception.AuthodeErrorException;
+import com.noknown.framework.security.model.BaseUserDetails;
 import com.noknown.framework.security.model.Role;
 import com.noknown.framework.security.model.ThirdPartyAccount;
 import com.noknown.framework.security.model.User;
-import com.noknown.framework.security.model.UserDetails;
-import com.noknown.framework.security.service.AuthcodeService;
 import com.noknown.framework.security.service.UserDetailsService;
 import com.noknown.framework.security.service.UserService;
+import com.noknown.framework.security.service.VerificationCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -33,19 +33,11 @@ import java.util.List;
 @Component
 public class SMSAuthenticationProvider implements AuthenticationProvider{
 
+	private final UserDetailsService udService;
 
-	/**
-	 * 使用时注入
-	 */
-	@Autowired
-	private UserDetailsService udService;
-	
+	private final VerificationCodeService verificationCodeService;
 
-	@Autowired
-	private AuthcodeService authcodeService;
-	
-	@Autowired
-	private UserService userService;
+	private final UserService userService;
 	
 	/**
 	 * 是否开启验证码
@@ -54,17 +46,25 @@ public class SMSAuthenticationProvider implements AuthenticationProvider{
 	@Value("${security.login.needAuthcode:false}")
 	private boolean authcodeValid;
 
+	@Autowired
+	public SMSAuthenticationProvider(UserDetailsService udService, VerificationCodeService verificationCodeService, UserService userService) {
+		this.udService = udService;
+		this.verificationCodeService = verificationCodeService;
+		this.userService = userService;
+	}
+
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		SurePhoteAuthToken upToken = (SurePhoteAuthToken)authentication;
 		List<GrantedAuthority> gaList = new ArrayList<>();
-		SureAuthenticationInfo saInfo = null;
-		String photo = null;
-		String photoAuthcode = null;
+		SureAuthenticationInfo saInfo;
+		String photo;
+		String photoAuthcode;
+		String clientId;
 		String authcode = null;
-		String clientId = null;
+
 		User user;
-		UserDetails ud;
+		BaseUserDetails ud;
 		
 		if (upToken.getPrincipal() == null || StringUtil.isBlank(upToken.getPrincipal().toString())){
 			 throw new BadCredentialsException("请输入用户名/手机号/邮箱");
@@ -89,22 +89,25 @@ public class SMSAuthenticationProvider implements AuthenticationProvider{
 		if (authcodeValid) {
 			boolean ret = false;
 			try {
-				ret = authcodeService.checkAuthCode(clientId, authcode);
+				ret = verificationCodeService.check(clientId, authcode);
 			} catch (DAOException | ServiceException e) {
 				e.printStackTrace();
 			}
-			if (!ret)
+			if (!ret) {
 				throw new AuthodeErrorException("验证码错误!");
+			}
 		}
 		
 		try {
 			user = userService.findByMobile(photo);
-			if (user == null)
+			if (user == null) {
 				throw new BadCredentialsException("手机号【" + photo + "】没有注册");
-			boolean isOk = authcodeService.checkAuthCode(photo, photoAuthcode);
-			if (!isOk)
+			}
+			boolean isOk = verificationCodeService.check(photo, photoAuthcode);
+			if (!isOk) {
 				throw new BadCredentialsException("验证码错误");
-			ud = udService.get(user.getId());
+			}
+			ud = udService.getUserDetail(user.getId());
 			List<Role> roleList = user.getRoles();
 			if (roleList != null && roleList.size() > 0) {
 				for (Role role : roleList) {
@@ -128,20 +131,6 @@ public class SMSAuthenticationProvider implements AuthenticationProvider{
 	@Override
 	public boolean supports(Class<?> authentication) {
 		return authentication.equals(SurePhoteAuthToken.class);  
-	}
-
-	/**
-	 * @return the udService
-	 */
-	public UserDetailsService getUdService() {
-		return udService;
-	}
-
-	/**
-	 * @param udService the udService to set
-	 */
-	public void setUdService(UserDetailsService udService) {
-		this.udService = udService;
 	}
 
 }

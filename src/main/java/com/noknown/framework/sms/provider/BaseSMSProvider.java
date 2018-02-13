@@ -1,12 +1,13 @@
 package com.noknown.framework.sms.provider;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.noknown.framework.common.util.RegexValidateUtil;
 import com.noknown.framework.common.util.StringUtil;
 import com.noknown.framework.common.util.http.HttpRequest;
 import com.noknown.framework.sms.pojo.SMS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
@@ -14,12 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.*;
 
-@Component
 public abstract class BaseSMSProvider implements SMSProvider {
 
     protected final Logger logger = (Logger) LoggerFactory.getLogger(getClass());
@@ -57,7 +54,7 @@ public abstract class BaseSMSProvider implements SMSProvider {
     //未知错误
     public static final String UNKNOWN_ERROR = "99";
 
-    private static final HashMap<String, String> errorCodeNameMap = new HashMap<>();
+	private static final HashMap<String, String> ERROR_CODE_NAME_MAP = new HashMap<>();
 
     public static BlockingQueue<SMS> msgQueue = new LinkedBlockingDeque<>(1000);
 
@@ -67,37 +64,21 @@ public abstract class BaseSMSProvider implements SMSProvider {
 
     public String split = ",";
 
+	@Value("${sms.support:false}")
+	private boolean smsSupport;
+
     protected abstract void initProvider();
 
     protected abstract String getSMSUrl(SMS sms);
 
     protected abstract void checkResult(String code,String phones);
 
-    @PostConstruct
-    void runSMSSendThread() {
-
-        int cpuNums = Runtime.getRuntime().availableProcessors();
-        //获取当前系统的CPU 数目
-        ExecutorService executorService = Executors.newFixedThreadPool(cpuNums);
-        for (int i=0; i < cpuNums; i ++)
-            executorService.execute(new SMSSendThread(this));
-
-        logger.debug("创建短信发送队列");
-
-        if (errorCodeNameMap.isEmpty()) {
-            errorCodeNameMap.put(BaseSMSProvider.NOT_ENOUGH_MONEY, "账户余额不足");
-            errorCodeNameMap.put(BaseSMSProvider.OUT_OF_MAX_SEND_NUM, "发送号码数理大于最大发送数量");
-            errorCodeNameMap.put(BaseSMSProvider.ERROR_PARA, "传递接口参数不正确");
-            errorCodeNameMap.put(BaseSMSProvider.USER_NOT_EXIST, "用户名不存在");
-            errorCodeNameMap.put(BaseSMSProvider.ERROR_PASSWARD, "用户名密码不正确");
-            errorCodeNameMap.put(BaseSMSProvider.ERROR_SUBMIT_TOO_FAST, "提交过快（提交速度超过流速限制）");
-            errorCodeNameMap.put(BaseSMSProvider.ERROR_SYSTEM_BUSY, "系统忙（因平台侧原因，暂时无法处理提交的短信）");
-            errorCodeNameMap.put(BaseSMSProvider.ERROR_LIMIT_WORDS, "包含敏感词");
-            errorCodeNameMap.put(BaseSMSProvider.UNKNOWN_ERROR, "未知错误");
+	public static String getErrorNameByCode(String errorCode) {
+		String errorMsg = ERROR_CODE_NAME_MAP.get(errorCode);
+		if (errorMsg == null) {
+			return errorCode;
         }
-
-        
-        initProvider();
+		return ERROR_CODE_NAME_MAP.get(errorCode);
     }
     
 
@@ -110,23 +91,41 @@ public abstract class BaseSMSProvider implements SMSProvider {
         logger.debug("短信发送成功");
     }
 
-    /**
-     *  将手机号码按照maxNum分拆成多组 （包含单组）
-     */
-    public List<List<String>> transitionPhoneGroup(List<String> mobileNos) {
-        List<List<String>> lis = new ArrayList<>();
-        int totalNum = mobileNos.size();
-        int totalGroupNum = (int) Math.ceil( Float.parseFloat(totalNum+"")  / maxNum);
-                
-        for (int i = 0; i < totalGroupNum;i++ ) {
-            int start, end;
-            start = maxNum * i;
-            end = maxNum * (i + 1);
-            if (end > totalNum)
-                end = totalNum;
-            lis.add(mobileNos.subList(start, end));
+	@PostConstruct
+	void runSMSSendThread() {
+		if (!smsSupport) {
+			return;
+		}
+
+		//获取当前系统的CPU 数目
+		int cpuNums = Runtime.getRuntime().availableProcessors();
+
+		ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
+				.setNameFormat("sms-sender-%d").build();
+
+		//Common Thread Pool
+		ExecutorService pool = new ThreadPoolExecutor(cpuNums, 200,
+				0L, TimeUnit.MILLISECONDS,
+				new LinkedBlockingQueue<Runnable>(1024), namedThreadFactory, new ThreadPoolExecutor.AbortPolicy());
+
+		for (int i = 0; i < cpuNums; i++) {
+			pool.execute(new SMSSendThread(this));
         }
-        return lis;
+
+		logger.debug("创建短信发送队列");
+
+		if (ERROR_CODE_NAME_MAP.isEmpty()) {
+			ERROR_CODE_NAME_MAP.put(BaseSMSProvider.NOT_ENOUGH_MONEY, "账户余额不足");
+			ERROR_CODE_NAME_MAP.put(BaseSMSProvider.OUT_OF_MAX_SEND_NUM, "发送号码数理大于最大发送数量");
+			ERROR_CODE_NAME_MAP.put(BaseSMSProvider.ERROR_PARA, "传递接口参数不正确");
+			ERROR_CODE_NAME_MAP.put(BaseSMSProvider.USER_NOT_EXIST, "用户名不存在");
+			ERROR_CODE_NAME_MAP.put(BaseSMSProvider.ERROR_PASSWARD, "用户名密码不正确");
+			ERROR_CODE_NAME_MAP.put(BaseSMSProvider.ERROR_SUBMIT_TOO_FAST, "提交过快（提交速度超过流速限制）");
+			ERROR_CODE_NAME_MAP.put(BaseSMSProvider.ERROR_SYSTEM_BUSY, "系统忙（因平台侧原因，暂时无法处理提交的短信）");
+			ERROR_CODE_NAME_MAP.put(BaseSMSProvider.ERROR_LIMIT_WORDS, "包含敏感词");
+			ERROR_CODE_NAME_MAP.put(BaseSMSProvider.UNKNOWN_ERROR, "未知错误");
+		}
+		initProvider();
     }
 
     public String transitionPhones(List<String> phones) {
@@ -147,89 +146,110 @@ public abstract class BaseSMSProvider implements SMSProvider {
         }
     }
 
-    public static String getErrorNameByCode(String errorCode) {
-        String errorMsg = errorCodeNameMap.get(errorCode);
-        if (errorMsg == null)
-            return errorCode;
-        return errorCodeNameMap.get(errorCode);
+	/**
+	 * 将手机号码按照maxNum分拆成多组 （包含单组）
+	 */
+	public List<List<String>> transitionPhoneGroup(List<String> mobileNos) {
+		List<List<String>> lis = new ArrayList<>();
+		int totalNum = mobileNos.size();
+		int totalGroupNum = (int) Math.ceil(Float.parseFloat(totalNum + "") / maxNum);
+
+		for (int i = 0; i < totalGroupNum; i++) {
+			int start, end;
+			start = maxNum * i;
+			end = maxNum * (i + 1);
+			if (end > totalNum) {
+				end = totalNum;
+			}
+			lis.add(mobileNos.subList(start, end));
+		}
+		return lis;
     }
 
-    public Boolean send(String mobileNo, String msg) throws Exception {
+	@Override
+	public Boolean send(String mobileNo, String msg) throws Exception {
 
-        List<String> phones = new ArrayList<String>();
-        phones.add(mobileNo);
-        return send(phones, msg);
-    }
+		List<String> phones = new ArrayList<String>();
+		phones.add(mobileNo);
+		return send(phones, msg);
+	}
 
-    public Boolean send(List<String> mobileNos, String msg) throws Exception {
+	@Override
+	public Boolean send(List<String> mobileNos, String msg) throws Exception {
 
-        List<List<String>> list = transitionPhoneGroup(mobileNos);
+		List<List<String>> list = transitionPhoneGroup(mobileNos);
 
-        for (List<String> list2 : list) {
-            SMS sms = new SMS(this.name, list2, msg);
-            msgQueue.offer(sms);
-        }
-        return true;
+		for (List<String> list2 : list) {
+			SMS sms = new SMS(this.name, list2, msg);
+			msgQueue.offer(sms);
+		}
+		return true;
 
-    }
+	}
 
-    public Boolean send(String mobileNo, String templateCode,
-                        Map<String, String> vars) throws Exception {
-        List<String> phones = new ArrayList<String>();
-        phones.add(mobileNo);
-        return send(phones, templateCode, vars);
-    }
+	@Override
+	public Boolean send(String mobileNo, String templateCode,
+	                    Map<String, String> vars) throws Exception {
+		List<String> phones = new ArrayList<String>();
+		phones.add(mobileNo);
+		return send(phones, templateCode, vars);
+	}
 
-    public Boolean send(List<String> mobileNos, String templateCode,
-                        Map<String, String> vars) throws Exception {
-        List<List<String>> list = transitionPhoneGroup(mobileNos);
+	@Override
+	public Boolean send(List<String> mobileNos, String templateCode,
+	                    Map<String, String> vars) throws Exception {
+		List<List<String>> list = transitionPhoneGroup(mobileNos);
 
-        for (List<String> list2 : list) {
-            SMS sms = new SMS(this.name, list2, templateCode, vars);
-            msgQueue.offer(sms);
-        }
-        return true;
-    }
+		for (List<String> list2 : list) {
+			SMS sms = new SMS(this.name, list2, templateCode, vars);
+			msgQueue.offer(sms);
+		}
+		return true;
+	}
 
-    public void doProcessSMSByTxt(SMS sms) {
-        try {
+	@Override
+	public void doProcessSMSByTxt(SMS sms) {
+		try {
 
-            String toUrl = this.getSMSUrl(sms);
+			String toUrl = this.getSMSUrl(sms);
 
-            HttpRequest request = HttpRequest.get(toUrl);
-            BufferedReader in =request.bufferedReader();
-            String line;
-            StringBuffer buffer = new StringBuffer();
-            while ((line = in.readLine()) != null)
-              buffer.append(line);
-              checkResult(buffer.toString(),sms.getPhones().toString());
-       
-        } catch (Exception e) {
-        	e.printStackTrace();
-            logger.error(String.format("发送短消息失败，手机号码:%s", transitionPhones(sms.getPhones())));
+			HttpRequest request = HttpRequest.get(toUrl);
+			BufferedReader in =request.bufferedReader();
+			String line;
+			StringBuffer buffer = new StringBuffer();
+			while ((line = in.readLine()) != null) {
+				buffer.append(line);
+			}
+			checkResult(buffer.toString(),sms.getPhones().toString());
 
-        }
-    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(String.format("发送短消息失败，手机号码:%s", transitionPhones(sms.getPhones())));
 
-    public void doProcessSMSByTemplate(SMS sms) throws Exception {
-        try {
+		}
+	}
 
-            String toUrl = this.getSMSUrl(sms);
+	@Override
+	public void doProcessSMSByTemplate(SMS sms) throws Exception {
+		try {
 
-            HttpRequest request = HttpRequest.get(toUrl);
-            BufferedReader in =request.bufferedReader();
-            String line;
-            StringBuffer buffer = new StringBuffer();
-            while ((line = in.readLine()) != null)
-                buffer.append(line);
-            checkResult(buffer.toString(),sms.getPhones().toString());
+			String toUrl = this.getSMSUrl(sms);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error(String.format("发送短消息失败，手机号码:%s", transitionPhones(sms.getPhones())));
+			HttpRequest request = HttpRequest.get(toUrl);
+			BufferedReader in =request.bufferedReader();
+			String line;
+			StringBuffer buffer = new StringBuffer();
+			while ((line = in.readLine()) != null) {
+				buffer.append(line);
+			}
+			checkResult(buffer.toString(),sms.getPhones().toString());
 
-        }
-    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(String.format("发送短消息失败，手机号码:%s", transitionPhones(sms.getPhones())));
+
+		}
+	}
 
     public class SMSSendThread implements Runnable {
     	
@@ -247,11 +267,13 @@ public abstract class BaseSMSProvider implements SMSProvider {
                 do {
                     SMS sms = msgQueue.take();
 
-                    if (sms.getType().equals(SMS.TYPE_TXT))
-                    	processpr.doProcessSMSByTxt(sms);
+	                if (sms.getType().equals(SMS.TYPE_TXT)) {
+		                processpr.doProcessSMSByTxt(sms);
+	                }
 
-                    if (sms.getType().equals(SMS.TYPE_TEMPLATE))
-                    	processpr.doProcessSMSByTemplate(sms);
+	                if (sms.getType().equals(SMS.TYPE_TEMPLATE)) {
+		                processpr.doProcessSMSByTemplate(sms);
+	                }
                 } while (true);
             } catch (Exception e) {
                 e.printStackTrace();

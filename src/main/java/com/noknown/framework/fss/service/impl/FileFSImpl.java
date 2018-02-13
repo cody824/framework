@@ -1,23 +1,21 @@
 package com.noknown.framework.fss.service.impl;
 
-import com.noknown.framework.common.exception.UtilException;
 import com.noknown.framework.common.util.BaseUtil;
 import com.noknown.framework.fss.service.FileStoreService;
 import org.aspectj.util.FileUtil;
 
 import java.io.*;
 
-
-public class FileFS implements FileStoreService {
+/**
+ * @author guodong
+ */
+public class FileFSImpl implements FileStoreService {
 
 	private String basePath;
 	
 	private String baseUrl;
-	
-	public FileFS() {
-	}
-	
-	public FileFS(String basePath, String baseUrl) {
+
+	public FileFSImpl(String basePath, String baseUrl) {
 		this.basePath = basePath;
 		this.baseUrl = baseUrl;
 	}
@@ -29,17 +27,11 @@ public class FileFS implements FileStoreService {
 
 	@Override
 	public String put(InputStream inputStream, String key) throws IOException {
-		File file = new File(BaseUtil.getPath(basePath) + key);
-		if (!file.exists())
-			try {
-				BaseUtil.createFile(BaseUtil.getPath(basePath) + key);
-			} catch (UtilException e) {
-				e.printStackTrace();
-			}
+		BaseUtil.createFile(BaseUtil.getPath(basePath) + key);
 		FileOutputStream fos = new FileOutputStream(BaseUtil.getPath(basePath) + key);
-		final int MAX = 4096;
-		byte[] buf = new byte[MAX];
-		for (int bytesRead = inputStream.read(buf, 0, MAX); bytesRead != -1; bytesRead = inputStream.read(buf, 0, MAX)) {
+		final int max = 4096;
+		byte[] buf = new byte[max];
+		for (int bytesRead = inputStream.read(buf, 0, max); bytesRead != -1; bytesRead = inputStream.read(buf, 0, max)) {
 			fos.write(buf, 0, bytesRead);
 		} 
 		fos.flush();
@@ -56,7 +48,7 @@ public class FileFS implements FileStoreService {
 	}
 
 	@Override
-	public void del(String key) throws IOException {
+	public void del(String key) {
 		File file = new File(BaseUtil.getPath(basePath) + key);
 		FileUtil.deleteContents(file);
 	}
@@ -72,12 +64,13 @@ public class FileFS implements FileStoreService {
 	@Override
 	public void get(OutputStream outputStream, String key) throws IOException {
 		File file = new File(BaseUtil.getPath(basePath) + key);
-		if (!file.exists())
+		if (!file.exists()) {
 			throw new IOException(BaseUtil.getPath(basePath) + key + "不存在");
+		}
 		FileInputStream fis = new FileInputStream(file);
-		final int MAX = 4096;
-		byte[] buf = new byte[MAX];
-		for (int bytesRead = fis.read(buf, 0, MAX); bytesRead != -1; bytesRead = fis.read(buf, 0, MAX)) {
+		final int max = 4096;
+		byte[] buf = new byte[max];
+		for (int bytesRead = fis.read(buf, 0, max); bytesRead != -1; bytesRead = fis.read(buf, 0, max)) {
 			outputStream.write(buf, 0, bytesRead);
 		} 
 		fis.close();
@@ -90,14 +83,6 @@ public class FileFS implements FileStoreService {
 
 	public void setBasePath(String basePath) {
 		this.basePath = basePath;
-	}
-
-	public String getBaseUrl() {
-		return baseUrl;
-	}
-
-	public void setBaseUrl(String baseUrl) {
-		this.baseUrl = baseUrl;
 	}
 
 }

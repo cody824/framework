@@ -33,7 +33,12 @@ import java.util.regex.Pattern;
  * @description
  */
 public class StringUtil extends StringUtils {
-	
+
+	public final static Pattern MOBILE_PATTERN = Pattern.compile("^(0|86|17951)?(17[0-9]|13[0-9]|15[012356789]|18[0-9]|14[57])[0-9]{8}$");
+
+	public final static Pattern EMAIL_PATTERN = Pattern.compile("\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*");
+
+
 	/**
 	 * 将数字字符串+默认加入值（当前默认加入值为1，默认返回值为0） 后重新转换成字符串 如 0099 +1=0100
 	 * 
@@ -73,7 +78,7 @@ public class StringUtil extends StringUtils {
 		}
 		for (int i = 0; i < str.length(); i++) {
 			String indexValue = str.substring(i, i + 1);
-			if (indexValue.equals("0")) {
+			if ("0".equals(indexValue)) {
 				flag++;
 			} else {
 				break;
@@ -97,8 +102,9 @@ public class StringUtil extends StringUtils {
 	 * @return
 	 */
 	public static String trim(String s) {
-		if (s == null)
+		if (s == null) {
 			return "";
+		}
 		return s.trim();
 	}
 
@@ -109,8 +115,9 @@ public class StringUtil extends StringUtils {
 	 * @return
 	 */
 	public static String cleanString(String in) {
-		if (isBlank(in))
+		if (isBlank(in)) {
 			return "";
+		}
 
 		StringBuffer out = new StringBuffer(); // Used to hold the output.
 
@@ -122,8 +129,9 @@ public class StringUtil extends StringUtils {
 					|| ((current >= 0x20) && (current <= 0x7E))
 					|| ((current >= 0xA1) && (current <= 0xD7FF))
 					|| ((current >= 0xE000) && (current <= 0xFFFD))
-					|| ((current >= 0x10000) && (current <= 0x10FFFF)))
+					|| ((current >= 0x10000) && (current <= 0x10FFFF))) {
 				out.append(current);
+			}
 		}
 		return out.toString().trim();
 	}
@@ -286,14 +294,12 @@ public class StringUtil extends StringUtils {
 	}
 	
 	public static boolean isMobile( String mobile) {
-		Pattern p = Pattern.compile("^(0|86|17951)?(17[0-9]|13[0-9]|15[012356789]|18[0-9]|14[57])[0-9]{8}$");  
-		Matcher m = p.matcher(mobile);  
+		Matcher m = MOBILE_PATTERN.matcher(mobile);
 		return m.matches();
 	}
 	
 	public static boolean isEmail( String email) {
-		Pattern p = Pattern.compile("\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*");  
-		Matcher m = p.matcher(email);  
+		Matcher m = EMAIL_PATTERN.matcher(email);
 		return m.matches();
 	}
 
@@ -347,18 +353,20 @@ public class StringUtil extends StringUtils {
 					}
 					outBuffer.append((char) value);
 				} else {
-					if (aChar == 't')
+					if (aChar == 't') {
 						aChar = '\t';
-					else if (aChar == 'r')
+					} else if (aChar == 'r') {
 						aChar = '\r';
-					else if (aChar == 'n')
+					} else if (aChar == 'n') {
 						aChar = '\n';
-					else if (aChar == 'f')
+					} else if (aChar == 'f') {
 						aChar = '\f';
+					}
 					outBuffer.append(aChar);
 				}
-			} else
+			} else {
 				outBuffer.append(aChar);
+			}
 		}
 		return outBuffer.toString();
 	}
@@ -387,9 +395,10 @@ public class StringUtil extends StringUtils {
 	                if (java.lang.Character.toString(t1[i]).matches(  
 	                        "[\\u4E00-\\u9FA5]+")) {  
 	                    t2 = PinyinHelper.toHanyuPinyinStringArray(t1[i], t3);  
-	                    t4 += t2[0];  
-	                } else  
-	                    t4 += java.lang.Character.toString(t1[i]);  
+	                    t4 += t2[0];
+	                } else {
+		                t4 += Character.toString(t1[i]);
+	                }
 	            }  
 	            // System.out.println(t4);  
 	            return t4;  

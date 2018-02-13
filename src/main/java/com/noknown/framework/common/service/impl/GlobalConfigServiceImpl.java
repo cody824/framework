@@ -45,40 +45,47 @@ public class GlobalConfigServiceImpl implements GlobalConfigService {
 	@Override
 	public String getConfig(String configType, String domain, String key, boolean isFetch) {
 		String value = null;
-		if(globalConfig == null || isFetch)
+		if (globalConfig == null || isFetch) {
 			getGlobalConfig(true);
+		}
 		value = globalConfig.getConfig(configType, domain, key);
-		if (value != null)
+		if (value != null) {
 			value = new String(value);
+		}
 		return value;
 	}
 
 	@Override
 	public Properties getProperties(String configType, String domain, boolean isFetch) {
 		Properties p = null;
-		if(globalConfig == null || isFetch)
+		if (globalConfig == null || isFetch) {
 			getGlobalConfig(true);
+		}
 		p = globalConfig.getProperties(configType, domain);
-		if (p != null)
+		if (p != null) {
 			p = (Properties) p.clone();
+		}
 		return p;
 	}
 
 	@Override
 	public ConfigRepo getConfigRepo(String configType, boolean isFetch) {
 		ConfigRepo cr = null;
-		if(globalConfig == null || isFetch)
+		if (globalConfig == null || isFetch) {
 			getGlobalConfig(true);
+		}
 		cr = globalConfig.getConfigRepo(configType);
-		if (cr != null)
+		if (cr != null) {
 			cr = cr.clone();
+		}
 		return cr;
 	}
 
 	@Override
 	public GlobalConfig getGlobalConfig(boolean fetch) {
-		if(globalConfig == null || fetch)
+		if (globalConfig == null || fetch) {
 			globalConfig = gcDao.getGlobalConfig();
+		}
 		return globalConfig;
 	}
 

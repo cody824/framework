@@ -93,8 +93,9 @@ public class ErrorMsg implements Serializable {
 	 * @return 错误参数
 	 */
 	public List<String> getErrorArgs() {
-		if (errorArgs == null)
+		if (errorArgs == null) {
 			errorArgs = new ArrayList<String>();
+		}
 		return errorArgs;
 	}
 

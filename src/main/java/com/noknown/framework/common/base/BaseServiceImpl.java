@@ -1,8 +1,8 @@
 package com.noknown.framework.common.base;
 
-import com.noknown.framework.common.exception.DAOException;
 import com.noknown.framework.common.exception.ServiceException;
 import com.noknown.framework.common.util.JpaUtil;
+import com.noknown.framework.common.util.ObjectUtil;
 import com.noknown.framework.common.web.model.PageData;
 import com.noknown.framework.common.web.model.SQLFilter;
 import org.springframework.data.domain.Page;
@@ -12,17 +12,18 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.lang.reflect.*;
 import java.util.Collection;
+import java.util.List;
 
-
-@Transactional
+/**
+ * @param <T>  类型
+ * @param <ID> ID
+ * @author guodong
+ */
+@Transactional(rollbackOn = Exception.class)
 public abstract  class BaseServiceImpl<T, ID extends Serializable> implements BaseService<T, ID> {
 	
 	protected Class<T> clazz;
@@ -44,17 +45,30 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 			clazz = clazz.getSuperclass();
 		}
 	}
-	
+
+	/**
+	 * 获取JpaRepository
+	 *
+	 * @return JpaRepository
+	 */
 	public abstract JpaRepository<T, ID> getRepository();
-	
+
+	/**
+	 * 获取JpaSpecificationExecutor
+	 * @return JpaSpecificationExecutor
+	 */
 	public abstract JpaSpecificationExecutor<T> getSpecificationExecutor();
+
+	@Override
+	public T create(T entry) {
+		getRepository().save(entry);
+		return entry;
+	}
 
 	@Override
 	public PageData<T> find(SQLFilter filter, int start, int limit) {
 		Pageable pageable = new PageRequest(start / limit, limit);
-		Specification<T> spec = (root, query, cb) -> {
-			return JpaUtil.sqlFilterToPredicate(clazz, root, query, cb, filter);
-        };
+		Specification<T> spec = (root, query, cb) -> JpaUtil.sqlFilterToPredicate(clazz, root, query, cb, filter);
 		Page<T> pd = getSpecificationExecutor().findAll(spec , pageable);
 		
 		PageData<T> pageData = new PageData<>();
@@ -67,7 +81,7 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 	}
 
 	@Override
-	public T get(ID entityid) throws DAOException, ServiceException {
+	public T get(ID entityid) {
 		return getRepository().findOne(entityid);
 	}
 
@@ -85,23 +99,15 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 			if (getMethod != null) {
 				t = (T) getMethod.invoke(getRepository(), attrValue);
 			}
-		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
+		} catch (NoSuchFieldException | SecurityException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
 		return t;
 	}
+
+	@SafeVarargs
 	@Override
-	public void delete(@SuppressWarnings("unchecked") ID ... entityids) {
+	public final void delete(ID... entityids) {
 		for (ID id : entityids) {
 			getRepository().delete(id);
 		}
@@ -122,6 +128,19 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 		getRepository().save(obj);
 	}
 
+
+	@Override
+	public T update(ID id, T obj, List<String> ignored) throws ServiceException {
+		T orgObj = getRepository().getOne(id);
+		if (orgObj == null) {
+			throw new ServiceException("对象不存在");
+		}
+		ObjectUtil.copy(orgObj, obj, ignored);
+		getRepository().save(orgObj);
+		return orgObj;
+	}
+
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<T> find(String attrName, Object attrValue) {
@@ -135,17 +154,7 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 			if (getMethod != null) {
 				col = (Collection<T>) getMethod.invoke(getRepository(), attrValue);
 			}
-		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
+		} catch (NoSuchFieldException | SecurityException | NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
 		return col;
@@ -158,12 +167,7 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 
 	@Override
 	public Collection<T> find(SQLFilter filter) {
-		Specification<T> spec = new Specification<T>(){
-
-			@Override
-			public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				return JpaUtil.sqlFilterToPredicate(clazz, root, query, cb, filter);
-			}} ;
+		Specification<T> spec = (root, query, cb) -> JpaUtil.sqlFilterToPredicate(clazz, root, query, cb, filter);
 		return getSpecificationExecutor().findAll(spec);
 	}
 
@@ -184,12 +188,7 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 
 	@Override
 	public long getCount(SQLFilter filter) {
-		Specification<T> spec = new Specification<T>(){
-
-			@Override
-			public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				return JpaUtil.sqlFilterToPredicate(clazz, root, query, cb, filter);
-			}} ;
+		Specification<T> spec = (root, query, cb) -> JpaUtil.sqlFilterToPredicate(clazz, root, query, cb, filter);
 		return getSpecificationExecutor().count(spec);
 	}
 

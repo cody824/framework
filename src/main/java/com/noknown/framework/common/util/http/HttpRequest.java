@@ -193,10 +193,11 @@ public class HttpRequest {
   private static HostnameVerifier TRUSTED_VERIFIER;
 
   private static String getValidCharset(final String charset) {
-    if (charset != null)
-      return charset;
-    else
-      return CHARSET_UTF8;
+	  if (charset != null) {
+		  return charset;
+	  } else {
+		  return CHARSET_UTF8;
+	  }
   }
 
   private static SSLSocketFactory getTrustedFactory()
@@ -204,17 +205,20 @@ public class HttpRequest {
     if (TRUSTED_FACTORY == null) {
       final TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
 
-        public X509Certificate[] getAcceptedIssuers() {
-          return new X509Certificate[0];
-        }
+	      @Override
+	      public X509Certificate[] getAcceptedIssuers() {
+		      return new X509Certificate[0];
+	      }
 
-        public void checkClientTrusted(X509Certificate[] chain, String authType) {
-          // Intentionally left blank
-        }
+	      @Override
+	      public void checkClientTrusted(X509Certificate[] chain, String authType) {
+		      // Intentionally left blank
+	      }
 
-        public void checkServerTrusted(X509Certificate[] chain, String authType) {
-          // Intentionally left blank
-        }
+	      @Override
+	      public void checkServerTrusted(X509Certificate[] chain, String authType) {
+		      // Intentionally left blank
+	      }
       } };
       try {
         SSLContext context = SSLContext.getInstance("TLS");
@@ -232,13 +236,15 @@ public class HttpRequest {
   }
 
   private static HostnameVerifier getTrustedVerifier() {
-    if (TRUSTED_VERIFIER == null)
-      TRUSTED_VERIFIER = new HostnameVerifier() {
+	  if (TRUSTED_VERIFIER == null) {
+		  TRUSTED_VERIFIER = new HostnameVerifier() {
 
-        public boolean verify(String hostname, SSLSession session) {
-          return true;
-        }
-      };
+			  @Override
+			  public boolean verify(String hostname, SSLSession session) {
+				  return true;
+			  }
+		  };
+	  }
 
     return TRUSTED_VERIFIER;
   }
@@ -249,8 +255,9 @@ public class HttpRequest {
     //
     // The following test is checking for the last slash not being part of
     // the protocol to host separator: '://'.
-    if (baseUrl.indexOf(':') + 2 == baseUrl.lastIndexOf('/'))
-      result.append('/');
+	  if (baseUrl.indexOf(':') + 2 == baseUrl.lastIndexOf('/')) {
+		  result.append('/');
+	  }
     return result;
   }
 
@@ -259,410 +266,12 @@ public class HttpRequest {
     // Add '?' if missing and add '&' if params already exist in base url
     final int queryStart = baseUrl.indexOf('?');
     final int lastChar = result.length() - 1;
-    if (queryStart == -1)
-      result.append('?');
-    else if (queryStart < lastChar && baseUrl.charAt(lastChar) != '&')
-      result.append('&');
+	  if (queryStart == -1) {
+		  result.append('?');
+	  } else if (queryStart < lastChar && baseUrl.charAt(lastChar) != '&') {
+		  result.append('&');
+	  }
     return result;
-  }
-
-  /**
-   * <p>
-   * Encodes and decodes to and from Base64 notation.
-   * </p>
-   * <p>
-   * I am placing this code in the Public Domain. Do with it as you will. This
-   * software comes with no guarantees or warranties but with plenty of
-   * well-wishing instead! Please visit <a
-   * href="http://iharder.net/base64">http://iharder.net/base64</a> periodically
-   * to check for updates or to contribute improvements.
-   * </p>
-   *
-   * @author Robert Harder
-   * @author rob@iharder.net
-   * @version 2.3.7
-   */
-  public static class Base64 {
-
-    /** The equals sign (=) as a byte. */
-    private final static byte EQUALS_SIGN = (byte) '=';
-
-    /** Preferred encoding. */
-    private final static String PREFERRED_ENCODING = "US-ASCII";
-
-    /** The 64 valid Base64 values. */
-    private final static byte[] _STANDARD_ALPHABET = { (byte) 'A', (byte) 'B',
-        (byte) 'C', (byte) 'D', (byte) 'E', (byte) 'F', (byte) 'G', (byte) 'H',
-        (byte) 'I', (byte) 'J', (byte) 'K', (byte) 'L', (byte) 'M', (byte) 'N',
-        (byte) 'O', (byte) 'P', (byte) 'Q', (byte) 'R', (byte) 'S', (byte) 'T',
-        (byte) 'U', (byte) 'V', (byte) 'W', (byte) 'X', (byte) 'Y', (byte) 'Z',
-        (byte) 'a', (byte) 'b', (byte) 'c', (byte) 'd', (byte) 'e', (byte) 'f',
-        (byte) 'g', (byte) 'h', (byte) 'i', (byte) 'j', (byte) 'k', (byte) 'l',
-        (byte) 'm', (byte) 'n', (byte) 'o', (byte) 'p', (byte) 'q', (byte) 'r',
-        (byte) 's', (byte) 't', (byte) 'u', (byte) 'v', (byte) 'w', (byte) 'x',
-        (byte) 'y', (byte) 'z', (byte) '0', (byte) '1', (byte) '2', (byte) '3',
-        (byte) '4', (byte) '5', (byte) '6', (byte) '7', (byte) '8', (byte) '9',
-        (byte) '+', (byte) '/' };
-
-    /** Defeats instantiation. */
-    private Base64() {
-    }
-
-    /**
-     * <p>
-     * Encodes up to three bytes of the array <var>source</var> and writes the
-     * resulting four Base64 bytes to <var>destination</var>. The source and
-     * destination arrays can be manipulated anywhere along their length by
-     * specifying <var>srcOffset</var> and <var>destOffset</var>. This method
-     * does not check to make sure your arrays are large enough to accomodate
-     * <var>srcOffset</var> + 3 for the <var>source</var> array or
-     * <var>destOffset</var> + 4 for the <var>destination</var> array. The
-     * actual number of significant bytes in your array is given by
-     * <var>numSigBytes</var>.
-     * </p>
-     * <p>
-     * This is the lowest level of the encoding methods with all possible
-     * parameters.
-     * </p>
-     *
-     * @param source
-     *          the array to convert
-     * @param srcOffset
-     *          the index where conversion begins
-     * @param numSigBytes
-     *          the number of significant bytes in your array
-     * @param destination
-     *          the array to hold the conversion
-     * @param destOffset
-     *          the index where output will be put
-     * @return the <var>destination</var> array
-     * @since 1.3
-     */
-    private static byte[] encode3to4(byte[] source, int srcOffset,
-        int numSigBytes, byte[] destination, int destOffset) {
-
-      byte[] ALPHABET = _STANDARD_ALPHABET;
-
-      int inBuff = (numSigBytes > 0 ? ((source[srcOffset] << 24) >>> 8) : 0)
-          | (numSigBytes > 1 ? ((source[srcOffset + 1] << 24) >>> 16) : 0)
-          | (numSigBytes > 2 ? ((source[srcOffset + 2] << 24) >>> 24) : 0);
-
-      switch (numSigBytes) {
-      case 3:
-        destination[destOffset] = ALPHABET[(inBuff >>> 18)];
-        destination[destOffset + 1] = ALPHABET[(inBuff >>> 12) & 0x3f];
-        destination[destOffset + 2] = ALPHABET[(inBuff >>> 6) & 0x3f];
-        destination[destOffset + 3] = ALPHABET[(inBuff) & 0x3f];
-        return destination;
-
-      case 2:
-        destination[destOffset] = ALPHABET[(inBuff >>> 18)];
-        destination[destOffset + 1] = ALPHABET[(inBuff >>> 12) & 0x3f];
-        destination[destOffset + 2] = ALPHABET[(inBuff >>> 6) & 0x3f];
-        destination[destOffset + 3] = EQUALS_SIGN;
-        return destination;
-
-      case 1:
-        destination[destOffset] = ALPHABET[(inBuff >>> 18)];
-        destination[destOffset + 1] = ALPHABET[(inBuff >>> 12) & 0x3f];
-        destination[destOffset + 2] = EQUALS_SIGN;
-        destination[destOffset + 3] = EQUALS_SIGN;
-        return destination;
-
-      default:
-        return destination;
-      }
-    }
-
-    /**
-     * Encode string as a byte array in Base64 annotation.
-     *
-     * @param string
-     * @return The Base64-encoded data as a string
-     */
-    public static String encode(String string) {
-      byte[] bytes;
-      try {
-        bytes = string.getBytes(PREFERRED_ENCODING);
-      } catch (UnsupportedEncodingException e) {
-        bytes = string.getBytes();
-      }
-      return encodeBytes(bytes);
-    }
-
-    /**
-     * Encodes a byte array into Base64 notation.
-     *
-     * @param source
-     *          The data to convert
-     * @return The Base64-encoded data as a String
-     * @throws NullPointerException
-     *           if source array is null
-     * @throws IllegalArgumentException
-     *           if source array, offset, or length are invalid
-     * @since 2.0
-     */
-    public static String encodeBytes(byte[] source) {
-      return encodeBytes(source, 0, source.length);
-    }
-
-    /**
-     * Encodes a byte array into Base64 notation.
-     *
-     * @param source
-     *          The data to convert
-     * @param off
-     *          Offset in array where conversion should begin
-     * @param len
-     *          Length of data to convert
-     * @return The Base64-encoded data as a String
-     * @throws NullPointerException
-     *           if source array is null
-     * @throws IllegalArgumentException
-     *           if source array, offset, or length are invalid
-     * @since 2.0
-     */
-    public static String encodeBytes(byte[] source, int off, int len) {
-      byte[] encoded = encodeBytesToBytes(source, off, len);
-      try {
-        return new String(encoded, PREFERRED_ENCODING);
-      } catch (UnsupportedEncodingException uue) {
-        return new String(encoded);
-      }
-    }
-
-    /**
-     * Similar to {@link #encodeBytes(byte[], int, int)} but returns a byte
-     * array instead of instantiating a String. This is more efficient if you're
-     * working with I/O streams and have large data sets to encode.
-     *
-     *
-     * @param source
-     *          The data to convert
-     * @param off
-     *          Offset in array where conversion should begin
-     * @param len
-     *          Length of data to convert
-     * @return The Base64-encoded data as a String if there is an error
-     * @throws NullPointerException
-     *           if source array is null
-     * @throws IllegalArgumentException
-     *           if source array, offset, or length are invalid
-     * @since 2.3.1
-     */
-    public static byte[] encodeBytesToBytes(byte[] source, int off, int len) {
-
-      if (source == null)
-        throw new NullPointerException("Cannot serialize a null array.");
-
-      if (off < 0)
-        throw new IllegalArgumentException("Cannot have negative offset: "
-            + off);
-
-      if (len < 0)
-        throw new IllegalArgumentException("Cannot have length offset: " + len);
-
-      if (off + len > source.length)
-        throw new IllegalArgumentException(
-            String
-                .format(
-                    "Cannot have offset of %d and length of %d with array of length %d",
-                    off, len, source.length));
-
-      // Bytes needed for actual encoding
-      int encLen = (len / 3) * 4 + (len % 3 > 0 ? 4 : 0);
-
-      byte[] outBuff = new byte[encLen];
-
-      int d = 0;
-      int e = 0;
-      int len2 = len - 2;
-      for (; d < len2; d += 3, e += 4)
-        encode3to4(source, d + off, 3, outBuff, e);
-
-      if (d < len) {
-        encode3to4(source, d + off, len - d, outBuff, e);
-        e += 4;
-      }
-
-      if (e <= outBuff.length - 1) {
-        byte[] finalOut = new byte[e];
-        System.arraycopy(outBuff, 0, finalOut, 0, e);
-        return finalOut;
-      } else
-        return outBuff;
-    }
-  }
-
-  /**
-   * HTTP request exception whose cause is always an {@link IOException}
-   */
-  public static class HttpRequestException extends RuntimeException {
-
-    private static final long serialVersionUID = -1170466989781746231L;
-
-    /**
-     * @param cause
-     */
-    protected HttpRequestException(final IOException cause) {
-      super(cause);
-    }
-
-    /**
-     * Get {@link IOException} that triggered this request exception
-     *
-     * @return {@link IOException} cause
-     */
-    @Override
-    public IOException getCause() {
-      return (IOException) super.getCause();
-    }
-  }
-
-  /**
-   * Operation that handles executing a callback once complete and handling
-   * nested exceptions
-   *
-   * @param <V>
-   */
-  protected static abstract class Operation<V> implements Callable<V> {
-
-    /**
-     * Run operation
-     *
-     * @return result
-     * @throws HttpRequestException
-     * @throws IOException
-     */
-    protected abstract V run() throws HttpRequestException, IOException;
-
-    /**
-     * Operation complete callback
-     *
-     * @throws IOException
-     */
-    protected abstract void done() throws IOException;
-
-    public V call() throws HttpRequestException {
-      boolean thrown = false;
-      try {
-        return run();
-      } catch (HttpRequestException e) {
-        thrown = true;
-        throw e;
-      } catch (IOException e) {
-        thrown = true;
-        throw new HttpRequestException(e);
-      } finally {
-        try {
-          done();
-        } catch (IOException e) {
-          if (!thrown)
-            throw new HttpRequestException(e);
-        }
-      }
-    }
-  }
-
-  /**
-   * Class that ensures a {@link Closeable} gets closed with proper exception
-   * handling.
-   *
-   * @param <V>
-   */
-  protected static abstract class CloseOperation<V> extends Operation<V> {
-
-    private final Closeable closeable;
-
-    private final boolean ignoreCloseExceptions;
-
-    /**
-     * Create closer for operation
-     *
-     * @param closeable
-     * @param ignoreCloseExceptions
-     */
-    protected CloseOperation(final Closeable closeable,
-        final boolean ignoreCloseExceptions) {
-      this.closeable = closeable;
-      this.ignoreCloseExceptions = ignoreCloseExceptions;
-    }
-
-    @Override
-    protected void done() throws IOException {
-      if (closeable instanceof Flushable)
-        ((Flushable) closeable).flush();
-      if (ignoreCloseExceptions)
-        try {
-          closeable.close();
-        } catch (IOException e) {
-          // Ignored
-        }
-      else
-        closeable.close();
-    }
-  }
-
-  /**
-   * Class that and ensures a {@link Flushable} gets flushed with proper
-   * exception handling.
-   *
-   * @param <V>
-   */
-  protected static abstract class FlushOperation<V> extends Operation<V> {
-
-    private final Flushable flushable;
-
-    /**
-     * Create flush operation
-     *
-     * @param flushable
-     */
-    protected FlushOperation(final Flushable flushable) {
-      this.flushable = flushable;
-    }
-
-    @Override
-    protected void done() throws IOException {
-      flushable.flush();
-    }
-  }
-
-  /**
-   * Request output stream
-   */
-  public static class RequestOutputStream extends BufferedOutputStream {
-
-    private final CharsetEncoder encoder;
-
-    /**
-     * Create request output stream
-     *
-     * @param stream
-     * @param charset
-     * @param bufferSize
-     */
-    public RequestOutputStream(final OutputStream stream, final String charset,
-        final int bufferSize) {
-      super(stream, bufferSize);
-
-      encoder = Charset.forName(getValidCharset(charset)).newEncoder();
-    }
-
-    /**
-     * Write string to stream
-     *
-     * @param value
-     * @return this stream
-     * @throws IOException
-     */
-    public RequestOutputStream write(final String value) throws IOException {
-      final ByteBuffer bytes = encoder.encode(CharBuffer.wrap(value));
-
-      super.write(bytes.array(), 0, bytes.limit());
-
-      return this;
-    }
   }
 
   /**
@@ -689,8 +298,9 @@ public class HttpRequest {
 
     String host = parsed.getHost();
     int port = parsed.getPort();
-    if (port != -1)
-      host = host + ':' + Integer.toString(port);
+	  if (port != -1) {
+		  host = host + ':' + Integer.toString(port);
+	  }
 
     try {
       return new URI(parsed.getProtocol(), host, parsed.getPath(),
@@ -701,6 +311,31 @@ public class HttpRequest {
       throw new HttpRequestException(io);
     }
   }
+
+	/**
+	 * HTTP request exception whose cause is always an {@link IOException}
+	 */
+	public static class HttpRequestException extends RuntimeException {
+
+		private static final long serialVersionUID = -1170466989781746231L;
+
+		/**
+		 * @param cause
+		 */
+		protected HttpRequestException(final IOException cause) {
+			super(cause);
+		}
+
+		/**
+		 * Get {@link IOException} that triggered this request exception
+		 *
+		 * @return {@link IOException} cause
+		 */
+		@Override
+		public IOException getCause() {
+			return (IOException) super.getCause();
+		}
+	}
 
   /**
    * Append given map as query parameters to the base URL
@@ -714,8 +349,9 @@ public class HttpRequest {
    */
   public static String append(final CharSequence url, final Map<?, ?> params) {
     final String baseUrl = url.toString();
-    if (params == null || params.isEmpty())
-      return baseUrl;
+	  if (params == null || params.isEmpty()) {
+	    return baseUrl;
+    }
 
     final StringBuilder result = new StringBuilder(baseUrl);
 
@@ -728,18 +364,20 @@ public class HttpRequest {
     entry = (Entry<?, ?>) iterator.next();
     result.append(entry.getKey().toString());
     result.append('=');
-    value = entry.getValue();
-    if (value != null)
-      result.append(value);
+	  value = entry.getValue();
+	  if (value != null) {
+		  result.append(value);
+    }
 
     while (iterator.hasNext()) {
       result.append('&');
       entry = (Entry<?, ?>) iterator.next();
       result.append(entry.getKey().toString());
       result.append('=');
-      value = entry.getValue();
-      if (value != null)
-        result.append(value);
+	    value = entry.getValue();
+	    if (value != null) {
+		    result.append(value);
+      }
     }
 
     return result.toString();
@@ -758,12 +396,14 @@ public class HttpRequest {
    */
   public static String append(final CharSequence url, final String... params) {
     final String baseUrl = url.toString();
-    if (params == null || params.length == 0)
-      return baseUrl;
+	  if (params == null || params.length == 0) {
+		  return baseUrl;
+	  }
 
-    if (params.length % 2 != 0)
-      throw new IllegalArgumentException(
-          "Must specify an even number of parameter names/values");
+	  if (params.length % 2 != 0) {
+		  throw new IllegalArgumentException(
+				  "Must specify an even number of parameter names/values");
+    }
 
     final StringBuilder result = new StringBuilder(baseUrl);
 
@@ -773,21 +413,158 @@ public class HttpRequest {
     Object value;
     result.append(params[0]);
     result.append('=');
-    value = params[1];
-    if (value != null)
-      result.append(value);
+	  value = params[1];
+	  if (value != null) {
+		  result.append(value);
+    }
 
     for (int i = 2; i < params.length; i += 2) {
       result.append('&');
       result.append(params[i]);
       result.append('=');
-      value = params[i + 1];
-      if (value != null)
-        result.append(value);
+	    value = params[i + 1];
+	    if (value != null) {
+		    result.append(value);
+      }
     }
 
     return result.toString();
   }
+
+	/**
+	 * Class that and ensures a {@link Flushable} gets flushed with proper
+	 * exception handling.
+	 *
+	 * @param <V>
+	 */
+	protected static abstract class FlushOperation<V> extends Operation<V> {
+
+		private final Flushable flushable;
+
+		/**
+		 * Create flush operation
+		 *
+		 * @param flushable
+		 */
+		protected FlushOperation(final Flushable flushable) {
+			this.flushable = flushable;
+		}
+
+		@Override
+		protected void done() throws IOException {
+			flushable.flush();
+		}
+	}
+
+	/**
+	 * Request output stream
+	 */
+	public static class RequestOutputStream extends BufferedOutputStream {
+
+		private final CharsetEncoder encoder;
+
+		/**
+		 * Create request output stream
+		 *
+		 * @param stream
+		 * @param charset
+		 * @param bufferSize
+		 */
+		public RequestOutputStream(final OutputStream stream, final String charset,
+		                           final int bufferSize) {
+			super(stream, bufferSize);
+
+			encoder = Charset.forName(getValidCharset(charset)).newEncoder();
+		}
+
+		/**
+		 * Write string to stream
+		 *
+		 * @param value
+		 * @return this stream
+		 * @throws IOException
+		 */
+		public RequestOutputStream write(final String value) throws IOException {
+			final ByteBuffer bytes = encoder.encode(CharBuffer.wrap(value));
+
+			super.write(bytes.array(), 0, bytes.limit());
+
+			return this;
+		}
+	}
+
+	/**
+	 * Set the 'http.nonProxyHosts' property to the given host values.
+	 * <p>
+	 * Hosts will be separated by a '|' character.
+	 * <p>
+	 * This setting will apply to requests.
+	 *
+	 * @param hosts
+	 */
+	public static void nonProxyHosts(final String... hosts) {
+		if (hosts != null && hosts.length > 0) {
+			StringBuilder separated = new StringBuilder();
+			int last = hosts.length - 1;
+			for (int i = 0; i < last; i++) {
+				separated.append(hosts[i]).append('|');
+			}
+			separated.append(hosts[last]);
+			setProperty("http.nonProxyHosts", separated.toString());
+		} else {
+			setProperty("http.nonProxyHosts", null);
+		}
+	}
+
+	/**
+	 * Set property to given value.
+	 * <p>
+	 * Specifying a null value will cause the property to be cleared
+	 *
+	 * @param name
+	 * @param value
+	 * @return previous value
+	 */
+	private static final String setProperty(final String name, final String value) {
+		final PrivilegedAction<String> action;
+		if (value != null) {
+			action = new PrivilegedAction<String>() {
+
+				@Override
+				public String run() {
+					return System.setProperty(name, value);
+				}
+			};
+		} else {
+			action = new PrivilegedAction<String>() {
+
+				@Override
+				public String run() {
+					return System.clearProperty(name);
+				}
+			};
+		}
+		return AccessController.doPrivileged(action);
+	}
+
+	/**
+	 * Set the size used when buffering and copying between streams
+	 * <p>
+	 * This size is also used for send and receive buffers created for both char
+	 * and byte arrays
+	 * <p>
+	 * The default buffer size is 8,192 bytes
+	 *
+	 * @param size
+	 * @return this request
+	 */
+	public HttpRequest bufferSize(final int size) {
+		if (size < 1) {
+			throw new IllegalArgumentException("Size must be greater than zero");
+		}
+		bufferSize = size;
+		return this;
+	}
 
   /**
    * Start a 'GET' request to the given URL
@@ -1188,58 +965,59 @@ public class HttpRequest {
    * @param port
    */
   public static void proxyPort(final int port) {
-    final String portValue = Integer.toString(port);
-    setProperty("http.proxyPort", portValue);
-    setProperty("https.proxyPort", portValue);
+	  final String portValue = Integer.toString(port);
+	  setProperty("http.proxyPort", portValue);
+	  setProperty("https.proxyPort", portValue);
   }
 
-  /**
-   * Set the 'http.nonProxyHosts' property to the given host values.
-   * <p>
-   * Hosts will be separated by a '|' character.
-   * <p>
-   * This setting will apply to requests.
-   *
-   * @param hosts
-   */
-  public static void nonProxyHosts(final String... hosts) {
-    if (hosts != null && hosts.length > 0) {
-      StringBuilder separated = new StringBuilder();
-      int last = hosts.length - 1;
-      for (int i = 0; i < last; i++)
-        separated.append(hosts[i]).append('|');
-      separated.append(hosts[last]);
-      setProperty("http.nonProxyHosts", separated.toString());
-    } else
-      setProperty("http.nonProxyHosts", null);
-  }
+	/**
+	 * Create byte array output stream
+	 *
+	 * @return stream
+	 */
+	protected ByteArrayOutputStream byteStream() {
+		final int size = contentLength();
+		if (size > 0) {
+			return new ByteArrayOutputStream(size);
+		} else {
+			return new ByteArrayOutputStream();
+		}
+	}
 
-  /**
-   * Set property to given value.
-   * <p>
-   * Specifying a null value will cause the property to be cleared
-   *
-   * @param name
-   * @param value
-   * @return previous value
-   */
-  private static final String setProperty(final String name, final String value) {
-    final PrivilegedAction<String> action;
-    if (value != null)
-      action = new PrivilegedAction<String>() {
+	/**
+	 * Get stream to response body
+	 *
+	 * @return stream
+	 * @throws HttpRequestException
+	 */
+	public InputStream stream() throws HttpRequestException {
+		InputStream stream;
+		if (code() < HTTP_BAD_REQUEST) {
+			try {
+				stream = connection.getInputStream();
+			} catch (IOException e) {
+				throw new HttpRequestException(e);
+			}
+		} else {
+			stream = connection.getErrorStream();
+			if (stream == null) {
+				try {
+					stream = connection.getInputStream();
+				} catch (IOException e) {
+					throw new HttpRequestException(e);
+				}
+			}
+		}
 
-        public String run() {
-          return System.setProperty(name, value);
-        }
-      };
-    else
-      action = new PrivilegedAction<String>() {
-
-        public String run() {
-          return System.clearProperty(name);
-        }
-      };
-    return AccessController.doPrivileged(action);
+		if (!uncompress || !ENCODING_GZIP.equals(contentEncoding())) {
+			return stream;
+    } else {
+	    try {
+	      return new GZIPInputStream(stream);
+	    } catch (IOException e) {
+	      throw new HttpRequestException(e);
+	    }
+    }
   }
 
   private final HttpURLConnection connection;
@@ -1449,25 +1227,23 @@ public class HttpRequest {
    * @return this request
    */
   public HttpRequest chunk(final int size) {
-    connection.setChunkedStreamingMode(size);
+	  connection.setChunkedStreamingMode(size);
     return this;
   }
 
   /**
-   * Set the size used when buffering and copying between streams
-   * <p>
-   * This size is also used for send and receive buffers created for both char
-   * and byte arrays
-   * <p>
-   * The default buffer size is 8,192 bytes
+   * Set all headers found in given map where the keys are the header names and
+   * the values are the header values
    *
-   * @param size
+   * @param headers
    * @return this request
    */
-  public HttpRequest bufferSize(final int size) {
-    if (size < 1)
-      throw new IllegalArgumentException("Size must be greater than zero");
-    bufferSize = size;
+  public HttpRequest headers(final Map<String, String> headers) {
+    if (!headers.isEmpty()) {
+	    for (Entry<String, String> header : headers.entrySet()) {
+		    header(header);
+	    }
+    }
     return this;
   }
 
@@ -1501,21 +1277,28 @@ public class HttpRequest {
    * @return this request
    */
   public HttpRequest uncompress(final boolean uncompress) {
-    this.uncompress = uncompress;
-    return this;
+	  this.uncompress = uncompress;
+	  return this;
   }
 
-  /**
-   * Create byte array output stream
-   *
-   * @return stream
-   */
-  protected ByteArrayOutputStream byteStream() {
-    final int size = contentLength();
-    if (size > 0)
-      return new ByteArrayOutputStream(size);
-    else
-      return new ByteArrayOutputStream();
+	/**
+	 * Get all values of the given header from the response
+	 *
+	 * @param name
+	 * @return non-null but possibly empty array of {@link String} header values
+	 */
+	public String[] headers(final String name) {
+		final Map<String, List<String>> headers = headers();
+		if (headers == null || headers.isEmpty()) {
+			return EMPTY_STRINGS;
+		}
+
+		final List<String> values = headers.get(name);
+    if (values != null && !values.isEmpty()) {
+	    return values.toArray(new String[values.size()]);
+    } else {
+	    return EMPTY_STRINGS;
+    }
   }
 
   /**
@@ -1583,41 +1366,58 @@ public class HttpRequest {
    * @throws HttpRequestException
    */
   public BufferedInputStream buffer() throws HttpRequestException {
-    return new BufferedInputStream(stream(), bufferSize);
+	  return new BufferedInputStream(stream(), bufferSize);
   }
 
-  /**
-   * Get stream to response body
-   *
-   * @return stream
-   * @throws HttpRequestException
-   */
-  public InputStream stream() throws HttpRequestException {
-    InputStream stream;
-    if (code() < HTTP_BAD_REQUEST)
-      try {
-        stream = connection.getInputStream();
-      } catch (IOException e) {
-        throw new HttpRequestException(e);
-      }
-    else {
-      stream = connection.getErrorStream();
-      if (stream == null)
-        try {
-          stream = connection.getInputStream();
-        } catch (IOException e) {
-          throw new HttpRequestException(e);
+	/**
+	 * Get parameter values from header value
+	 *
+	 * @param header
+	 * @return parameter value or null if none
+	 */
+	protected Map<String, String> getParams(final String header) {
+		if (header == null || header.length() == 0) {
+			return Collections.emptyMap();
+		}
+
+		final int headerLength = header.length();
+		int start = header.indexOf(';') + 1;
+		if (start == 0 || start == headerLength) {
+			return Collections.emptyMap();
+		}
+
+		int end = header.indexOf(';', start);
+		if (end == -1) {
+			end = headerLength;
+		}
+
+		Map<String, String> params = new LinkedHashMap<String, String>();
+		while (start < end) {
+			int nameEnd = header.indexOf('=', start);
+			if (nameEnd != -1 && nameEnd < end) {
+				String name = header.substring(start, nameEnd).trim();
+				if (name.length() > 0) {
+					String value = header.substring(nameEnd + 1, end).trim();
+					int length = value.length();
+					if (length != 0) {
+						if (length > 2 && '"' == value.charAt(0)
+								&& '"' == value.charAt(length - 1)) {
+							params.put(name, value.substring(1, length - 1));
+						} else {
+							params.put(name, value);
+	          }
+          }
         }
+      }
+
+      start = end + 1;
+      end = header.indexOf(';', start);
+      if (end == -1) {
+	      end = headerLength;
+      }
     }
 
-    if (!uncompress || !ENCODING_GZIP.equals(contentEncoding()))
-      return stream;
-    else
-      try {
-        return new GZIPInputStream(stream);
-      } catch (IOException e) {
-        throw new HttpRequestException(e);
-      }
+    return params;
   }
 
   /**
@@ -1814,21 +1614,56 @@ public class HttpRequest {
    * @return this request
    */
   public HttpRequest header(final String name, final Number value) {
-    return header(name, value != null ? value.toString() : null);
+	  return header(name, value != null ? value.toString() : null);
   }
 
-  /**
-   * Set all headers found in given map where the keys are the header names and
-   * the values are the header values
-   *
-   * @param headers
-   * @return this request
-   */
-  public HttpRequest headers(final Map<String, String> headers) {
-    if (!headers.isEmpty())
-      for (Entry<String, String> header : headers.entrySet())
-        header(header);
-    return this;
+	/**
+	 * Get parameter value from header value
+	 *
+	 * @param value
+	 * @param paramName
+	 * @return parameter value or null if none
+	 */
+	protected String getParam(final String value, final String paramName) {
+		if (value == null || value.length() == 0) {
+			return null;
+		}
+
+		final int length = value.length();
+		int start = value.indexOf(';') + 1;
+		if (start == 0 || start == length) {
+			return null;
+		}
+
+		int end = value.indexOf(';', start);
+		if (end == -1) {
+			end = length;
+		}
+
+		while (start < end) {
+			int nameEnd = value.indexOf('=', start);
+			if (nameEnd != -1 && nameEnd < end
+					&& paramName.equals(value.substring(start, nameEnd).trim())) {
+				String paramValue = value.substring(nameEnd + 1, end).trim();
+				int valueLength = paramValue.length();
+				if (valueLength != 0) {
+					if (valueLength > 2 && '"' == paramValue.charAt(0)
+							&& '"' == paramValue.charAt(valueLength - 1)) {
+						return paramValue.substring(1, valueLength - 1);
+					} else {
+						return paramValue;
+	        }
+        }
+      }
+
+      start = end + 1;
+      end = value.indexOf(';', start);
+      if (end == -1) {
+	      end = length;
+      }
+    }
+
+    return null;
   }
 
   /**
@@ -1914,27 +1749,25 @@ public class HttpRequest {
    * @throws HttpRequestException
    */
   public int intHeader(final String name, final int defaultValue)
-      throws HttpRequestException {
-    closeOutputQuietly();
-    return connection.getHeaderFieldInt(name, defaultValue);
+		  throws HttpRequestException {
+	  closeOutputQuietly();
+	  return connection.getHeaderFieldInt(name, defaultValue);
   }
 
-  /**
-   * Get all values of the given header from the response
-   *
-   * @param name
-   * @return non-null but possibly empty array of {@link String} header values
-   */
-  public String[] headers(final String name) {
-    final Map<String, List<String>> headers = headers();
-    if (headers == null || headers.isEmpty())
-      return EMPTY_STRINGS;
-
-    final List<String> values = headers.get(name);
-    if (values != null && !values.isEmpty())
-      return values.toArray(new String[values.size()]);
-    else
-      return EMPTY_STRINGS;
+	/**
+	 * Set the 'Content-Type' request header to the given value and charset
+	 *
+	 * @param value
+	 * @param charset
+	 * @return this request
+	 */
+	public HttpRequest contentType(final String value, final String charset) {
+		if (charset != null) {
+      final String separator = "; " + PARAM_CHARSET + '=';
+      return header(HEADER_CONTENT_TYPE, value + separator + charset);
+    } else {
+	    return header(HEADER_CONTENT_TYPE, value);
+    }
   }
 
   /**
@@ -1958,95 +1791,55 @@ public class HttpRequest {
    * @return non-null but possibly empty map of parameter headers
    */
   public Map<String, String> parameters(final String headerName) {
-    return getParams(header(headerName));
+	  return getParams(header(headerName));
   }
 
-  /**
-   * Get parameter values from header value
-   *
-   * @param header
-   * @return parameter value or null if none
-   */
-  protected Map<String, String> getParams(final String header) {
-    if (header == null || header.length() == 0)
-      return Collections.emptyMap();
+	/**
+	 * Copy from input stream to output stream
+	 *
+	 * @param input
+	 * @param output
+	 * @return this request
+	 * @throws IOException
+	 */
+	protected HttpRequest copy(final InputStream input, final OutputStream output)
+			throws IOException {
+		return new CloseOperation<HttpRequest>(input, ignoreCloseExceptions) {
 
-    final int headerLength = header.length();
-    int start = header.indexOf(';') + 1;
-    if (start == 0 || start == headerLength)
-      return Collections.emptyMap();
+			@Override
+			public HttpRequest run() throws IOException {
+				final byte[] buffer = new byte[bufferSize];
+				int read;
+				while ((read = input.read(buffer)) != -1) {
+					output.write(buffer, 0, read);
+				}
+				return HttpRequest.this;
+			}
+		}.call();
+	}
 
-    int end = header.indexOf(';', start);
-    if (end == -1)
-      end = headerLength;
+	/**
+	 * Copy from reader to writer
+	 *
+	 * @param input
+	 * @param output
+	 * @return this request
+	 * @throws IOException
+	 */
+	protected HttpRequest copy(final Reader input, final Writer output)
+			throws IOException {
+		return new CloseOperation<HttpRequest>(input, ignoreCloseExceptions) {
 
-    Map<String, String> params = new LinkedHashMap<String, String>();
-    while (start < end) {
-      int nameEnd = header.indexOf('=', start);
-      if (nameEnd != -1 && nameEnd < end) {
-        String name = header.substring(start, nameEnd).trim();
-        if (name.length() > 0) {
-          String value = header.substring(nameEnd + 1, end).trim();
-          int length = value.length();
-          if (length != 0)
-            if (length > 2 && '"' == value.charAt(0)
-                && '"' == value.charAt(length - 1))
-              params.put(name, value.substring(1, length - 1));
-            else
-              params.put(name, value);
+			@Override
+			public HttpRequest run() throws IOException {
+        final char[] buffer = new char[bufferSize];
+        int read;
+        while ((read = input.read(buffer)) != -1) {
+	        output.write(buffer, 0, read);
         }
+        return HttpRequest.this;
       }
-
-      start = end + 1;
-      end = header.indexOf(';', start);
-      if (end == -1)
-        end = headerLength;
-    }
-
-    return params;
-  }
-
-  /**
-   * Get parameter value from header value
-   *
-   * @param value
-   * @param paramName
-   * @return parameter value or null if none
-   */
-  protected String getParam(final String value, final String paramName) {
-    if (value == null || value.length() == 0)
-      return null;
-
-    final int length = value.length();
-    int start = value.indexOf(';') + 1;
-    if (start == 0 || start == length)
-      return null;
-
-    int end = value.indexOf(';', start);
-    if (end == -1)
-      end = length;
-
-    while (start < end) {
-      int nameEnd = value.indexOf('=', start);
-      if (nameEnd != -1 && nameEnd < end
-          && paramName.equals(value.substring(start, nameEnd).trim())) {
-        String paramValue = value.substring(nameEnd + 1, end).trim();
-        int valueLength = paramValue.length();
-        if (valueLength != 0)
-          if (valueLength > 2 && '"' == paramValue.charAt(0)
-              && '"' == paramValue.charAt(valueLength - 1))
-            return paramValue.substring(1, valueLength - 1);
-          else
-            return paramValue;
-      }
-
-      start = end + 1;
-      end = value.indexOf(';', start);
-      if (end == -1)
-        end = length;
-    }
-
-    return null;
+    }.call();
   }
 
   /**
@@ -2224,29 +2017,41 @@ public class HttpRequest {
     return header(HEADER_IF_NONE_MATCH, value);
   }
 
-  /**
+	/**
    * Set the 'Content-Type' request header to the given value
-   *
-   * @param value
-   * @return this request
-   */
-  public HttpRequest contentType(final String value) {
-    return contentType(value, null);
-  }
+	 *
+	 * @param value
+	 * @return this request
+	 */
+	public HttpRequest contentType(final String value) {
+		return contentType(value, null);
+	}
 
-  /**
-   * Set the 'Content-Type' request header to the given value and charset
-   *
-   * @param value
-   * @param charset
-   * @return this request
-   */
-  public HttpRequest contentType(final String value, final String charset) {
-    if (charset != null) {
-      final String separator = "; " + PARAM_CHARSET + '=';
-      return header(HEADER_CONTENT_TYPE, value + separator + charset);
-    } else
-      return header(HEADER_CONTENT_TYPE, value);
+	/**
+	 * Close output stream
+	 *
+	 * @return this request
+	 * @throws HttpRequestException
+	 * @throws IOException
+	 */
+	protected HttpRequest closeOutput() throws IOException {
+		if (output == null) {
+			return this;
+		}
+		if (multipart) {
+			output.write("\r\n--" + BOUNDARY + "--\r\n");
+    }
+    if (ignoreCloseExceptions) {
+	    try {
+	      output.close();
+	    } catch (IOException ignored) {
+	      // Ignored
+	    }
+    } else {
+	    output.close();
+    }
+    output = null;
+    return this;
   }
 
   /**
@@ -2308,99 +2113,15 @@ public class HttpRequest {
   }
 
   /**
-   * Copy from input stream to output stream
-   *
-   * @param input
-   * @param output
-   * @return this request
-   * @throws IOException
-   */
-  protected HttpRequest copy(final InputStream input, final OutputStream output)
-      throws IOException {
-    return new CloseOperation<HttpRequest>(input, ignoreCloseExceptions) {
-
-      @Override
-      public HttpRequest run() throws IOException {
-        final byte[] buffer = new byte[bufferSize];
-        int read;
-        while ((read = input.read(buffer)) != -1)
-          output.write(buffer, 0, read);
-        return HttpRequest.this;
-      }
-    }.call();
-  }
-
-  /**
-   * Copy from reader to writer
-   *
-   * @param input
-   * @param output
-   * @return this request
-   * @throws IOException
-   */
-  protected HttpRequest copy(final Reader input, final Writer output)
-      throws IOException {
-    return new CloseOperation<HttpRequest>(input, ignoreCloseExceptions) {
-
-      @Override
-      public HttpRequest run() throws IOException {
-        final char[] buffer = new char[bufferSize];
-        int read;
-        while ((read = input.read(buffer)) != -1)
-          output.write(buffer, 0, read);
-        return HttpRequest.this;
-      }
-    }.call();
-  }
-
-  /**
-   * Close output stream
-   *
-   * @return this request
-   * @throws HttpRequestException
-   * @throws IOException
-   */
-  protected HttpRequest closeOutput() throws IOException {
-    if (output == null)
-      return this;
-    if (multipart)
-      output.write("\r\n--" + BOUNDARY + "--\r\n");
-    if (ignoreCloseExceptions)
-      try {
-        output.close();
-      } catch (IOException ignored) {
-        // Ignored
-      }
-    else
-      output.close();
-    output = null;
-    return this;
-  }
-
-  /**
-   * Call {@link #closeOutput()} and re-throw a caught {@link IOException}s as
-   * an {@link HttpRequestException}
-   *
-   * @return this request
-   * @throws HttpRequestException
-   */
-  protected HttpRequest closeOutputQuietly() throws HttpRequestException {
-    try {
-      return closeOutput();
-    } catch (IOException e) {
-      throw new HttpRequestException(e);
-    }
-  }
-
-  /**
    * Open output stream
    *
    * @return this request
    * @throws IOException
    */
   protected HttpRequest openOutput() throws IOException {
-    if (output != null)
-      return this;
+    if (output != null) {
+	    return this;
+    }
     connection.setDoOutput(true);
     final String charset = getParam(
         connection.getRequestProperty(HEADER_CONTENT_TYPE), PARAM_CHARSET);
@@ -2420,8 +2141,9 @@ public class HttpRequest {
       multipart = true;
       contentType(CONTENT_TYPE_MULTIPART).openOutput();
       output.write("--" + BOUNDARY + "\r\n");
-    } else
-      output.write("\r\n--" + BOUNDARY + "\r\n");
+    } else {
+	    output.write("\r\n--" + BOUNDARY + "\r\n");
+    }
     return this;
   }
 
@@ -2436,12 +2158,97 @@ public class HttpRequest {
   protected HttpRequest writePartHeader(final String name, final String filename)
       throws IOException {
     final StringBuilder partBuffer = new StringBuilder();
-    partBuffer.append("form-data; name=\"").append(name);
-    if (filename != null)
-      partBuffer.append("\"; filename=\"").append(filename);
-    partBuffer.append('"');
-    return partHeader("Content-Disposition", partBuffer.toString());
+	  partBuffer.append("form-data; name=\"").append(name);
+	  if (filename != null) {
+		  partBuffer.append("\"; filename=\"").append(filename);
+	  }
+	  partBuffer.append('"');
+	  return partHeader("Content-Disposition", partBuffer.toString());
   }
+
+	/**
+	 * Call {@link #closeOutput()} and re-throw a caught {@link IOException}s as
+	 * an {@link HttpRequestException}
+	 *
+	 * @return this request
+	 * @throws HttpRequestException
+	 */
+	protected HttpRequest closeOutputQuietly() throws HttpRequestException {
+		try {
+			return closeOutput();
+		} catch (IOException e) {
+			throw new HttpRequestException(e);
+		}
+	}
+
+	/**
+	 * Write the name/value pair as form data to the request body
+	 * <p>
+	 * The values specified will be URL-encoded and sent with the
+	 * 'application/x-www-form-urlencoded' content-type
+	 *
+	 * @param name
+	 * @param value
+	 * @param charset
+	 * @return this request
+	 * @throws HttpRequestException
+	 */
+	public HttpRequest form(final Object name, final Object value,
+	                        final String charset) throws HttpRequestException {
+		final boolean first = !form;
+		if (first) {
+			contentType(CONTENT_TYPE_FORM, charset);
+			form = true;
+		}
+		try {
+			openOutput();
+			if (!first) {
+				output.write('&');
+			}
+			output.write(URLEncoder.encode(name.toString(), charset));
+			output.write('=');
+			if (value != null) {
+				output.write(URLEncoder.encode(value.toString(), charset));
+			}
+		} catch (IOException e) {
+			throw new HttpRequestException(e);
+		}
+		return this;
+	}
+
+	/**
+	 * Write the values in the map as encoded form data to the request body
+	 *
+	 * @param values
+	 * @param charset
+	 * @return this request
+	 * @throws HttpRequestException
+	 */
+	public HttpRequest form(final Map<?, ?> values, final String charset)
+			throws HttpRequestException {
+		if (!values.isEmpty()) {
+			for (Entry<?, ?> entry : values.entrySet()) {
+				form(entry, charset);
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * Configure HTTPS connection to trust all certificates
+	 * <p>
+	 * This method does nothing if the current request is not a HTTPS request
+	 *
+	 * @return this request
+	 * @throws HttpRequestException
+	 */
+	public HttpRequest trustAllCerts() throws HttpRequestException {
+		if (connection instanceof HttpsURLConnection) {
+			((HttpsURLConnection) connection)
+					.setSSLSocketFactory(getTrustedFactory());
+		}
+		return this;
+	}
 
   /**
    * Write part of a multipart request to the request body
@@ -2751,70 +2558,6 @@ public class HttpRequest {
   }
 
   /**
-   * Write the name/value pair as form data to the request body
-   * <p>
-   * The values specified will be URL-encoded and sent with the
-   * 'application/x-www-form-urlencoded' content-type
-   *
-   * @param name
-   * @param value
-   * @param charset
-   * @return this request
-   * @throws HttpRequestException
-   */
-  public HttpRequest form(final Object name, final Object value,
-      final String charset) throws HttpRequestException {
-    final boolean first = !form;
-    if (first) {
-      contentType(CONTENT_TYPE_FORM, charset);
-      form = true;
-    }
-    try {
-      openOutput();
-      if (!first)
-        output.write('&');
-      output.write(URLEncoder.encode(name.toString(), charset));
-      output.write('=');
-      if (value != null)
-        output.write(URLEncoder.encode(value.toString(), charset));
-    } catch (IOException e) {
-      throw new HttpRequestException(e);
-    }
-    return this;
-  }
-
-  /**
-   * Write the values in the map as encoded form data to the request body
-   *
-   * @param values
-   * @param charset
-   * @return this request
-   * @throws HttpRequestException
-   */
-  public HttpRequest form(final Map<?, ?> values, final String charset)
-      throws HttpRequestException {
-    if (!values.isEmpty())
-      for (Entry<?, ?> entry : values.entrySet())
-        form(entry, charset);
-    return this;
-  }
-
-  /**
-   * Configure HTTPS connection to trust all certificates
-   * <p>
-   * This method does nothing if the current request is not a HTTPS request
-   *
-   * @return this request
-   * @throws HttpRequestException
-   */
-  public HttpRequest trustAllCerts() throws HttpRequestException {
-    if (connection instanceof HttpsURLConnection)
-      ((HttpsURLConnection) connection)
-          .setSSLSocketFactory(getTrustedFactory());
-    return this;
-  }
-
-  /**
    * Configure HTTPS connection to trust all hosts using a custom
    * {@link HostnameVerifier} that always returns <code>true</code> for each
    * host verified
@@ -2824,10 +2567,322 @@ public class HttpRequest {
    * @return this request
    */
   public HttpRequest trustAllHosts() {
-    if (connection instanceof HttpsURLConnection)
-      ((HttpsURLConnection) connection)
-          .setHostnameVerifier(getTrustedVerifier());
-    return this;
+	  if (connection instanceof HttpsURLConnection) {
+		  ((HttpsURLConnection) connection)
+				  .setHostnameVerifier(getTrustedVerifier());
+	  }
+	  return this;
   }
+
+	/**
+	 * <p>
+	 * Encodes and decodes to and from Base64 notation.
+	 * </p>
+	 * <p>
+	 * I am placing this code in the Public Domain. Do with it as you will. This
+	 * software comes with no guarantees or warranties but with plenty of
+	 * well-wishing instead! Please visit <a
+	 * href="http://iharder.net/base64">http://iharder.net/base64</a> periodically
+	 * to check for updates or to contribute improvements.
+	 * </p>
+	 *
+	 * @author Robert Harder
+	 * @author rob@iharder.net
+	 * @version 2.3.7
+	 */
+	public static class Base64 {
+
+		/**
+		 * The equals sign (=) as a byte.
+		 */
+		private final static byte EQUALS_SIGN = (byte) '=';
+
+		/**
+		 * Preferred encoding.
+		 */
+		private final static String PREFERRED_ENCODING = "US-ASCII";
+
+		/**
+		 * The 64 valid Base64 values.
+		 */
+		private final static byte[] STANDARD_ALPHABET = {(byte) 'A', (byte) 'B',
+				(byte) 'C', (byte) 'D', (byte) 'E', (byte) 'F', (byte) 'G', (byte) 'H',
+				(byte) 'I', (byte) 'J', (byte) 'K', (byte) 'L', (byte) 'M', (byte) 'N',
+				(byte) 'O', (byte) 'P', (byte) 'Q', (byte) 'R', (byte) 'S', (byte) 'T',
+				(byte) 'U', (byte) 'V', (byte) 'W', (byte) 'X', (byte) 'Y', (byte) 'Z',
+				(byte) 'a', (byte) 'b', (byte) 'c', (byte) 'd', (byte) 'e', (byte) 'f',
+				(byte) 'g', (byte) 'h', (byte) 'i', (byte) 'j', (byte) 'k', (byte) 'l',
+				(byte) 'm', (byte) 'n', (byte) 'o', (byte) 'p', (byte) 'q', (byte) 'r',
+				(byte) 's', (byte) 't', (byte) 'u', (byte) 'v', (byte) 'w', (byte) 'x',
+				(byte) 'y', (byte) 'z', (byte) '0', (byte) '1', (byte) '2', (byte) '3',
+				(byte) '4', (byte) '5', (byte) '6', (byte) '7', (byte) '8', (byte) '9',
+				(byte) '+', (byte) '/'};
+
+		/**
+		 * Defeats instantiation.
+		 */
+		private Base64() {
+		}
+
+		/**
+		 * <p>
+		 * Encodes up to three bytes of the array <var>source</var> and writes the
+		 * resulting four Base64 bytes to <var>destination</var>. The source and
+		 * destination arrays can be manipulated anywhere along their length by
+		 * specifying <var>srcOffset</var> and <var>destOffset</var>. This method
+		 * does not check to make sure your arrays are large enough to accomodate
+		 * <var>srcOffset</var> + 3 for the <var>source</var> array or
+		 * <var>destOffset</var> + 4 for the <var>destination</var> array. The
+		 * actual number of significant bytes in your array is given by
+		 * <var>numSigBytes</var>.
+		 * </p>
+		 * <p>
+		 * This is the lowest level of the encoding methods with all possible
+		 * parameters.
+		 * </p>
+		 *
+		 * @param source      the array to convert
+		 * @param srcOffset   the index where conversion begins
+		 * @param numSigBytes the number of significant bytes in your array
+		 * @param destination the array to hold the conversion
+		 * @param destOffset  the index where output will be put
+		 * @return the <var>destination</var> array
+		 * @since 1.3
+		 */
+		private static byte[] encode3to4(byte[] source, int srcOffset,
+		                                 int numSigBytes, byte[] destination, int destOffset) {
+
+			byte[] alphabet = STANDARD_ALPHABET;
+
+			int inBuff = (numSigBytes > 0 ? ((source[srcOffset] << 24) >>> 8) : 0)
+					| (numSigBytes > 1 ? ((source[srcOffset + 1] << 24) >>> 16) : 0)
+					| (numSigBytes > 2 ? ((source[srcOffset + 2] << 24) >>> 24) : 0);
+
+			switch (numSigBytes) {
+				case 3:
+					destination[destOffset] = alphabet[(inBuff >>> 18)];
+					destination[destOffset + 1] = alphabet[(inBuff >>> 12) & 0x3f];
+					destination[destOffset + 2] = alphabet[(inBuff >>> 6) & 0x3f];
+					destination[destOffset + 3] = alphabet[(inBuff) & 0x3f];
+					return destination;
+
+				case 2:
+					destination[destOffset] = alphabet[(inBuff >>> 18)];
+					destination[destOffset + 1] = alphabet[(inBuff >>> 12) & 0x3f];
+					destination[destOffset + 2] = alphabet[(inBuff >>> 6) & 0x3f];
+					destination[destOffset + 3] = EQUALS_SIGN;
+					return destination;
+
+				case 1:
+					destination[destOffset] = alphabet[(inBuff >>> 18)];
+					destination[destOffset + 1] = alphabet[(inBuff >>> 12) & 0x3f];
+					destination[destOffset + 2] = EQUALS_SIGN;
+					destination[destOffset + 3] = EQUALS_SIGN;
+					return destination;
+
+				default:
+					return destination;
+			}
+		}
+
+		/**
+		 * Encode string as a byte array in Base64 annotation.
+		 *
+		 * @param string
+		 * @return The Base64-encoded data as a string
+		 */
+		public static String encode(String string) {
+			byte[] bytes;
+			try {
+				bytes = string.getBytes(PREFERRED_ENCODING);
+			} catch (UnsupportedEncodingException e) {
+				bytes = string.getBytes();
+			}
+			return encodeBytes(bytes);
+		}
+
+		/**
+		 * Encodes a byte array into Base64 notation.
+		 *
+		 * @param source The data to convert
+		 * @return The Base64-encoded data as a String
+		 * @throws NullPointerException     if source array is null
+		 * @throws IllegalArgumentException if source array, offset, or length are invalid
+		 * @since 2.0
+		 */
+		public static String encodeBytes(byte[] source) {
+			return encodeBytes(source, 0, source.length);
+		}
+
+		/**
+		 * Encodes a byte array into Base64 notation.
+		 *
+		 * @param source The data to convert
+		 * @param off    Offset in array where conversion should begin
+		 * @param len    Length of data to convert
+		 * @return The Base64-encoded data as a String
+		 * @throws NullPointerException     if source array is null
+		 * @throws IllegalArgumentException if source array, offset, or length are invalid
+		 * @since 2.0
+		 */
+		public static String encodeBytes(byte[] source, int off, int len) {
+			byte[] encoded = encodeBytesToBytes(source, off, len);
+			try {
+				return new String(encoded, PREFERRED_ENCODING);
+			} catch (UnsupportedEncodingException uue) {
+				return new String(encoded);
+			}
+		}
+
+		/**
+		 * Similar to {@link #encodeBytes(byte[], int, int)} but returns a byte
+		 * array instead of instantiating a String. This is more efficient if you're
+		 * working with I/O streams and have large data sets to encode.
+		 *
+		 * @param source The data to convert
+		 * @param off    Offset in array where conversion should begin
+		 * @param len    Length of data to convert
+		 * @return The Base64-encoded data as a String if there is an error
+		 * @throws NullPointerException     if source array is null
+		 * @throws IllegalArgumentException if source array, offset, or length are invalid
+		 * @since 2.3.1
+		 */
+		public static byte[] encodeBytesToBytes(byte[] source, int off, int len) {
+
+			if (source == null) {
+				throw new NullPointerException("Cannot serialize a null array.");
+			}
+
+			if (off < 0) {
+				throw new IllegalArgumentException("Cannot have negative offset: "
+						+ off);
+			}
+
+			if (len < 0) {
+				throw new IllegalArgumentException("Cannot have length offset: " + len);
+			}
+
+			if (off + len > source.length) {
+				throw new IllegalArgumentException(
+						String
+								.format(
+										"Cannot have offset of %d and length of %d with array of length %d",
+										off, len, source.length));
+			}
+
+			// Bytes needed for actual encoding
+			int encLen = (len / 3) * 4 + (len % 3 > 0 ? 4 : 0);
+
+			byte[] outBuff = new byte[encLen];
+
+			int d = 0;
+			int e = 0;
+			int len2 = len - 2;
+			for (; d < len2; d += 3, e += 4) {
+				encode3to4(source, d + off, 3, outBuff, e);
+			}
+
+			if (d < len) {
+				encode3to4(source, d + off, len - d, outBuff, e);
+				e += 4;
+			}
+
+			if (e <= outBuff.length - 1) {
+				byte[] finalOut = new byte[e];
+				System.arraycopy(outBuff, 0, finalOut, 0, e);
+				return finalOut;
+			} else {
+				return outBuff;
+			}
+		}
+	}
+
+	/**
+	 * Operation that handles executing a callback once complete and handling
+	 * nested exceptions
+	 *
+	 * @param <V>
+	 */
+	protected static abstract class Operation<V> implements Callable<V> {
+
+		/**
+		 * Run operation
+		 *
+		 * @return result
+		 * @throws HttpRequestException
+		 * @throws IOException
+		 */
+		protected abstract V run() throws HttpRequestException, IOException;
+
+		/**
+		 * Operation complete callback
+		 *
+		 * @throws IOException
+		 */
+		protected abstract void done() throws IOException;
+
+		@Override
+		public V call() throws HttpRequestException {
+			boolean thrown = false;
+			try {
+				return run();
+			} catch (HttpRequestException e) {
+				thrown = true;
+				throw e;
+			} catch (IOException e) {
+				thrown = true;
+				throw new HttpRequestException(e);
+			} finally {
+				try {
+					done();
+				} catch (IOException e) {
+					if (!thrown) {
+						throw new HttpRequestException(e);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Class that ensures a {@link Closeable} gets closed with proper exception
+	 * handling.
+	 *
+	 * @param <V>
+	 */
+	protected static abstract class CloseOperation<V> extends Operation<V> {
+
+		private final Closeable closeable;
+
+		private final boolean ignoreCloseExceptions;
+
+		/**
+		 * Create closer for operation
+		 *
+		 * @param closeable
+		 * @param ignoreCloseExceptions
+		 */
+		protected CloseOperation(final Closeable closeable,
+		                         final boolean ignoreCloseExceptions) {
+			this.closeable = closeable;
+			this.ignoreCloseExceptions = ignoreCloseExceptions;
+		}
+
+		@Override
+		protected void done() throws IOException {
+			if (closeable instanceof Flushable) {
+				((Flushable) closeable).flush();
+			}
+			if (ignoreCloseExceptions) {
+				try {
+					closeable.close();
+				} catch (IOException e) {
+					// Ignored
+				}
+			} else {
+				closeable.close();
+			}
+		}
+	}
   
 }

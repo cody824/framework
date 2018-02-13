@@ -67,12 +67,15 @@ public class JsonFileUtil {
 			om.writeValue(os, obj);
 		} finally {
 			try {
-				if (lock != null)
+				if (lock != null) {
 					lock.release();
-				if (channel != null)
+				}
+				if (channel != null) {
 					channel.close();
-				if (os != null)
+				}
+				if (os != null) {
 					os.close();
+				}
 			} catch (IOException e) {
 			}
 		}
@@ -116,12 +119,15 @@ public class JsonFileUtil {
 			return null;
 		} finally {
 			try {
-				if (lock != null)
+				if (lock != null) {
 					lock.release();
-				if (channel != null)
+				}
+				if (channel != null) {
 					channel.close();
-				if (is != null)
+				}
+				if (is != null) {
 					is.close();
+				}
 			} catch (IOException e) {
 			}
 		}

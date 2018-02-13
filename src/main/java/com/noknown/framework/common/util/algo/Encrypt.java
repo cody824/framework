@@ -27,7 +27,7 @@ public class Encrypt {
 
 		byte[] bt = strSrc.getBytes();
 		try {
-			if (encType == null || encType.equals("")) {
+			if (encType == null || "".equals(encType)) {
 				encType = "MD5";
 			}
 			md = MessageDigest.getInstance(encType);
@@ -50,17 +50,5 @@ public class Encrypt {
 			des += tmp;
 		}
 		return des;
-	}
-	
-	@SuppressWarnings("static-access")
-	public static void main(String[] args) {
-		Encrypt te=new Encrypt();
-        String strSrc="123456";
-        System.out.println("Source String:"+strSrc);
-        System.out.println("Encrypted String:");
-        System.out.println("Use Def:"+te.hashEncrypt(strSrc,null));
-        System.out.println("Use MD5:"+te.hashEncrypt(strSrc,"MD5"));
-        System.out.println("Use SHA:"+te.hashEncrypt(strSrc,"SHA-1"));
-        System.out.println("Use SHA-256:"+te.hashEncrypt(strSrc,"SHA-256"));
 	}
 }

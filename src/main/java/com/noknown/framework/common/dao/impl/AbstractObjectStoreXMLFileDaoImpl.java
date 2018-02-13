@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ObjectStoreXMLFileDaoImpl implements ObjectStoreDao{
+public abstract class AbstractObjectStoreXMLFileDaoImpl implements ObjectStoreDao {
 	
 
 	private  final Logger logger = LoggerFactory.getLogger(getClass());

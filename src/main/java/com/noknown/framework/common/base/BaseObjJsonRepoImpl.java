@@ -1,6 +1,6 @@
 package com.noknown.framework.common.base;
 
-import com.noknown.framework.common.dao.impl.ObjectStoreJSONFileDaoImpl;
+import com.noknown.framework.common.dao.impl.AbstractObjectStoreJSONFileDaoImpl;
 import com.noknown.framework.common.exception.DAOException;
 import com.noknown.framework.common.util.BaseUtil;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +10,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BaseObjJsonRepoImpl<T extends  BaseObj> extends ObjectStoreJSONFileDaoImpl implements BaseObjRepo<T> {
+public class BaseObjJsonRepoImpl<T extends BaseObj> extends AbstractObjectStoreJSONFileDaoImpl implements BaseObjRepo<T> {
 
     protected Class<T> clazz;
 

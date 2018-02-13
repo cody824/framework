@@ -68,29 +68,36 @@ public class LoginViewController extends BaseController {
 		String redirectUri;// 验证回调uri
 
 		Properties loginConfig = gcs.getProperties("loginConfig", appIdUtil.getAppId(), true);
-		if (loginConfig == null)
+		if (loginConfig == null) {
 			loginConfig = new Properties();
+		}
 
 		String avString = loginConfig.getProperty(request.getServerName());
 		if (avString != null && appId == null) {
 			String[] av = avString.split(":");
 			appId = av[0];
-			if (view == null && av.length > 1)
+			if (view == null && av.length > 1) {
 				view = av[1];
+			}
 		}
 		appId = appId == null ? "default" : appId;
-		if (view == null)
+		if (view == null) {
 			view = "/" + defaultView;
+		}
 
 		loginAction = loginConfig.getProperty("loginAction", "/base/auth");
-		if (supportQQLogin)
+		if (supportQQLogin) {
 			supportTpaType.add("qq");
-		if (supportWeiboLogin)
+		}
+		if (supportWeiboLogin) {
 			supportTpaType.add("weibo");
-		if (supportWechatLogin)
+		}
+		if (supportWechatLogin) {
 			supportTpaType.add("wechat");
-		if (supportWechatOSLogin)
+		}
+		if (supportWechatOSLogin) {
 			supportTpaType.add("wechatOS");
+		}
 		
 		
 

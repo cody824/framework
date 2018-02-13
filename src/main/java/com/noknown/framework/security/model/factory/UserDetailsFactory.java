@@ -1,10 +1,10 @@
 package com.noknown.framework.security.model.factory;
 
-import com.noknown.framework.security.model.UserDetails;
+import com.noknown.framework.security.model.BaseUserDetails;
 
 public interface UserDetailsFactory {
 
-	UserDetails createUD(Integer id);
-	
-	UserDetails parseUD(String  text);
+	BaseUserDetails createUD(Integer id);
+
+	BaseUserDetails parseUD(String text);
 }

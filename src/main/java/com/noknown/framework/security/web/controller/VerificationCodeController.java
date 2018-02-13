@@ -5,8 +5,7 @@ import com.noknown.framework.common.base.BaseController;
 import com.noknown.framework.common.exception.ServiceException;
 import com.noknown.framework.common.exception.WebException;
 import com.noknown.framework.common.util.RegexValidateUtil;
-import com.noknown.framework.common.util.StringUtil;
-import com.noknown.framework.security.service.AuthcodeService;
+import com.noknown.framework.security.service.VerificationCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -26,40 +25,32 @@ import java.util.Random;
 
 @Controller("messageAuthCodeController")
 @RequestMapping(value = "/security")
-public class AuthcodeController extends BaseController {
+public class VerificationCodeController extends BaseController {
 
 	@Autowired
-	private AuthcodeService authcodeService;
+	private VerificationCodeService verificationCodeService;
 
 	@Autowired
 	private CacheService cacheService;
-	
-	@RequestMapping(value = "/authcode/{type}", method = RequestMethod.POST)
+
+	@RequestMapping(value = {"/authcode/{type}", "/verification-code/{type}"}, method = RequestMethod.POST)
 	public @ResponseBody
-	Object  generatePhotoAuthcode(HttpServletRequest request,
-			HttpServletResponse response,
+	Object generatePhotoAuthcode(
 			@PathVariable String type,
 			@RequestParam(value = "to", required = false) String to,
 			@RequestParam(required = false, defaultValue = "4") int len,
-			@RequestParam(required = false, defaultValue = "10") int timeout,
-			@RequestParam(required = false) String authcode,
-			@RequestParam(required = false) String clientid) throws Exception {
-		
-		
-		if (type.equals("phone")){
+			@RequestParam(required = false, defaultValue = "10") int timeout) throws Exception {
+
+
+		if ("phone".equals(type)) {
 
 			if (!RegexValidateUtil.checkMobile(to)) {
 				throw new WebException("请输入正确的手机号码");
 			}
-			if (StringUtil.isBlank(clientid))
-				clientid = request.getSession().getId();
-			
-		} else if (type.equals("email")){
+		} else if ("email".equals(type)) {
 			if (!RegexValidateUtil.checkEmail(to)) {
 				throw new WebException("请输入正确的邮箱");
 			}
-			if (StringUtil.isBlank(clientid))
-				clientid = request.getSession().getId();
 		} else {
 			throw new WebException("不支持发送改类型的验证码");
 		}
@@ -70,8 +61,7 @@ public class AuthcodeController extends BaseController {
 		} else {
 			throw new WebException("对不起，验证码发送间隔为1分钟，请稍后再试");
 		}
-		
-		authcodeService.sendAuthCode(type, to, len, timeout);
+		verificationCodeService.send(type, to, len, timeout);
 		return ResponseEntity.ok().body(new HashMap<>());
 	
 	}
@@ -80,21 +70,19 @@ public class AuthcodeController extends BaseController {
 	/**
 	 * 验证码验证
 	 * @param request servlet请求
-	 * @param response servlet应答
 	 * @param authcode 验证码
 	 * @param clientId 客户id
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/authcode", method = RequestMethod.POST)
+	@RequestMapping(value = {"/authcode", "/verification-code"}, method = RequestMethod.POST)
 	public @ResponseBody
 	Object validateAuthcode(HttpServletRequest request,
-			HttpServletResponse response,
 			@RequestParam("authcode") String authcode,
 			@RequestParam(required = false) String clientId) throws Exception {
 		
 		clientId = clientId == null ? request.getSession().getId() : clientId;
-		boolean isOk = authcodeService.checkAuthCode(clientId, authcode);
+		boolean isOk = verificationCodeService.check(clientId, authcode);
 		if (!isOk){
 			throw new WebException("验证码错误");
 		}
@@ -108,7 +96,7 @@ public class AuthcodeController extends BaseController {
 	 * @param clientId 客户端id
 	 * @throws Exception 
 	 */
-	@RequestMapping(value = "/authcode/img", method = RequestMethod.GET)
+	@RequestMapping(value = {"/authcode/img", "/verification-code/img"}, method = RequestMethod.GET)
 	public void generateImgAuthcode(HttpServletRequest request,
 			HttpServletResponse response,
 			@RequestParam(required = false, defaultValue = "4") int len,
@@ -153,7 +141,7 @@ public class AuthcodeController extends BaseController {
 		// 取随机产生的认证码(4位数字)
 		String aRand = "";
 		try {
-			aRand = authcodeService.generateAuthCode(clientId, len, timeout);
+			aRand = verificationCodeService.generate(clientId, len, timeout);
 		} catch (ServiceException e1) {
 			e1.printStackTrace();
 			for (int i = 0; i < len; i++) {
@@ -187,10 +175,12 @@ public class AuthcodeController extends BaseController {
 	
 	private  Color getRandColor(int fc, int bc) {
 		Random random = new Random();
-		if (fc > 255)
+		if (fc > 255) {
 			fc = 255;
-		if (fc > 255)
+		}
+		if (fc > 255) {
 			bc = 255;
+		}
 		int r = fc + random.nextInt(bc - fc);
 		int g = fc + random.nextInt(bc - fc);
 		int b = fc + random.nextInt(bc - fc);

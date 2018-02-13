@@ -4,10 +4,10 @@ import com.noknown.framework.common.exception.DAOException;
 import com.noknown.framework.common.exception.ServiceException;
 import com.noknown.framework.common.util.StringUtil;
 import com.noknown.framework.security.authentication.oauth2.Oauth2Handler;
+import com.noknown.framework.security.model.BaseUserDetails;
 import com.noknown.framework.security.model.Role;
 import com.noknown.framework.security.model.ThirdPartyAccount;
 import com.noknown.framework.security.model.User;
-import com.noknown.framework.security.model.UserDetails;
 import com.noknown.framework.security.service.UserDetailsService;
 import com.noknown.framework.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,23 +40,28 @@ public class TpaAuthenticationProvider implements AuthenticationProvider{
 	/**
 	 * 使用时注入
 	 */
-	private UserDetailsService udService;
-	
+	private final UserDetailsService udService;
+
+	private final UserService userService;
+
 	@Autowired
-	private UserService userService;
+	public TpaAuthenticationProvider(UserDetailsService udService, UserService userService) {
+		this.udService = udService;
+		this.userService = userService;
+	}
 
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		SureOauthToken token = (SureOauthToken)authentication;
 		List<GrantedAuthority> gaList = new ArrayList<>();
-		SureAuthenticationInfo saInfo = null;
-		String code = null;
-		String authType = null;
-		String[] stateParam = null;
+		SureAuthenticationInfo saInfo;
+		String code;
+		String authType;
+		String[] stateParam;
 		
 		ThirdPartyAccount tpa;
 		User user;
-		UserDetails ud = null;
+		BaseUserDetails ud = null;
 		Integer userId;
 		
 		if (StringUtil.isBlank(token.getCode())){
@@ -84,9 +89,10 @@ public class TpaAuthenticationProvider implements AuthenticationProvider{
 				ud = userService.addUserFromTpa(tpa);
 				userId = ud.getId();
 			}
-			user = userService.findById(userId);
-			if (ud == null)
-				ud = udService.get(user.getId());
+			user = userService.get(userId);
+			if (ud == null) {
+				ud = udService.getUserDetail(user.getId());
+			}
 			List<Role> roleList = user.getRoles();
 			if (roleList != null && roleList.size() > 0) {
 				for (Role role : roleList) {
@@ -112,34 +118,6 @@ public class TpaAuthenticationProvider implements AuthenticationProvider{
 		return authentication.equals(SureOauthToken.class);  
 	}
 
-	/**
-	 * @return the udService
-	 */
-	public UserDetailsService getUdService() {
-		return udService;
-	}
-
-	/**
-	 * @param udService the udService to set
-	 */
-	public void setUdService(UserDetailsService udService) {
-		this.udService = udService;
-	}
-
-	/**
-	 * @return the supportOauth2Handler
-	 */
-	public Map<String, Oauth2Handler> getSupportOauth2Handler() {
-		return supportOauth2Handler;
-	}
-
-	/**
-	 * @param supportOauth2Handler the supportOauth2Handler to set
-	 */
-	public void setSupportOauth2Handler(Map<String, Oauth2Handler> supportOauth2Handler) {
-		this.supportOauth2Handler = supportOauth2Handler;
-	}
-	
 	public void addHandler(String key, Oauth2Handler handler) {
 		this.supportOauth2Handler.put(key, handler);
 	}

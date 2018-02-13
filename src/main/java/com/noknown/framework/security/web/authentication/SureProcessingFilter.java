@@ -63,7 +63,9 @@ public class SureProcessingFilter  extends AbstractAuthenticationProcessingFilte
         String code = request.getParameter(codeParam);
         String state = request.getParameter(stateParam);
         Authentication token = null;
-        if (clientId == null) clientId = session.getId();
+		if (clientId == null) {
+			clientId = session.getId();
+		}
         if (userName != null && password != null){
         	token = new SureUsernamePasswordAuthenticationToken(userName, password, authcode, clientId);
         } else if (code != null && state != null){
@@ -111,13 +113,15 @@ public class SureProcessingFilter  extends AbstractAuthenticationProcessingFilte
 		}
         return auth;  
 	}
-	
+
+	@Override
 	@Autowired
 	public void setAuthenticationSuccessHandler(
 			AuthenticationSuccessHandler successHandler) {
 		super.setAuthenticationSuccessHandler(successHandler);
 	}
 
+	@Override
 	@Autowired
 	public void setAuthenticationFailureHandler(
 			AuthenticationFailureHandler failureHandler) {

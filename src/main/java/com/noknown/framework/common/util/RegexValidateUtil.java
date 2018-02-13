@@ -10,17 +10,24 @@ import java.util.regex.Pattern;
  * 
  */
 public class RegexValidateUtil {
+
+
+	public final static Pattern MOBILE_PATTERN = Pattern.compile("^(0|86|17951)?(17[0-9]|13[0-9]|15[012356789]|18[0-9]|14[57])[0-9]{8}$");
+
+	public final static Pattern EMAIL_PATTERN = Pattern.compile("\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*");
+
+	public final static Pattern VERSION_PATTERN = Pattern.compile("(^[0-9])(\\.([0-9]){1,2}){0,2}(-.+)*$");
+
 	/**
 	 * 验证邮箱
-	 * 
-	 * @param email
-	 * @return
+	 *
+	 * @param email 邮箱
+	 * @return 是否是电子邮箱
 	 */
 	public static boolean checkEmail(String email) {
-		boolean flag = false;
+		boolean flag;
 		try {
-			Pattern regex = Pattern.compile("\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*");
-			Matcher matcher = regex.matcher(email);
+			Matcher matcher = EMAIL_PATTERN.matcher(email);
 			flag = matcher.matches();
 		} catch (Exception e) {
 			flag = false;
@@ -30,15 +37,14 @@ public class RegexValidateUtil {
 
 	/**
 	 * 验证手机号码
-	 * 
-	 * @param mobileNumber
-	 * @return
+	 *
+	 * @param mobileNumber 电话号码
+	 * @return 是否是电话号码
 	 */
 	public static boolean checkMobile(String mobileNumber) {
-		boolean flag = false;
+		boolean flag;
 		try {
-			Pattern p = Pattern.compile("^(0|86|17951)?(17[0-9]|13[0-9]|15[012356789]|18[0-9]|14[57])[0-9]{8}$");  
-			Matcher m = p.matcher(mobileNumber);  
+			Matcher m = MOBILE_PATTERN.matcher(mobileNumber);
 			flag = m.matches();
 		} catch (Exception e) {
 			flag = false;
@@ -47,22 +53,17 @@ public class RegexValidateUtil {
 	}
 	
 	/**
-	 * 验证版本号（maven）
+	 * 验证版本号（maven） 	 FIXME 不支持1.11.0
 	 *  1.0.0-SNAPSHOT
 	 *  1.0.0
-	 *  1.0
 	 *  1
-	 * 
-	 * @param version
-	 * @return
+	 * @param version  版本
+	 * @return 是否是版本
 	 */
-	//FIXME 不支持1.11.0
 	public static boolean checkVersion(String version) {
-		boolean flag = false;
+		boolean flag;
 		try {
-			Pattern regex = Pattern
-					.compile("(^[0-9])(\\.([0-9]){1,2}){0,2}(-.+)*$");
-			Matcher matcher = regex.matcher(version);
+			Matcher matcher = VERSION_PATTERN.matcher(version);
 			flag = matcher.matches();
 		} catch (Exception e) {
 			flag = false;

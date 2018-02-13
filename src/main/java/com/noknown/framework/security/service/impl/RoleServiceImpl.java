@@ -77,12 +77,14 @@ public  class RoleServiceImpl extends BaseServiceImpl<Role, Integer> implements 
 	@Override
 	public void attachRoleForUser(Integer userId, Integer roleId) throws DAOException, ServiceException {
 		User user = userDao.findOne(userId);
-		if (user == null)
+		if (user == null) {
 			throw new ServiceException("用户不存在");
+		}
 		
 		Role role = roleDao.findOne(roleId);
-		if (role == null)
+		if (role == null) {
 			throw new ServiceException("角色不存在");
+		}
 		
 		user.addRole(role);
 		userDao.save(user);
@@ -92,12 +94,14 @@ public  class RoleServiceImpl extends BaseServiceImpl<Role, Integer> implements 
 	@Override
 	public void attachRoleForUser(Integer userId, String roleName) throws DAOException, ServiceException {
 		User user = userDao.findOne(userId);
-		if (user == null)
+		if (user == null) {
 			throw new ServiceException("用户不存在");
+		}
 
 		Role role = roleDao.findByName(roleName);
-		if (role == null)
+		if (role == null) {
 			throw new ServiceException("角色不存在");
+		}
 
 		user.addRole(role);
 		userDao.save(user);
@@ -106,12 +110,14 @@ public  class RoleServiceImpl extends BaseServiceImpl<Role, Integer> implements 
 	@Override
 	public void detachRoleFromUser(Integer userId, Integer roleId) throws DAOException, ServiceException {
 		User user = userDao.findOne(userId);
-		if (user == null)
+		if (user == null) {
 			throw new ServiceException("用户不存在");
+		}
 		
 		Role role = roleDao.findOne(roleId);
-		if (role == null)
+		if (role == null) {
 			throw new ServiceException("角色不存在");
+		}
 		
 		user.removeRole(role);
 		userDao.save(user);
@@ -121,12 +127,14 @@ public  class RoleServiceImpl extends BaseServiceImpl<Role, Integer> implements 
 	@Override
 	public void detachRoleFromUser(Integer userId, String roleName) throws DAOException, ServiceException {
 		User user = userDao.findOne(userId);
-		if (user == null)
+		if (user == null) {
 			throw new ServiceException("用户不存在");
+		}
 
 		Role role = roleDao.findByName(roleName);
-		if (role == null)
+		if (role == null) {
 			throw new ServiceException("角色不存在");
+		}
 
 		user.removeRole(role);
 		userDao.save(user);
@@ -142,4 +150,5 @@ public  class RoleServiceImpl extends BaseServiceImpl<Role, Integer> implements 
 	public JpaSpecificationExecutor<Role> getSpecificationExecutor() {
 		return roleDao;
 	}
+
 }

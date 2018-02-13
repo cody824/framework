@@ -6,6 +6,7 @@ import com.noknown.framework.common.model.ConfigRepo;
 import com.noknown.framework.common.model.GlobalConfig;
 import com.noknown.framework.common.util.BaseUtil;
 import com.noknown.framework.common.util.OrderProperties;
+import com.noknown.framework.common.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,14 +16,16 @@ import java.io.File;
 import java.util.Map;
 import java.util.Properties;
 
-
+/**
+ * @author guodong
+ */
 @Component
 public class GlobalConfigImplDao implements GlobalConfigDao {
 	
 	private static final Logger logger = LoggerFactory.getLogger(GlobalConfigImplDao.class);
 
-	public static final String descSuffix = ".desc";
-	public static final String nameConfigFile = "nameConfig";
+	private static final String DESC_SUFFIX = ".desc";
+	private static final String NAME_CONFIG_FILE = "nameConfig";
 
 	@Value("${framework.globalConfig.basePath:/var/noknown/properties/}")
 	private String basePath;
@@ -40,16 +43,16 @@ public class GlobalConfigImplDao implements GlobalConfigDao {
 
 		if (baseOk) {
 			File[] files = baseDir.listFiles();
-			for (File dir : files) {
-				ConfigRepo cr = getConfigRepoFromDir(dir);
-				if (cr != null) {
-					gc.getSupportConfigTypes().add(cr.getConfigId());
-					gc.getConfigRepos().put(cr.getConfigId(), cr);
+			if (files != null) {
+				for (File dir : files) {
+					ConfigRepo cr = getConfigRepoFromDir(dir);
+					if (cr != null) {
+						gc.getSupportConfigTypes().add(cr.getConfigId());
+						gc.getConfigRepos().put(cr.getConfigId(), cr);
+					}
 				}
 			}
-
 		}
-
 		return gc;
 	}
 
@@ -70,8 +73,9 @@ public class GlobalConfigImplDao implements GlobalConfigDao {
 	public String getConfig(String configType, String domain, String key) {
 		String value = null;
 		Properties p = getProperties(configType, domain);
-		if (p != null && key != null)
+		if (p != null && key != null) {
 			value = p.getProperty(key);
+		}
 		return value;
 	}
 
@@ -84,19 +88,21 @@ public class GlobalConfigImplDao implements GlobalConfigDao {
 
 		dirOk = dir.exists() && dir.isDirectory();
 
-		if (!dirOk)
+		if (!dirOk) {
 			return null;
+		}
 		descFile = new File(dir.getPath() + File.separator + dir.getName()
-				+ descSuffix);
+				+ DESC_SUFFIX);
 
 		dirOk = descFile.exists() && descFile.isFile();
 
-		if (dirOk)
+		if (dirOk) {
 			try {
 				crp = BaseUtil.loadPropertiesFromRealPath(descFile.getPath());
 			} catch (UtilException e) {
 				return null;
 			}
+		}
 
 		cr = new ConfigRepo();
 		cr.setConfigId(dir.getName());
@@ -105,14 +111,17 @@ public class GlobalConfigImplDao implements GlobalConfigDao {
 			cr.setConfigDesc(crp.getProperty("configDesc", ""));
 		}
 		configFiles = dir.listFiles();
-		for (File file : configFiles) {
-			if (file.getName().endsWith(descSuffix))
-				continue;
-			try {
-				Properties p = BaseUtil.loadPropertiesFromFile(file);
-				cr.getConfigs().put(file.getName(), p);
-				cr.getKeySets().put(file.getName(), p.stringPropertyNames());
-			} catch (UtilException e) {
+		if (configFiles != null) {
+			for (File file : configFiles) {
+				if (file.getName().endsWith(DESC_SUFFIX)) {
+					continue;
+				}
+				try {
+					Properties p = BaseUtil.loadPropertiesFromFile(file);
+					cr.getConfigs().put(file.getName(), p);
+					cr.getKeySets().put(file.getName(), p.stringPropertyNames());
+				} catch (UtilException ignored) {
+				}
 			}
 		}
 		return cr;
@@ -129,15 +138,20 @@ public class GlobalConfigImplDao implements GlobalConfigDao {
 	@Override
 	public void updateConfigRepo(String configType, ConfigRepo cr) {
 		Properties repoProps = new OrderProperties();
-		repoProps.put(cr.getConfigDesc(), cr.getConfigDesc());
-		repoProps.put(cr.getConfigDesc(), cr.getConfigId());
-		repoProps.put(cr.getConfigDesc(), cr.getConfigName());
-		String path = getBasePath() + File.separator + configType
-				+ File.separator + configType + descSuffix;
-		try {
-			BaseUtil.savePropertiesToRealPath(repoProps, path);
-		} catch (UtilException e) {
-			logger.warn(e.getLocalizedMessage());
+		if (StringUtil.isNotBlank(cr.getConfigDesc())) {
+			repoProps.put("configDesc", cr.getConfigDesc());
+		}
+		if (StringUtil.isNotBlank(cr.getConfigDesc())) {
+			repoProps.put("configName", cr.getConfigName());
+		}
+		if (!repoProps.isEmpty()) {
+			String path = getBasePath() + File.separator + configType
+					+ File.separator + configType + DESC_SUFFIX;
+			try {
+				BaseUtil.savePropertiesToRealPath(repoProps, path);
+			} catch (UtilException e) {
+				logger.warn(e.getLocalizedMessage());
+			}
 		}
 		Map<String, Properties> configMap = cr.getConfigs();
 
@@ -207,7 +221,7 @@ public class GlobalConfigImplDao implements GlobalConfigDao {
 	@Override
 	public Properties getNameConfig() {
 		Properties ncp = null;
-		String nameConfigPath = getBasePath() + File.separator + nameConfigFile;
+		String nameConfigPath = getBasePath() + File.separator + NAME_CONFIG_FILE;
 		
 		try {
 			ncp = BaseUtil.loadPropertiesFromRealPath(nameConfigPath);
@@ -221,7 +235,7 @@ public class GlobalConfigImplDao implements GlobalConfigDao {
 	@Override
 	public void updateNameConfig(String key, String value) {
 		Properties ncp;
-		String nameConfigPath = getBasePath() + File.separator + nameConfigFile;
+		String nameConfigPath = getBasePath() + File.separator + NAME_CONFIG_FILE;
 		
 		try {
 			ncp = BaseUtil.loadPropertiesFromRealPath(nameConfigPath);
@@ -235,11 +249,12 @@ public class GlobalConfigImplDao implements GlobalConfigDao {
 	
 	@Override
 	public void deleteNameConfig(String key) {
-		String nameConfigPath = getBasePath() + File.separator + nameConfigFile;
+		String nameConfigPath = getBasePath() + File.separator + NAME_CONFIG_FILE;
 		
 		File file = new File(nameConfigPath);
-		if (!file.exists())
+		if (!file.exists()) {
 			return ;
+		}
 		
 		try {
 			Properties ncp = BaseUtil.loadPropertiesFromRealPath(nameConfigPath);
@@ -258,10 +273,11 @@ public class GlobalConfigImplDao implements GlobalConfigDao {
 		baseOk = baseDir.exists() || baseDir.mkdir();
 
 		baseOk = baseOk && baseDir.isDirectory();
-		if (baseOk)
+		if (baseOk) {
 			return baseDir;
-		else
+		} else {
 			return null;
+		}
 	}
 
 	public String getBasePath() {

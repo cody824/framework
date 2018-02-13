@@ -67,7 +67,7 @@ public class BaseUtil{
 		String code = DateUtil.toString(time, DateUtil.ACCOUNT_DATE_FORMAT) // 类似20150728
 				+ "00" // 分类识别码，默认00，代表书册
 				+ timesplit // 取时间毫秒数中的4位，精确到0.1秒
-				+ RandomString.RandomNumber(2); // 取2位随机数
+				+ RandomString.randomNumber(2); // 取2位随机数
 		return code;
 	}
 
@@ -214,8 +214,9 @@ public class BaseUtil{
 			throw new UtilException(e);
 		} finally {
 			try {
-				if (reader != null)
+				if (reader != null) {
 					reader.close();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -291,35 +292,30 @@ public class BaseUtil{
 	 * 
 	 * @param destFileName
 	 * @return File 返回创建成功的文件 ，null返回失败
-	 * @throws UtilException
+	 * @throws IOException
 	 *             创建失败的异常信息
 	 */
-	public static File createFile(String destFileName) throws UtilException {
+	public static File createFile(String destFileName) throws IOException {
 		File file = new File(destFileName);
 		if (file.exists()) {
 			return file;
 		}
 		if (destFileName.endsWith(File.separator)) {
-			throw new UtilException("创建单个文件" + destFileName + "失败，目标文件不能为目录！");
+			throw new IOException("创建单个文件" + destFileName + "失败，目标文件不能为目录！");
 		}
 		// 判断目标文件所在的目录是否存在
 		if (!file.getParentFile().exists()) {
 			// 如果目标文件所在的目录不存在，则创建父目录
 			file.getParentFile().mkdirs();
 		}
-		if (!file.getParentFile().exists())
-			throw new UtilException("创建目标文件所在目录失败！");
+		if (!file.getParentFile().exists()) {
+			throw new IOException("创建目标文件所在目录失败！");
+		}
 		// 创建目标文件
-		try {
-			if (file.createNewFile()) {
-				return file;
-			} else {
-				return null;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new UtilException("创建单个文件" + destFileName + "失败！"
-					+ e.getMessage());
+		if (file.createNewFile()) {
+			return file;
+		} else {
+			return null;
 		}
 	}
 
