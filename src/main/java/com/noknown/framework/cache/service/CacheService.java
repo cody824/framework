@@ -10,24 +10,25 @@ import java.util.Date;
 public interface CacheService {
 
 	/**
-	 * 设置key的值
-	 * @param key
-	 * @param obj
-	 * @param expireTime
+	 * 设置key
+	 * @param key   key
+	 * @param obj   value
+	 * @param expireTime    过期时间
+	 * @return 是否成功
 	 */
 	boolean set(String key, Object obj, Date expireTime);
 
 	/**
 	 * 获取对象
-	 * @param key
-	 * @return
+	 * @param key   key
+	 * @return 对象
 	 */
 	Object get(String key);
 	
 	/**
 	 * 删除key对应的对象
-	 * @param key
-	 * @return
+	 * @param key   key
+	 * @return 是否成功
 	 */
 	boolean delete(String key);
 

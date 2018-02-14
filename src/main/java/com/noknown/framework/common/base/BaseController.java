@@ -18,56 +18,46 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author guodong
+ */
 public class BaseController {
-	
-	public final Logger logger = LoggerFactory.getLogger(getClass());
 
-	public static Map<String, Object> okRet = new HashMap<>();
+	protected static Map<String, Object> okRet = new HashMap<>();
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	static {
 		okRet.put("success", true);
 	}
-	
+
 	@Value("${ajaxHttpStatus:true}")
 	private boolean httpStatus = true;
-	
-	public Authentication loginAuth(){
-    	return SecurityContextHolder.getContext().getAuthentication();
-    }
-	
-    public boolean hasRole(String role){
-    	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    	if (auth != null){
-    		for (GrantedAuthority ga : auth.getAuthorities()){
-    			if (ga.getAuthority().equals(role)){
-    				return true;
-    			}
-    		}
-    	}
-    	return false;
-    }
-    
-    /**
-     * 返回错误
-     * @param msg
-     * @param status
-     * @return
-     */
-	public ResponseEntity<?> outActionError(String msg, HttpStatus status) {
+
+	protected Authentication loginAuth() {
+		return SecurityContextHolder.getContext().getAuthentication();
+	}
+
+	protected boolean hasRole(String role) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null) {
+			for (GrantedAuthority ga : auth.getAuthorities()) {
+				if (ga.getAuthority().equals(role)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	protected ResponseEntity<?> outActionError(String msg, HttpStatus status) {
 		HttpStatus sendStatus = HttpStatus.OK;
 		if (httpStatus) {
 			sendStatus = status;
 		}
-        ErrorMsg errorMsg = new ErrorMsg(msg, false);
-        return new ResponseEntity<Object>(errorMsg, sendStatus);
+		ErrorMsg errorMsg = new ErrorMsg(msg, false);
+		return new ResponseEntity<Object>(errorMsg, sendStatus);
 	}
-    
-    /**
-	 * 返回对象
-	 * @param obj		要返回的对象
-	 * @param status	响应状态
-	 * @return
-	 */
+
 	public ResponseEntity<?> outActionReturn(Object obj, HttpStatus status) {
 		HttpStatus sendStatus = HttpStatus.OK;
 		if (httpStatus) {
@@ -75,17 +65,17 @@ public class BaseController {
 		}
 		return new ResponseEntity<>(obj, sendStatus);
 	}
-	
-	
-    public ResponseEntity<?> outActionReturn(Object obj, int status) {
-    	HttpStatus sendStatus = HttpStatus.OK;
-        try {
-        	sendStatus = HttpStatus.valueOf(status); 
-        } catch (IllegalArgumentException  e) {
-        	e.printStackTrace();
-        }
-        return outActionReturn(obj, sendStatus);
-    }
+
+
+	public ResponseEntity<?> outActionReturn(Object obj, int status) {
+		HttpStatus sendStatus = HttpStatus.OK;
+		try {
+			sendStatus = HttpStatus.valueOf(status);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		}
+		return outActionReturn(obj, sendStatus);
+	}
 
 	public SQLFilter buildFilter(String filter, String sort) {
 		filter = HtmlUtils.htmlUnescape(filter);
@@ -99,8 +89,10 @@ public class BaseController {
 				sqlFilter = new SQLFilter();
 			}
 			List<SQLOrder> sortL = JsonUtil.toList(sort, SQLOrder.class);
-			for (SQLOrder order : sortL) {
-				sqlFilter.addSQLOrder(order);
+			if (sortL != null) {
+				for (SQLOrder order : sortL) {
+					sqlFilter.addSQLOrder(order);
+				}
 			}
 		}
 		if (sqlFilter == null) {

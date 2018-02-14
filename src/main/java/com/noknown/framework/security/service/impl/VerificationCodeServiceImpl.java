@@ -7,8 +7,6 @@ import com.noknown.framework.common.util.algo.RandomString;
 import com.noknown.framework.email.processor.MailProcessor;
 import com.noknown.framework.security.service.VerificationCodeService;
 import com.noknown.framework.sms.provider.SMSProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,20 +16,25 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author guodong
+ */
 @Service
 public class VerificationCodeServiceImpl implements VerificationCodeService {
-	
-	public final Logger logger = LoggerFactory.getLogger(getClass());
+
+	private final static String PHONE = "phone";
+
+	private static final String EMAIL = "email";
 
 	private final CacheService cacheService;
 
 	private final SMSProvider smsProvider;
 
 	private final MailProcessor mailProcessor;
-	
+
 	@Value("${security.authcode.email.tpl:}")
 	private String tpl;
-	
+
 	@Value("${security.authcode.email.subject:验证码}")
 	private String mailSubject;
 
@@ -47,24 +50,23 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
 
 
 	@Override
-	public String generate(String to, int len, int timeout) throws ServiceException {
+	public String generate(String to, int len, int timeout) {
 		//生成验证码 : 全部为数字
 		String authcode = RandomString.randomNumber(len);
-		
+
 		//存到cache中
 		Date now = new Date();
 		Date expireTime = new Date(now.getTime() + timeout * 60 * 1000);
-		
+
 		String key = "authcode:" + to;
 		cacheService.set(key, authcode, expireTime);
-		
+
 		return authcode;
 	}
 
 	@Override
-	public boolean check(String to, String authcode)
-			throws ServiceException {
-		
+	public boolean check(String to, String authcode) {
+
 		String key = "authcode:" + to;
 		String code = (String) cacheService.get(key);
 
@@ -75,9 +77,9 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
 	public void send(String type, String to, int len, int timeout) throws ServiceException {
 
 		String authcode = generate(to, len, timeout);
-		if("phone".equals(type)){
+		if (PHONE.equals(type)) {
 			if (StringUtil.isNotBlank(smsTpl)) {
-				Map<String, String> params = new HashMap<>();
+				Map<String, String> params = new HashMap<>(2);
 				params.put("code", authcode);
 				params.put("timeout", timeout + "");
 				sendAuthCodeSms(to, smsTpl, params);
@@ -85,7 +87,7 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
 				String sms = "您本次操作需要的验证码是:"+authcode+"，" + timeout + "分钟内有效，请尽快操作。";
 				sendAuthCodeSms(to, sms);
 			}
-		}else if("email".equals(type)){
+		} else if (EMAIL.equals(type)) {
 			sendAuthCodeMail(to, authcode, timeout);
 		}else{
 			throw new ServiceException("参数错误");
@@ -93,42 +95,39 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
 	}
 
 	@Override
-	public void expire(String type, String to) throws ServiceException {
+	public void expire(String type, String to) {
 
 		String key = "authcode:" + to;
 		cacheService.delete(key);
 	}
-	
-	private boolean sendAuthCodeMail(String to, String authcode, int timeout) {
+
+	private void sendAuthCodeMail(String to, String authcode, int timeout) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH点mm分ss秒");
 		if (StringUtil.isBlank(tpl)) {
 			String msg = "您本次操作需要的验证码是:"+authcode+"，" + timeout + "分钟内有效，请尽快操作。";
 			mailProcessor.sendMail(null, to, mailSubject, msg, true);
 		} else {
-			Map<String, String> tplData = new HashMap<>();
+			Map<String, String> tplData = new HashMap<>(3);
 			tplData.put("authcode", authcode);
 			tplData.put("timeout", Integer.toString(timeout));
 			tplData.put("time", sdf.format(new Date()));
 			mailProcessor.sendMail(null, to, mailSubject, tpl, tplData, true);
 		}
-		return true;
 	}
-	
-	private boolean sendAuthCodeSms(String to, String msg) {
+
+	private void sendAuthCodeSms(String to, String msg) {
 		try {
-			return smsProvider.send(to, msg);
+			smsProvider.send(to, msg);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return false;
 		}
 	}
 
-	private boolean sendAuthCodeSms(String to, String tpl, Map<String, String> tplParams) {
+	private void sendAuthCodeSms(String to, String tpl, Map<String, String> tplParams) {
 		try {
-			return smsProvider.send(to, tpl, tplParams);
+			smsProvider.send(to, tpl, tplParams);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return false;
 		}
 	}
 

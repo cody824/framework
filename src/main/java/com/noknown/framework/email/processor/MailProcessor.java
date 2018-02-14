@@ -1,21 +1,12 @@
-/**
- * @Title: MailService.java
- * @Package com.soulinfo.api.mail.service
- * @Description: 邮件服务层
- * CopyRright (c) 2014-2015 SOUL
- * Company:无锡众志和达数据计算股份有限公司
- * 
- * @author xingweiwei
- * @date 2015年5月28日 下午12:19:56
- * @version V1.0
- */
 package com.noknown.framework.email.processor;
 
 import com.noknown.framework.email.model.MailMessage;
 
 import java.util.Map;
 
-
+/**
+ * @author 未知
+ */
 public interface MailProcessor {
 	
 	/**
@@ -24,7 +15,8 @@ public interface MailProcessor {
 	 * @param to	收件人地址
 	 * @param subject 主题
 	 * @param content 正文
-	 * @return true 成功
+	 * @param async 异步发送
+	 * @return 是否成功
 	 */
 	boolean sendMail(String from, String to, String subject, String content, boolean async);
 	
@@ -35,14 +27,16 @@ public interface MailProcessor {
 	 * @param subject 主题
 	 * @param tpl	模板名
 	 * @param tplData	模板内容
-	 * @return true 成功
+	 * @param async 异步发送
+	 * @return 是否成功
 	 */
 	boolean sendMail(String from, String to, String subject, String tpl, Map<String, String> tplData, boolean async);
 	
 	/**
 	 * 发送邮件
-	 * @param mailMessage
-	 * @return
+	 * @param mailMessage   邮件信息
+	 * @param async 异步发送
+	 * @return 是否成功
 	 */
 	boolean sendMail(MailMessage mailMessage, boolean async);
 

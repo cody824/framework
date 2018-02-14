@@ -5,7 +5,9 @@ import com.noknown.framework.common.model.GlobalConfig;
 
 import java.util.Properties;
 
-
+/**
+ * @author guodong
+ */
 public interface GlobalConfigService {
 	
 	/**
@@ -14,7 +16,6 @@ public interface GlobalConfigService {
 	 * @param domain domain名
 	 * @param key 配置名
 	 * @param isDelete 是否删除配置
-	 * @return 
 	 */
 	void fetchConfig(String configType, String domain, String key, boolean isDelete);
 	
@@ -23,6 +24,7 @@ public interface GlobalConfigService {
 	 * @param configType 配置类型
 	 * @param domain domain名
 	 * @param key 配置名
+	 * @param isFetch 是否更新
 	 * @return 配置值
 	 */
 	String getConfig(String configType, String domain, String key, boolean isFetch);
@@ -31,6 +33,7 @@ public interface GlobalConfigService {
 	 * 获取domain对应配置表
 	 * @param configType 配置类型
 	 * @param domain domain名
+	 * @param isFetch 是否更新
 	 * @return 配置表
 	 */
 	Properties getProperties(String configType, String domain, boolean isFetch);
@@ -38,12 +41,14 @@ public interface GlobalConfigService {
 	/**
 	 * 获取configType对应配置库
 	 * @param configType 配置类型
+	 * @param isFetch 是否更新
 	 * @return 配置库
 	 */
 	ConfigRepo getConfigRepo(String configType, boolean isFetch);
 	
 	/**
 	 * 获取全局配置对象
+	 * @param fetch 是否更新
 	 * @return 全局配置对象ClobalConfig
 	 */
 	GlobalConfig getGlobalConfig(boolean fetch);

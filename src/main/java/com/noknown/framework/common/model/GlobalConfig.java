@@ -2,11 +2,14 @@ package com.noknown.framework.common.model;
 
 import java.util.*;
 
+/**
+ * @author guodong
+ */
 public class GlobalConfig {
-	
+
 	/**支持的配置类型*/
 	private Set<String> supportConfigTypes;
-	
+
 	/**配置库*/
 	private Map<String, ConfigRepo> configRepos;
 
@@ -16,10 +19,9 @@ public class GlobalConfig {
 	 * @return               配置库
 	 */
 	public ConfigRepo getConfigRepo(String configType) {
-		ConfigRepo cr = this.getConfigRepos().get(configType);
-		return cr;
+		return this.getConfigRepos().get(configType);
 	}
-	
+
 	/**
 	 * 根据domain获取配置表
 	 * @param configType     配置类型
@@ -31,10 +33,9 @@ public class GlobalConfig {
 		if (cr == null) {
 			return null;
 		}
-		Properties p = cr.getConfigs().get(domain);
-		return p;
+		return cr.getConfigs().get(domain);
 	}
-	
+
 	/**
 	 * 根据key获取配置值
 	 * @param configType     配置类型
@@ -49,22 +50,22 @@ public class GlobalConfig {
 		}
 		return p.getProperty(key);
 	}
-	
-	
+
+
 	public Set<String> getSupportConfigTypes() {
 		if (supportConfigTypes == null) {
-			supportConfigTypes = new HashSet<String>();
+			supportConfigTypes = new HashSet<>();
 		}
 		return supportConfigTypes;
 	}
-	
+
 	public void setSupportConfigTypes(Set<String> supportConfigTypes) {
 		this.supportConfigTypes = supportConfigTypes;
 	}
 
 	public Map<String, ConfigRepo> getConfigRepos() {
 		if (configRepos == null) {
-			configRepos = new HashMap<String, ConfigRepo>();
+			configRepos = new HashMap<>(10);
 		}
 		return configRepos;
 	}
@@ -74,10 +75,8 @@ public class GlobalConfig {
 	}
 
 	public Map<String, Map<String, Properties>> toMap() {
-		Map<String, Map<String, Properties>> map = new HashMap<>();
-		this.getConfigRepos().forEach((key, repo) -> {
-			map.put(key, repo.getConfigs());
-		});
+		Map<String, Map<String, Properties>> map = new HashMap<>(10);
+		this.getConfigRepos().forEach((key, repo) -> map.put(key, repo.getConfigs()));
 		return map;
 	}
 
@@ -86,5 +85,5 @@ public class GlobalConfig {
 		return "GlobalConfig [supportConfigTypes=" + supportConfigTypes
 				+ ", configRepos=" + configRepos + "]";
 	}
-	
+
 }

@@ -20,19 +20,26 @@ import org.springframework.stereotype.Component;
 import java.util.Properties;
 
 
+/**
+ * @author guodong
+ */
 @Component("QQOauth2Handler")
 public class QQOauth2Handler implements Oauth2Handler {
-	
+
 	public final Logger logger = LoggerFactory.getLogger(getClass());
-	
+
+	private final AppInfo baseAppIdUtil;
+
+	private final GlobalConfigService gcs;
+
+	private final UserService userService;
+
 	@Autowired
-	private AppInfo baseAppIdUtil;
-	
-	@Autowired
-	private GlobalConfigService gcs;
-	
-	@Autowired
-	private UserService userService;
+	public QQOauth2Handler(AppInfo baseAppIdUtil, GlobalConfigService gcs, UserService userService) {
+		this.baseAppIdUtil = baseAppIdUtil;
+		this.gcs = gcs;
+		this.userService = userService;
+	}
 
 	@Override
 	public ThirdPartyAccount doAuth(String code, String state) {
@@ -41,9 +48,9 @@ public class QQOauth2Handler implements Oauth2Handler {
 			AccessToken qqAccessToken;
 			HttpClient client = new HttpClient();
 			Properties qqP =  gcs.getProperties("qq", baseAppIdUtil.getAppId(), false);
-			
+
 			qqAccessToken = new AccessToken(client.post(qqP.getProperty("accessTokenURL"),
-							new PostParameter[]{new PostParameter("client_id", qqP.getProperty("app_ID")),
+					new PostParameter[]{new PostParameter("client_id", qqP.getProperty("app_ID")),
 							new PostParameter("client_secret", qqP.getProperty("app_KEY")),
 							new PostParameter("grant_type", "authorization_code"),
 							new PostParameter("code", code),
@@ -51,12 +58,12 @@ public class QQOauth2Handler implements Oauth2Handler {
 
 			OpenID userOpenID = new OpenID(qqAccessToken.getAccessToken());
 			openId = userOpenID.getUserOpenID();
-			
+
 			UserInfo  qqUserInfo = new UserInfo(qqAccessToken.getAccessToken(), openId);
 			nickname = qqUserInfo.getUserInfo().getNickname();
 			avatar = qqUserInfo.getUserInfo().getAvatar().getAvatarURL50();
 			avatarHd = qqUserInfo.getUserInfo().getAvatar().getAvatarURL100();
-			
+
 			ThirdPartyAccount tpa = userService.getThirdPartyAccountByOpenId(openId, "qq");
 			if (tpa == null) {
 				tpa = new ThirdPartyAccount();
@@ -67,7 +74,7 @@ public class QQOauth2Handler implements Oauth2Handler {
 			tpa.setAvatarHd(avatarHd);
 			tpa.setNickname(nickname);
 			return tpa;
-			
+
 		} catch (Exception e) {
 			String trackStr = gcs.getConfig("runConfig", baseAppIdUtil.getAppId(), "serviceTrack", false);
 			boolean track = !StringUtil.isBlank(trackStr) && Boolean.parseBoolean(trackStr);

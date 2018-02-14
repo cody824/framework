@@ -1,7 +1,7 @@
 package com.noknown.framework.security.service.impl;
 
 import com.noknown.framework.common.base.BaseServiceImpl;
-import com.noknown.framework.common.exception.DAOException;
+import com.noknown.framework.common.exception.DaoException;
 import com.noknown.framework.common.exception.ServiceException;
 import com.noknown.framework.common.util.BaseUtil;
 import com.noknown.framework.common.util.ObjectUtil;
@@ -25,7 +25,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Date;
 import java.util.List;
 
-
+/**
+ * @author guodong
+ */
 public abstract class AbstractUserServiceImpl extends BaseServiceImpl<User, Integer> implements UserService {
 
 	@Autowired
@@ -196,7 +198,7 @@ public abstract class AbstractUserServiceImpl extends BaseServiceImpl<User, Inte
 	}
 
 	@Override
-	public void bindEmail(Integer userId, String email) throws DAOException, ServiceException {
+	public void bindEmail(Integer userId, String email) throws DaoException, ServiceException {
 		User user = userDao.getOne(userId);
 		if (user == null) {
 			throw new ServiceException("用户[" + userId + "]不存在");
@@ -210,7 +212,7 @@ public abstract class AbstractUserServiceImpl extends BaseServiceImpl<User, Inte
 	}
 
 	@Override
-	public void unbindEmail(Integer userId) throws DAOException, ServiceException {
+	public void unbindEmail(Integer userId) throws DaoException, ServiceException {
 		User user = userDao.getOne(userId);
 		if (user == null) {
 			throw new ServiceException("用户[" + userId + "]不存在");
@@ -221,7 +223,7 @@ public abstract class AbstractUserServiceImpl extends BaseServiceImpl<User, Inte
 	}
 
 	@Override
-	public void bindMobile(Integer userId, String mobile) throws DAOException, ServiceException {
+	public void bindMobile(Integer userId, String mobile) throws DaoException, ServiceException {
 		User user = userDao.getOne(userId);
 		if (user == null) {
 			throw new ServiceException("用户[" + userId + "]不存在");
@@ -235,7 +237,7 @@ public abstract class AbstractUserServiceImpl extends BaseServiceImpl<User, Inte
 	}
 
 	@Override
-	public void unbindMobile(Integer userId) throws DAOException, ServiceException {
+	public void unbindMobile(Integer userId) throws DaoException, ServiceException {
 		User user = userDao.getOne(userId);
 		if (user == null) {
 			throw new ServiceException("用户[" + userId + "]不存在");

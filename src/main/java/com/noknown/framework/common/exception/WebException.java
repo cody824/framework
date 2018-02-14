@@ -4,17 +4,6 @@ import com.noknown.framework.common.web.model.ErrorMsg;
 import org.springframework.http.HttpStatus;
 
 /**
- * @(#)WebException.java 
- * 版权声明 soulinfo 版权所有 违者必究 
- *
- * 修订记录:
- * 1)更改者:郭栋
- * 时　间：2007-12-21　
- * 描　述：创建
- */
-
-
-/**
  * 
  * 
  * web层抛出异常的包装
@@ -30,8 +19,6 @@ import org.springframework.http.HttpStatus;
  * @version 1.1
  * @since 1.0
  */
-
-
 public class WebException extends Exception {
 	
 	/**
@@ -87,8 +74,8 @@ public class WebException extends Exception {
 
 	public WebException(Throwable cause) {
 		super(cause);
-		if (cause instanceof DAOException) {
-			DAOException e = (DAOException)cause;
+		if (cause instanceof DaoException) {
+			DaoException e = (DaoException) cause;
 			emsg = e.getEmsg();
 		} else if (cause instanceof ServiceException) {
 			ServiceException e = (ServiceException)cause;
@@ -107,8 +94,8 @@ public class WebException extends Exception {
 	
 	public WebException(Throwable cause, HttpStatus status) {
 		super(cause);
-		if (cause instanceof DAOException) {
-			DAOException e = (DAOException)cause;
+		if (cause instanceof DaoException) {
+			DaoException e = (DaoException) cause;
 			emsg = e.getEmsg();
 		} else if (cause instanceof ServiceException) {
 			ServiceException e = (ServiceException)cause;

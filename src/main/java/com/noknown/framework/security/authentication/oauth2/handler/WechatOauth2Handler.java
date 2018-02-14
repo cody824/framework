@@ -17,34 +17,41 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author guodong
+ */
 @Component("WechatOauth2Handler")
 public class WechatOauth2Handler implements Oauth2Handler {
-	
+
 	public final Logger logger = LoggerFactory.getLogger(getClass());
-	
-	@Autowired
-	private AppInfo baseAppIdUtil;
-	
-	@Autowired
-	private GlobalConfigService gcs;
-	
-	@Autowired
-	private UserService userService;
+
+	private final AppInfo baseAppIdUtil;
+
+	private final GlobalConfigService gcs;
+
+	private final UserService userService;
+
+	private final WxMpServiceRepo wxRepo;
 
 	@Autowired
-	private WxMpServiceRepo wxRepo;
-	
+	public WechatOauth2Handler(AppInfo baseAppIdUtil, GlobalConfigService gcs, UserService userService, WxMpServiceRepo wxRepo) {
+		this.baseAppIdUtil = baseAppIdUtil;
+		this.gcs = gcs;
+		this.userService = userService;
+		this.wxRepo = wxRepo;
+	}
+
 
 	@Override
 	public ThirdPartyAccount doAuth(String code, String state) {
 		String openId, avatar, avatarHd, nickname;
-		ThirdPartyAccount tpa = null;
+		ThirdPartyAccount tpa;
 		String appId;
 		String[]  stateParam;
-		
-		
+
+
 		if (StringUtil.isBlank(state)){
-			 throw new BadCredentialsException("state参数错误");
+			throw new BadCredentialsException("state参数错误");
 		} else {
 			stateParam = state.split(",");
 			if (stateParam.length < 3) {
@@ -53,16 +60,16 @@ public class WechatOauth2Handler implements Oauth2Handler {
 			appId = stateParam[2];
 		}
 		try {
-			WxMpUser wechatUser = null;
+			WxMpUser wechatUser;
 			WxMpService ws = wxRepo.getService(appId);
 			if (ws == null) {
 				throw new BadCredentialsException("无效的APPID");
 			}
-			
-			
+
+
 			WxMpOAuth2AccessToken accessToken = ws.oauth2getAccessToken(code);
 			wechatUser = ws.oauth2getUserInfo(accessToken, null);
-			
+
 			openId = wechatUser.getOpenId();
 			nickname = wechatUser.getNickname();
 			avatar = wechatUser.getHeadImgUrl();
@@ -88,7 +95,7 @@ public class WechatOauth2Handler implements Oauth2Handler {
 			}
 			logger.error("处理绑定微信失败, 错误原因:{}", e.getLocalizedMessage());
 			throw new AuthenticationServiceException(e.getLocalizedMessage());
-		} 
+		}
 	}
 
 }

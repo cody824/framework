@@ -11,13 +11,16 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.Date;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * @author guodong
+ */
 public class XMemcachedCacheServiceImpl implements CacheService {
-	
+
 	public final Logger logger = LoggerFactory.getLogger(getClass());
-	
+
 	@Autowired
 	private MemcachedClient memcachedClient;
-	
+
 	@Value("${cache.prefix:noknown}")
 	private String prefix;
 

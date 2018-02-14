@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * @author guodong
+ */
 public class ErrorMsg implements Serializable {
 	private static final long serialVersionUID = 8853943991332469005L;
 	

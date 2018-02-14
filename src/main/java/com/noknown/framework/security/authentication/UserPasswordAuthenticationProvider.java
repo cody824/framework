@@ -1,6 +1,6 @@
 package com.noknown.framework.security.authentication;
 
-import com.noknown.framework.common.exception.DAOException;
+import com.noknown.framework.common.exception.DaoException;
 import com.noknown.framework.common.exception.ServiceException;
 import com.noknown.framework.common.util.StringUtil;
 import com.noknown.framework.security.exception.AuthodeErrorException;
@@ -115,7 +115,7 @@ public class UserPasswordAuthenticationProvider implements AuthenticationProvide
 			saInfo.setTpaList(tpaList);
 		} catch (ServiceException e) {
 			throw new BadCredentialsException(e.getLocalizedMessage());
-		} catch (DAOException e) {
+		} catch (DaoException e) {
 			throw new org.springframework.security.authentication.AuthenticationServiceException(e.getLocalizedMessage());
 		}
 		return saInfo;

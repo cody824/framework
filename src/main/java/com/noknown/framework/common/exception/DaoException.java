@@ -4,87 +4,81 @@ import com.noknown.framework.common.web.model.ErrorMsg;
 
 
 /**
- * 
- * 
  * DAO类抛出异常的包装
- * 
- * 
- * 
- * 
+ *
+ * @author guodong
+ * <p>
  * JDK版本:
- * 
+ * <p>
  * 1.5
- * 
  * @version 1.1
  * @since 1.0
  */
+public class DaoException extends Exception {
 
-
-public class DAOException extends Exception{
-	
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -2240679549488998517L;
-	
+
 	private ErrorMsg emsg;
 
-	public DAOException(String message){
+	public DaoException(String message) {
 		super(message);
 		emsg = new ErrorMsg();
 	}
-	
-	public DAOException(String message, int errorNum){
+
+	public DaoException(String message, int errorNum) {
 		super(message);
 		emsg = new ErrorMsg();
 		emsg.setErrorNum(errorNum);
 		emsg.setErrorMsg(message);
 	}
-	
-	public DAOException(String message, ErrorMsg msg){
+
+	public DaoException(String message, ErrorMsg msg) {
 		super(message);
 		emsg = msg;
 	}
-	
-	public DAOException(Throwable cause) {
+
+	public DaoException(Throwable cause) {
 		super(cause);
-		if (cause instanceof DAOException) {
-			DAOException e = (DAOException)cause;
+		if (cause instanceof DaoException) {
+			DaoException e = (DaoException) cause;
 			emsg = e.getEmsg();
 		} else if (cause instanceof ServiceException) {
-			ServiceException e = (ServiceException)cause;
+			ServiceException e = (ServiceException) cause;
 			emsg = e.getEmsg();
 		} else if (cause instanceof UtilException) {
-			UtilException e = (UtilException)cause;
+			UtilException e = (UtilException) cause;
 			emsg = e.getEmsg();
 		}
 		emsg = new ErrorMsg();
 	}
-	
-	public DAOException(Throwable cause, int errorNum) {
+
+	public DaoException(Throwable cause, int errorNum) {
 		super(cause);
 		emsg = new ErrorMsg();
 		emsg.setErrorNum(errorNum);
 		emsg.setErrorMsg(cause.getMessage());
 	}
-	
-	public DAOException(Throwable cause, ErrorMsg emsg) {
+
+	public DaoException(Throwable cause, ErrorMsg emsg) {
 		super(cause);
 		this.emsg = emsg;
 	}
 
-	public DAOException(String message, Throwable cause) {
+	public DaoException(String message, Throwable cause) {
 		super(message, cause);
 	}
-	
-	public DAOException(String message, Throwable cause, int errorNum) {
+
+	public DaoException(String message, Throwable cause, int errorNum) {
 		super(message, cause);
 		emsg = new ErrorMsg();
 		emsg.setErrorNum(errorNum);
 		emsg.setErrorMsg(cause.getMessage());
 	}
-	
-	public DAOException(String message, Throwable cause, ErrorMsg emsg) {
+
+	public DaoException(String message, Throwable cause, ErrorMsg emsg) {
 		super(message, cause);
 		this.emsg = emsg;
 	}

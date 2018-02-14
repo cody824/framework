@@ -21,11 +21,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 
+/**
+ * @author guodong
+ */
 @Component
 public class SureProcessingFilter  extends AbstractAuthenticationProcessingFilter {
-	
+
 	private static String defautlLoginAction = "/base/auth";
 
 	private static String userNameParam = "username";
@@ -36,15 +38,15 @@ public class SureProcessingFilter  extends AbstractAuthenticationProcessingFilte
 	private static String authcodeParam = "authcode";
 	private static String codeParam = "code";
 	private static String stateParam = "state";
-	
+
 	@Autowired
 	private AuthenticationManager authenticationManager;
-	
+
 	public SureProcessingFilter() {
 		super(defautlLoginAction);
 		super.setAuthenticationManager(authenticationManager);
 	}
-	
+
 	public SureProcessingFilter(String defaultFilterProcessesUrl) {
 		super(defaultFilterProcessesUrl);
 		super.setAuthenticationManager(authenticationManager);
@@ -52,34 +54,34 @@ public class SureProcessingFilter  extends AbstractAuthenticationProcessingFilte
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-			throws AuthenticationException, IOException, ServletException {
+			throws AuthenticationException, ServletException {
 		HttpSession session = request.getSession();
 		String userName = request.getParameter(userNameParam);
-        String password = request.getParameter(passwordParam);
-        String phone = request.getParameter(phoneParam);
-        String phoneAuthcode = request.getParameter(phoneAuthcodeParam);
-        String authcode = request.getParameter(authcodeParam);
-        String clientId = request.getParameter(clientIdParam);
-        String code = request.getParameter(codeParam);
-        String state = request.getParameter(stateParam);
-        Authentication token = null;
+		String password = request.getParameter(passwordParam);
+		String phone = request.getParameter(phoneParam);
+		String phoneAuthcode = request.getParameter(phoneAuthcodeParam);
+		String authcode = request.getParameter(authcodeParam);
+		String clientId = request.getParameter(clientIdParam);
+		String code = request.getParameter(codeParam);
+		String state = request.getParameter(stateParam);
+		Authentication token = null;
 		if (clientId == null) {
 			clientId = session.getId();
 		}
-        if (userName != null && password != null){
-        	token = new SureUsernamePasswordAuthenticationToken(userName, password, authcode, clientId);
-        } else if (code != null && state != null){
-	   		String[] stateParam = state.split(",");
-	   		String authSessionId = stateParam[1];
-	   		if (StringUtil.isBlank(authSessionId) || !authSessionId.equals(session.getId())) {
-	   			throw new ServletException("非法请求");
-	   		}
-        	token = new SureOauthToken(code, state);
+		if (userName != null && password != null) {
+			token = new SureUsernamePasswordAuthenticationToken(userName, password, authcode, clientId);
+		} else if (code != null && state != null) {
+			String[] stateParam = state.split(",");
+			String authSessionId = stateParam[1];
+			if (StringUtil.isBlank(authSessionId) || !authSessionId.equals(session.getId())) {
+				throw new ServletException("非法请求");
+			}
+			token = new SureOauthToken(code, state);
 
-        } else if (phone != null && phoneAuthcode != null) {
-        	token = new SurePhoteAuthToken(phone, phoneAuthcode, authcode, clientId);
-        } 
-        if (token == null) {
+		} else if (phone != null && phoneAuthcode != null) {
+			token = new SurePhoteAuthToken(phone, phoneAuthcode, authcode, clientId);
+		}
+		if (token == null) {
 			//微博取消之后 返回下面的地址
 			// http://192.168.2.180:8080/browse/ZYY-894
 			//http://www.smartprt.com.cn/base/auth?state=weibo,za6v4z09jncp1kgsmy5ifeton
@@ -97,21 +99,21 @@ public class SureProcessingFilter  extends AbstractAuthenticationProcessingFilte
 			}
 		}
 
-        Authentication auth = this.getAuthenticationManager().authenticate(token);  
-        //此处为登录成功后，相应的处理逻辑  
-        if (auth == null || !auth.isAuthenticated()) { 
-       		throw new BadCredentialsException("登录失败");
-        }
-        session.setAttribute(Constants.SURE_LOGIN_INFO, auth);
-        if (auth instanceof SureAuthenticationInfo) {
-        	SureAuthenticationInfo saInfo = (SureAuthenticationInfo) auth;
-        	session.setAttribute(Constants.SURE_LOGIN_USER_NAME, saInfo.getUd().getFullName());
-        	session.setAttribute(Constants.SURE_LOGIN_USER_ID, saInfo.getUser().getId());
-        	session.setAttribute(Constants.SURE_LOGIN_USER, saInfo.getUser());
-        	session.setAttribute(Constants.SURE_LOGIN_USER_DETAIL, saInfo.getUd());
-        	session.setAttribute(Constants.SURE_LOGIN_USER_ROLES, saInfo.getRoles());
+		Authentication auth = this.getAuthenticationManager().authenticate(token);
+		//此处为登录成功后，相应的处理逻辑
+		if (auth == null || !auth.isAuthenticated()) {
+			throw new BadCredentialsException("登录失败");
 		}
-        return auth;  
+		session.setAttribute(Constants.SURE_LOGIN_INFO, auth);
+		if (auth instanceof SureAuthenticationInfo) {
+			SureAuthenticationInfo saInfo = (SureAuthenticationInfo) auth;
+			session.setAttribute(Constants.SURE_LOGIN_USER_NAME, saInfo.getUd().getFullName());
+			session.setAttribute(Constants.SURE_LOGIN_USER_ID, saInfo.getUser().getId());
+			session.setAttribute(Constants.SURE_LOGIN_USER, saInfo.getUser());
+			session.setAttribute(Constants.SURE_LOGIN_USER_DETAIL, saInfo.getUd());
+			session.setAttribute(Constants.SURE_LOGIN_USER_ROLES, saInfo.getRoles());
+		}
+		return auth;
 	}
 
 	@Override
@@ -127,17 +129,17 @@ public class SureProcessingFilter  extends AbstractAuthenticationProcessingFilte
 			AuthenticationFailureHandler failureHandler) {
 		super.setAuthenticationFailureHandler(failureHandler);
 	}
-	
-	
-	@Override  
-    public void afterPropertiesSet() {  
+
+
+	@Override
+	public void afterPropertiesSet() {
 		super.setAuthenticationManager(this.authenticationManager);
-        super.afterPropertiesSet();  
-        /* 
-        *该处理器实现了AuthenticationSuccessHandler, AuthenticationFailureHandler 
-        *用于处理登录成功或者失败后，跳转的界面 
-        */  
-  
-    }  
-	
+		super.afterPropertiesSet();
+		/*
+		 *该处理器实现了AuthenticationSuccessHandler, AuthenticationFailureHandler
+		 *用于处理登录成功或者失败后，跳转的界面
+		 */
+
+	}
+
 }

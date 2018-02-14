@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * @param <T> 数据类型
+ * @author guodong
+ */
 public class PageData<T> implements Serializable {
 
 	private static final long serialVersionUID = 6154488472992859862L;
@@ -34,39 +38,43 @@ public class PageData<T> implements Serializable {
 	private int limit;
 	private List<Integer> pages;
 	private int liststep = 10;
-	
+
 
 	public List<Integer> getPages() {
 		pages = new ArrayList<Integer>();
-		 int listbegin = (this.getPageNum() - (int) Math.ceil((double) liststep / 2));//从第几页开始显示分页信息
-         if (listbegin < 1){
-             listbegin = 1;
-         }
-         int listend = this.getPageNum() + liststep/2;//分页信息显示到第几页
-         if (listend > getTotalPage()){
-             listend = getTotalPage()+1;
-         }
-         for (;listbegin < listend;listbegin++){
-        	 pages.add(listbegin);
-         }
+		//从第几页开始显示分页信息
+		int listbegin = (this.getPageNum() - (int) Math.ceil((double) liststep / 2));
+		if (listbegin < 1) {
+			listbegin = 1;
+		}
+		//分页信息显示到第几页
+		int listend = this.getPageNum() + liststep / 2;
+		if (listend > getTotalPage()) {
+			listend = getTotalPage() + 1;
+		}
+		for (; listbegin < listend; listbegin++) {
+			pages.add(listbegin);
+		}
 		return pages;
 	}
-	
-	public  List<Integer> pager(int pageNO,int liststep,int pageCount){
-		 List<Integer> itemsIndex = new ArrayList<Integer>();
-		 int listbegin = (pageNO - (int) Math.ceil((double) liststep / 2));//从第几页开始显示分页信息
-         if (listbegin < 1){
-             listbegin = 1;
-         }
-         int listend = pageNO + liststep/2;//分页信息显示到第几页
-         if (listend > pageCount){
-             listend = pageCount+1;
-         }
-         for (;listbegin < listend;listbegin++){
-        	 itemsIndex.add(listbegin);
-         }
-         return itemsIndex;
-    }
+
+	public List<Integer> pager(int pageNO, int liststep, int pageCount) {
+		List<Integer> itemsIndex = new ArrayList<>();
+		//从第几页开始显示分页信息
+		int listbegin = (pageNO - (int) Math.ceil((double) liststep / 2));
+		if (listbegin < 1) {
+			listbegin = 1;
+		}
+		//分页信息显示到第几页
+		int listend = pageNO + liststep / 2;
+		if (listend > pageCount) {
+			listend = pageCount + 1;
+		}
+		for (; listbegin < listend; listbegin++) {
+			itemsIndex.add(listbegin);
+		}
+		return itemsIndex;
+	}
 
 	public int getPageNum() {
 		if (limit != 0) {

@@ -9,19 +9,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * @author guodong
+ */
 @RestController
 public class SmsTestController extends BaseController {
 
-    protected final Logger logger = (Logger) LoggerFactory.getLogger(getClass());
+	protected final Logger logger = (Logger) LoggerFactory.getLogger(getClass());
 
 	@RequestMapping(value = "/sms/test/send", method = {RequestMethod.POST,RequestMethod.GET})
-	public ResponseEntity<?> analysis(@RequestParam String to, @RequestParam String text)
-			throws Exception {
+	public ResponseEntity<?> analysis(@RequestParam String to, @RequestParam String text) {
 		System.out.println("发送短信给出[" + to + "]:");
 		System.out.println("短信内容：" + text);
 		return ResponseEntity.ok("0");
 	}
-	
-	
-	
+
+
 }

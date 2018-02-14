@@ -3,10 +3,13 @@ package com.noknown.framework.common.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author guodong
+ */
 @Component
 @ConfigurationProperties(prefix="app")
 public class AppInfo {
-	
+
 	private String appId;
 
 	private String warProject;

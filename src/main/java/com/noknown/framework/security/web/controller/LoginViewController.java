@@ -11,24 +11,23 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.*;
 
-
+/**
+ * @author guodong
+ */
 @Controller
 public class LoginViewController extends BaseController {
 
 	@Value("${security.login.defaultView:login}")
 	private String defaultView = "login";
 
-	@Autowired
-	private GlobalConfigService gcs;
+	private final GlobalConfigService gcs;
 
-	@Autowired
-	private AppInfo appIdUtil;
+	private final AppInfo appIdUtil;
 	
 	  
     @Value("${security.login.qq:false}")
@@ -43,29 +42,28 @@ public class LoginViewController extends BaseController {
     @Value("${security.login.wechatOS:false}")
     private boolean supportWechatOSLogin;
 
-	/**
-	 * 登录页面
-	 * 
-	 * @param session
-	 * @param request
-	 * @param response
-	 * @param appId
-	 * @param view
-	 * @return
-	 * @throws Exception
-	 */
+	@Autowired
+	public LoginViewController(GlobalConfigService gcs, AppInfo appIdUtil) {
+		this.gcs = gcs;
+		this.appIdUtil = appIdUtil;
+	}
+
+
 	@RequestMapping(value = "/gotoLoginView", method = { RequestMethod.GET, RequestMethod.POST })
-	public String gotoLoginView(HttpSession session, HttpServletRequest request, HttpServletResponse response,
-			/* @PathVariable("tpType") String tpType, */
-			@RequestParam(required = false) String appId, @RequestParam(required = false) String view)
+	public String gotoLoginView(HttpSession session, HttpServletRequest request,
+	                            @RequestParam(required = false) String appId, @RequestParam(required = false) String view)
 			throws Exception {
-		String loginAction;// 登录请求
-		Map<String, String> urlMap = new HashMap<>();// 第三方登录url链接
+		// 登录请求
+		String loginAction;
+		// 第三方登录url链接
+		Map<String, String> urlMap = new HashMap<>(4);
 		// 支持的第三方登录类型，默认为"qq,wechat,weibo,wechatOS"，
 		// wechat只PC端微信二维码登录，wechatOS指微信环境授权登录
 		List<String> supportTpaType = new ArrayList<>();
-		String loginServer;// 登录回调服务器
-		String redirectUri;// 验证回调uri
+		// 登录回调服务器
+		String loginServer;
+		// 验证回调uri
+		String redirectUri;
 
 		Properties loginConfig = gcs.getProperties("loginConfig", appIdUtil.getAppId(), true);
 		if (loginConfig == null) {

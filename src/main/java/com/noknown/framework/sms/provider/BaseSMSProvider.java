@@ -17,79 +17,105 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
+/**
+ * @author 未知
+ */
 public abstract class BaseSMSProvider implements SMSProvider {
 
-    protected final Logger logger = (Logger) LoggerFactory.getLogger(getClass());
-
-    //发送成功
-    public static final String SEND_SUCCESS = "0";
-
-    //账户余额不足
-    public static final String NOT_ENOUGH_MONEY = "1";
-
-    //发送号码数理大于最大发送数量
-    public static final String OUT_OF_MAX_SEND_NUM = "2";
-
-    //传递接口参数不正确
-    public static final String ERROR_PARA = "3";
-
-    //用户名不存在
-    public static final String USER_NOT_EXIST = "4";
-
-    //用户名密码不正确
-    public static final String ERROR_PASSWARD = "5";
-
-    //提交过快（提交速度超过流速限制）
-    public static final String ERROR_SUBMIT_TOO_FAST = "6";
-
-    //系统忙（因平台侧原因，暂时无法处理提交的短信）
-    public static final String ERROR_SYSTEM_BUSY = "7";
-
-    //敏感词
-    public static final String ERROR_LIMIT_WORDS = "8";
-
-    //消息长度错
-    public static final String ERROR_MESSAGE_TOO_LONG = "9";
-
-    //未知错误
-    public static final String UNKNOWN_ERROR = "99";
+	/**
+	 * 发送成功
+	 */
+	public static final String SEND_SUCCESS = "0";
+	/**
+	 * 账户余额不足
+	 */
+	public static final String NOT_ENOUGH_MONEY = "1";
+	/**
+	 * 发送号码数理大于最大发送数量
+	 */
+	public static final String OUT_OF_MAX_SEND_NUM = "2";
+	/**
+	 * 传递接口参数不正确
+	 */
+	public static final String ERROR_PARA = "3";
+	/**
+	 * 用户名不存在
+	 */
+	public static final String USER_NOT_EXIST = "4";
+	/**
+	 * 用户名密码不正确s
+	 */
+	public static final String ERROR_PASSWARD = "5";
+	/**
+	 * 提交过快（提交速度超过流速限制）
+	 */
+	public static final String ERROR_SUBMIT_TOO_FAST = "6";
+	/**
+	 * 系统忙（因平台侧原因，暂时无法处理提交的短信）
+	 */
+	public static final String ERROR_SYSTEM_BUSY = "7";
+	/**
+	 * 敏感词
+	 */
+	public static final String ERROR_LIMIT_WORDS = "8";
+	/**
+	 * 消息长度错
+	 */
+	public static final String ERROR_MESSAGE_TOO_LONG = "9";
+	/**
+	 * 未知错误
+	 */
+	public static final String UNKNOWN_ERROR = "99";
+	public static BlockingQueue<SMS> msgQueue = new LinkedBlockingDeque<>(1000);
 
 	private static final HashMap<String, String> ERROR_CODE_NAME_MAP = new HashMap<>();
+	protected final Logger logger = (Logger) LoggerFactory.getLogger(getClass());
+	public String name;
 
-    public static BlockingQueue<SMS> msgQueue = new LinkedBlockingDeque<>(1000);
+	public int maxNum = 100;
 
-    public String name;
-
-    public int maxNum = 100;
-
-    public String split = ",";
+	public String split = ",";
 
 	@Value("${sms.support:false}")
 	private boolean smsSupport;
-
-    protected abstract void initProvider();
-
-    protected abstract String getSMSUrl(SMS sms);
-
-    protected abstract void checkResult(String code,String phones);
 
 	public static String getErrorNameByCode(String errorCode) {
 		String errorMsg = ERROR_CODE_NAME_MAP.get(errorCode);
 		if (errorMsg == null) {
 			return errorCode;
-        }
+		}
 		return ERROR_CODE_NAME_MAP.get(errorCode);
-    }
-    
+	}
 
-    public void sendError(String errorCode,String phone) {
-    	String message =String.format("短信发送失败--短信服务商【%s】--发送号码【%s】  --错误原因【%s】", name, phone, getErrorNameByCode(errorCode));
-        logger.error(message);
-    }
+	/**
+	 * 初始化短信服务商
+	 */
+	protected abstract void initProvider();
 
-    public void sendSuccess() {
-        logger.debug("短信发送成功");
-    }
+	/**
+	 * 获取发送短信的url
+	 *
+	 * @param sms 短信
+	 * @return
+	 */
+	protected abstract String getSMSUrl(SMS sms);
+
+	/**
+	 * 检测发送结果
+	 *
+	 * @param code   编码
+	 * @param phones 电话列表
+	 */
+	protected abstract void checkResult(String code, String phones);
+
+	public void sendError(String errorCode, String phone) {
+		String message = String.format("短信发送失败--短信服务商【%s】--发送号码【%s】  --错误原因【%s】", name, phone, getErrorNameByCode(errorCode));
+		logger.error(message);
+	}
+
+	public void sendSuccess() {
+		logger.debug("短信发送成功");
+	}
 
 	@PostConstruct
 	void runSMSSendThread() {
@@ -110,7 +136,7 @@ public abstract class BaseSMSProvider implements SMSProvider {
 
 		for (int i = 0; i < cpuNums; i++) {
 			pool.execute(new SMSSendThread(this));
-        }
+		}
 
 		logger.debug("创建短信发送队列");
 
@@ -126,25 +152,25 @@ public abstract class BaseSMSProvider implements SMSProvider {
 			ERROR_CODE_NAME_MAP.put(BaseSMSProvider.UNKNOWN_ERROR, "未知错误");
 		}
 		initProvider();
-    }
+	}
 
-    public String transitionPhones(List<String> phones) {
-        if (phones.size() == 1) {
-            return phones.get(0);
-        } else {
-            String phoneStr = "";
-            for (String phone : phones) {
-                if (RegexValidateUtil.checkMobile(phone)) {
-                    if (StringUtil.isBlank(phoneStr)) {
-                        phoneStr = phone;
-                    } else {
-                        phoneStr += this.split + phone;
-                    }
-                }
-            }
-            return phoneStr;
-        }
-    }
+	public String transitionPhones(List<String> phones) {
+		if (phones.size() == 1) {
+			return phones.get(0);
+		} else {
+			String phoneStr = "";
+			for (String phone : phones) {
+				if (RegexValidateUtil.checkMobile(phone)) {
+					if (StringUtil.isBlank(phoneStr)) {
+						phoneStr = phone;
+					} else {
+						phoneStr += this.split + phone;
+					}
+				}
+			}
+			return phoneStr;
+		}
+	}
 
 	/**
 	 * 将手机号码按照maxNum分拆成多组 （包含单组）
@@ -164,7 +190,7 @@ public abstract class BaseSMSProvider implements SMSProvider {
 			lis.add(mobileNos.subList(start, end));
 		}
 		return lis;
-    }
+	}
 
 	@Override
 	public Boolean send(String mobileNo, String msg) throws Exception {
@@ -251,33 +277,33 @@ public abstract class BaseSMSProvider implements SMSProvider {
 		}
 	}
 
-    public class SMSSendThread implements Runnable {
-    	
-    	SMSProvider processpr;
-    	
-    	public SMSSendThread(SMSProvider processpr) {
-    		super();
-    		this.processpr = processpr;
+	public class SMSSendThread implements Runnable {
+
+		SMSProvider processpr;
+
+		public SMSSendThread(SMSProvider processpr) {
+			super();
+			this.processpr = processpr;
 		}
-    	
-        @Override
-        public void run() {
-            logger.info("启动发送短信线程！");
-            try {
-                do {
-                    SMS sms = msgQueue.take();
 
-	                if (sms.getType().equals(SMS.TYPE_TXT)) {
-		                processpr.doProcessSMSByTxt(sms);
-	                }
+		@Override
+		public void run() {
+			logger.info("启动发送短信线程！");
+			try {
+				do {
+					SMS sms = msgQueue.take();
 
-	                if (sms.getType().equals(SMS.TYPE_TEMPLATE)) {
-		                processpr.doProcessSMSByTemplate(sms);
-	                }
-                } while (true);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
+					if (sms.getType().equals(SMS.TYPE_TXT)) {
+						processpr.doProcessSMSByTxt(sms);
+					}
+
+					if (sms.getType().equals(SMS.TYPE_TEMPLATE)) {
+						processpr.doProcessSMSByTemplate(sms);
+					}
+				} while (true);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }

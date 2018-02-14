@@ -3,62 +3,65 @@ package com.noknown.framework.security.model;
 import javax.persistence.*;
 import java.io.Serializable;
 
+/**
+ * @author guodong
+ */
 @Entity
 @Table(name = "security_tpa")
 public class ThirdPartyAccount implements Serializable {
-	
+
 	private static final long serialVersionUID = -2129093964399945648L;
-	
+
 	/**
 	 * 主键 第三方账号ID
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
-	
+
 	/**
 	 * 关联的用户ID
 	 */
 	private Integer userId;
-	
+
 	/**
 	 * 第三方的账号类型
 	 */
 	private String accountType;
-	
+
 	/**
 	 * 第三方账号的ID
 	 */
 	private String openId;
-	
+
 	/**
 	 * 头像
 	 */
 	private String avatar;
-	
+
 	/**
 	 * 高清头像
 	 */
 	private String avatarHd;
-	
+
 	/**
-	 * 
+	 *
 	 * 昵称
 	 */
 	private String nickname;
-	
+
 	/**
 	 * 访问token
 	 */
 	private String accessToken;
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private String appId;
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private String unionId;
 
@@ -103,7 +106,7 @@ public class ThirdPartyAccount implements Serializable {
 	public void setAccountType(String accountType) {
 		this.accountType = accountType;
 	}
-	
+
 
 	/**
 	 * @return the openId

@@ -14,26 +14,33 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 import weibo4j.util.WeiboConfig;
 
+/**
+ * @author guodong
+ */
 @Component("WeiboOauth2Handler")
 public class WeiboOauth2Handler implements Oauth2Handler {
-	
+
 	public final Logger logger = LoggerFactory.getLogger(getClass());
-	
+
+	private final AppInfo baseAppIdUtil;
+
+	private final GlobalConfigService gcs;
+
+	private final UserService userService;
+
 	@Autowired
-	private AppInfo baseAppIdUtil;
-	
-	@Autowired
-	private GlobalConfigService gcs;
-	
-	@Autowired
-	private UserService userService;
+	public WeiboOauth2Handler(AppInfo baseAppIdUtil, GlobalConfigService gcs, UserService userService) {
+		this.baseAppIdUtil = baseAppIdUtil;
+		this.gcs = gcs;
+		this.userService = userService;
+	}
 
 	@Override
 	public ThirdPartyAccount doAuth(String code, String state) {
 		String openId, avatar, avatarHd, nickname;
-		ThirdPartyAccount tpa = null;
+		ThirdPartyAccount tpa;
 
-		String appId = null;
+		String appId;
 		String[]  stateParam;
 
 
@@ -56,7 +63,7 @@ public class WeiboOauth2Handler implements Oauth2Handler {
 			weibo4j.http.AccessToken accessToken;
 			accessToken = oauth.getAccessTokenByCode(code);
 			openId = accessToken.getUid();
-			
+
 			weibo4j.Users weiUser = new weibo4j.Users(weiboConfig);
 			weiUser.client.setToken(accessToken.getAccessToken());
 			weibo4j.model.User wUser = weiUser.showUserById(openId);
@@ -81,7 +88,7 @@ public class WeiboOauth2Handler implements Oauth2Handler {
 			}
 			logger.error("处理绑定weibo失败, 错误原因:{}", e.getLocalizedMessage());
 			throw new AuthenticationServiceException(e.getLocalizedMessage());
-		} 
+		}
 	}
 
 }

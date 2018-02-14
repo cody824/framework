@@ -5,7 +5,9 @@ import com.noknown.framework.common.model.GlobalConfig;
 
 import java.util.Properties;
 
-
+/**
+ * @author guodong
+ */
 public interface GlobalConfigDao {
 	
 	/**

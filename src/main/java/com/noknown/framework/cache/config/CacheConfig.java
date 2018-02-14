@@ -14,6 +14,9 @@ import org.springframework.context.annotation.PropertySource;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
+/**
+ * @author guodong
+ */
 @Configuration
 @PropertySource(value = "${spring.config.custom-path:classpath:}conf/${spring.profiles.active}/cache.properties", ignoreResourceNotFound = true)
 public class CacheConfig {
@@ -25,12 +28,12 @@ public class CacheConfig {
 
 	@Bean
 	public JedisPool redisPoolFactory(@Value("${redis.config.open:true}") boolean connect,
-			@Value("${spring.redis.host}") String host,
-			@Value("${spring.redis.port}") int port,
-			@Value("${spring.redis.timeout}") int timeout,
-			@Value("${spring.redis.pool.max-idle}") int maxIdle,
-			@Value("${spring.redis.pool.max-wait}") long  maxWaitMillis,
-			@Value("${spring.redis.password}") String password) {
+	                                  @Value("${spring.redis.host}") String host,
+	                                  @Value("${spring.redis.port}") int port,
+	                                  @Value("${spring.redis.timeout}") int timeout,
+	                                  @Value("${spring.redis.pool.max-idle}") int maxIdle,
+	                                  @Value("${spring.redis.pool.max-wait}") long maxWaitMillis,
+	                                  @Value("${spring.redis.password}") String password) {
 		JedisPool jedisPool = null;
 		if (connect) {
 			JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
@@ -45,7 +48,7 @@ public class CacheConfig {
 
 	@Bean
 	public MemcachedClient connectMemcachedClient(@Value("${memcached.config.open:false}") boolean connect,
-			@Value("${memcached.config.servers:memcached.soulinfo.com:11211}") String servers) {
+	                                              @Value("${memcached.config.servers:memcached.soulinfo.com:11211}") String servers) {
 		MemcachedClient client = null;
 		if (connect) {
 			XMemcachedClientFactoryBean factoryBean = new XMemcachedClientFactoryBean();
@@ -64,15 +67,15 @@ public class CacheConfig {
 	public CacheService connectionCache() {
 		CacheService cacheService;
 		switch (cacheType) {
-		case "jedis":
-			cacheService = new JedisCacheServiceImpl();
-			break;
-		case "xmemcached":
-			cacheService = new XMemcachedCacheServiceImpl();
-			break;
-		default:
-			cacheService = new JedisCacheServiceImpl();
-			break;
+			case "jedis":
+				cacheService = new JedisCacheServiceImpl();
+				break;
+			case "xmemcached":
+				cacheService = new XMemcachedCacheServiceImpl();
+				break;
+			default:
+				cacheService = new JedisCacheServiceImpl();
+				break;
 		}
 
 		return cacheService;

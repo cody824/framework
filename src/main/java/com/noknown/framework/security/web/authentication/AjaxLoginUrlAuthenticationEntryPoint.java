@@ -18,75 +18,78 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+/**
+ * @author guodong
+ */
 @Component
 public class AjaxLoginUrlAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint{
-	
-	private final Logger logger = LoggerFactory.getLogger(getClass());
-	
-	private static String defaultView = "/gotoLoginView";
-	
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	private static String defaultView = "/gotoLoginView";
+
+	@Value("${security.login.response401:true}")
 	private boolean response401 = true;
-	
+
 	private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
 	public AjaxLoginUrlAuthenticationEntryPoint(){
 		super(defaultView);
 	}
-	
-	  /**
-     * Performs the redirect (or forward) to the login form URL.
-     */
-	  @Override
-	  public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
-            throws IOException, ServletException {
 
-        String redirectUrl = null;
-        
-        boolean isAjax = isAjaxRequest(request);
-        if (isAjax) {
-	        if (response401) {
-		        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-	        }
+	/**
+	 * Performs the redirect (or forward) to the login form URL.
+	 */
+	@Override
+	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
+			throws IOException, ServletException {
+
+		String redirectUrl = null;
+
+		boolean isAjax = isAjaxRequest(request);
+		if (isAjax) {
+			if (response401) {
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			}
 			ErrorMsg msg = new ErrorMsg();
 			msg.setErrorNum(401);
 			msg.setErrorMsg("对不起，您需要登录");
 			responseOutWithJson(response, msg);
 			return;
-        } 
+		}
 
-        if (isUseForward()) {
+		if (isUseForward()) {
 
-            if (isForceHttps() && "http".equals(request.getScheme())) {
-                // First redirect the current request to HTTPS.
-                // When that request is received, the forward to the login page will be used.
-                redirectUrl = buildHttpsRedirectUrlForRequest(request);
-            }
+			if (isForceHttps() && "http".equals(request.getScheme())) {
+				// First redirect the current request to HTTPS.
+				// When that request is received, the forward to the login page will be used.
+				redirectUrl = buildHttpsRedirectUrlForRequest(request);
+			}
 
-            if (redirectUrl == null) {
-                String loginForm = determineUrlToUseForThisRequest(request, response, authException);
+			if (redirectUrl == null) {
+				String loginForm = determineUrlToUseForThisRequest(request, response, authException);
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Server side forward to: " + loginForm);
-                }
+				if (logger.isDebugEnabled()) {
+					logger.debug("Server side forward to: " + loginForm);
+				}
 
-                RequestDispatcher dispatcher = request.getRequestDispatcher(loginForm);
+				RequestDispatcher dispatcher = request.getRequestDispatcher(loginForm);
 
-                dispatcher.forward(request, response);
+				dispatcher.forward(request, response);
 
-                return;
-            }
-        } else {
-            // redirect to login page. Use https if forceHttps true
+				return;
+			}
+		} else {
+			// redirect to login page. Use https if forceHttps true
 
-            redirectUrl = buildRedirectUrlToLoginPage(request, response, authException);
+			redirectUrl = buildRedirectUrlToLoginPage(request, response, authException);
 
-        }
+		}
 
-        redirectStrategy.sendRedirect(request, response, redirectUrl);
-    }
-	
-	
+		redirectStrategy.sendRedirect(request, response, redirectUrl);
+	}
+
+
 	private boolean isAjaxRequest(HttpServletRequest request) {
 		boolean check = false;
 		if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
@@ -109,20 +112,6 @@ public class AjaxLoginUrlAuthenticationEntryPoint extends LoginUrlAuthentication
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	/**
-	 * @return the response401
-	 */
-	public boolean isResponse401() {
-		return response401;
-	}
-
-	/**
-	 * @param response401 the response401 to set
-	 */
-	public void setResponse401(boolean response401) {
-		this.response401 = response401;
 	}
 
 	@Override

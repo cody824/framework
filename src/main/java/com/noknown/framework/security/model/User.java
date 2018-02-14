@@ -15,6 +15,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * @author guodong
+ */
 @Entity
 @NamedEntityGraph(name = "User.role",
 		attributeNodes = @NamedAttributeNode("roles"))
@@ -23,7 +26,7 @@ import java.util.List;
 public class User implements Serializable, Authentication, UserDetails {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 6026489601310615286L;
 
@@ -41,15 +44,15 @@ public class User implements Serializable, Authentication, UserDetails {
 
 	@Column(length = 16)
 	private String mobile;
-	
+
 	private Boolean enable = true;
-	
+
 	private Boolean nickOk = false;
-	
+
 	private Date createDate;
-	
+
 	private Date lastPasswordResetDate;
-	
+
 	@Transient
 	private boolean isAuth;
 
@@ -64,13 +67,12 @@ public class User implements Serializable, Authentication, UserDetails {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		List<GrantedAuthority> auths = new ArrayList<>();
-        List<Role> roles = this.getRoles();
-        for (Role role : roles) {
-            auths.add(new SimpleGrantedAuthority(role.getName()));
-        }
-        return auths;
+		List<Role> roles = this.getRoles();
+		for (Role role : roles) {
+			auths.add(new SimpleGrantedAuthority(role.getName()));
+		}
+		return auths;
 	}
-	
 
 
 	/**
@@ -199,7 +201,7 @@ public class User implements Serializable, Authentication, UserDetails {
 	public void setRoles(List<Role> roles) {
 		this.roles = roles;
 	}
-	
+
 	public void addRole(Role role) {
 		if (roles == null) {
 			roles = new ArrayList<>();
@@ -208,11 +210,11 @@ public class User implements Serializable, Authentication, UserDetails {
 			roles.add(role);
 		}
 	}
-	
+
 	public void removeRole(Role role) {
 		if (roles != null){
 			roles.remove(role);
-		} 
+		}
 	}
 
 
@@ -224,19 +226,16 @@ public class User implements Serializable, Authentication, UserDetails {
 	}
 
 
-
 	@Override
 	public String getName() {
 		return "id";
 	}
 
 
-
 	@Override
 	public Object getCredentials() {
 		return password;
 	}
-
 
 
 	@Override
@@ -256,12 +255,10 @@ public class User implements Serializable, Authentication, UserDetails {
 	}
 
 
-
 	@Override
 	public boolean isAuthenticated() {
 		return isAuth;
 	}
-
 
 
 	@Override
@@ -280,12 +277,10 @@ public class User implements Serializable, Authentication, UserDetails {
 	}
 
 
-
 	@Override
 	public boolean isAccountNonExpired() {
 		return true;
 	}
-
 
 
 	@Override
@@ -294,12 +289,10 @@ public class User implements Serializable, Authentication, UserDetails {
 	}
 
 
-
 	@Override
 	public boolean isCredentialsNonExpired() {
 		return true;
 	}
-
 
 
 	@Override
@@ -308,14 +301,12 @@ public class User implements Serializable, Authentication, UserDetails {
 	}
 
 
-
 	/**
 	 * @return the nickOk
 	 */
 	public Boolean getNickOk() {
 		return nickOk;
 	}
-
 
 
 	/**

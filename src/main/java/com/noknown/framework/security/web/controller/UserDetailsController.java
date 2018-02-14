@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 
+import static com.noknown.framework.security.Constants.ROLE_ADMIN;
+
+/**
+ * @author guodong
+ */
 @RestController
 @RequestMapping(value = "/security")
 public class UserDetailsController  extends BaseController {
@@ -36,7 +41,7 @@ public class UserDetailsController  extends BaseController {
 		if (user == null) {
 			throw new WebException("对不起，需要登录后才能操作");
 		}
-		if (hasRole("ROLE_ADMIN")){
+		if (hasRole(ROLE_ADMIN)) {
 			canDo = true;
 		}
 		if (user.getPrincipal().equals(userId)){
@@ -67,7 +72,7 @@ public class UserDetailsController  extends BaseController {
 			return ResponseEntity.ok(ud);
 		}
 	}
-	
+
 	@RequestMapping(value = "/ud/loginInfo", method = RequestMethod.GET)
 	public ResponseEntity<?> getLoginUD()
 			throws WebException, ServiceException {
@@ -81,5 +86,5 @@ public class UserDetailsController  extends BaseController {
 		}
 		return ResponseEntity.ok(udDetails);
 	}
-	
+
 }

@@ -13,20 +13,23 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+/**
+ * @author guodong
+ */
 @Service
 public class TokenAuthServiceImpl implements TokenAuthService {
 
 	private AuthenticationManager authenticationManager;
 	private UserService userDetailsService;
 	private JwtTokenUtil jwtTokenUtil;
-	
 
-    @Value("${security.jwt.tokenHead}")
-    private String tokenHead;
+
+	@Value("${security.jwt.tokenHead}")
+	private String tokenHead;
 
 	@Autowired
 	public TokenAuthServiceImpl(AuthenticationManager authenticationManager, UserService userDetailsService,
-			JwtTokenUtil jwtTokenUtil) {
+	                            JwtTokenUtil jwtTokenUtil) {
 		this.authenticationManager = authenticationManager;
 		this.userDetailsService = userDetailsService;
 		this.jwtTokenUtil = jwtTokenUtil;
@@ -41,21 +44,18 @@ public class TokenAuthServiceImpl implements TokenAuthService {
 
 		// Reload password post-security so we can generate token
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-		final String token = jwtTokenUtil.generateToken(userDetails);
-		return token;
+		return jwtTokenUtil.generateToken(userDetails);
 	}
-	
+
 
 	@Override
 	public String login(User user) {
 		user.setAuthenticated(true);
 		SecurityContextHolder.getContext().setAuthentication(user);
-		final String token = jwtTokenUtil.generateToken(user);
-		return token;
+		return jwtTokenUtil.generateToken(user);
 	}
 
-	
-	
+
 	@Override
 	public String refresh(String oldToken) {
 		final String token = oldToken.substring(tokenHead.length());

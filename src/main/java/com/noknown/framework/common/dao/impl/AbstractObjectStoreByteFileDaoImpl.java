@@ -1,8 +1,8 @@
 package com.noknown.framework.common.dao.impl;
 
 import com.noknown.framework.common.dao.ObjectStoreDao;
-import com.noknown.framework.common.exception.DAOException;
-import com.noknown.framework.common.util.JsonFileUtil;
+import com.noknown.framework.common.exception.DaoException;
+import com.noknown.framework.common.util.ObjectUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,24 +10,27 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractObjectStoreJSONFileDaoImpl implements ObjectStoreDao {
+/**
+ * @author guodong
+ */
+public abstract class AbstractObjectStoreByteFileDaoImpl implements ObjectStoreDao {
 
 	private  final Logger logger = LoggerFactory.getLogger(getClass());
-
+	
 	@Override
-	public Object getObjectByKey(String path, String key) throws DAOException {
+	public Object getObjectByKey(String path, String key) throws DaoException {
 		return getObjectByKey(path, key, Object.class);
 	}
 
 	@Override
-	public Object getObjectByKey(String path, String key, Class<?> clazz) throws DAOException {
+	public Object getObjectByKey(String path, String key, Class<?> clazz) throws DaoException {
 		Object object;
-		String filePath = getDefaultBasePath() + File.separator + path
+		String filePath = getBasePath() + File.separator + path
 				+ File.separator + key;
 		try {
-			object = JsonFileUtil.readObjectFromJsonFile(filePath, clazz);
+			object = ObjectUtil.readObjectFromFile(filePath);
 		} catch (Exception e) {
-			throw new DAOException(e);
+			throw new DaoException(e);
 		}
 		return object;
 	}
@@ -36,15 +39,15 @@ public abstract class AbstractObjectStoreJSONFileDaoImpl implements ObjectStoreD
 	public List<Object> getObjectList(String path, Class<?> c) {
 		List<Object> list = new ArrayList<>();
 		Object object;
-		String filePath = getDefaultBasePath() + File.separator + path
+		String filePath = getBasePath() + File.separator + path
 				+ File.separator;
 		File dir = new File(filePath);
 		if (dir.exists() && dir.isDirectory()) {
 			File[] files = dir.listFiles();
-			if (files != null){
+			if (files != null) {
 				for (File file : files) {
 					try {
-						object = JsonFileUtil.readObjectFromJsonFile(file.getPath(), c);
+						object = ObjectUtil.readObjectFromFile(file.getPath());
 						list.add(object);
 					} catch (Exception e) {
 						logger.warn(e.getLocalizedMessage());
@@ -56,20 +59,21 @@ public abstract class AbstractObjectStoreJSONFileDaoImpl implements ObjectStoreD
 	}
 
 	@Override
-	public String saveObject(String path, String key, Object obj) throws DAOException {
-		String filePath = getDefaultBasePath() + File.separator + path
+	public String saveObject(String path, String key, Object obj) throws DaoException {
+		String filePath = getBasePath() + File.separator + path
 				+ File.separator + key;
+		
 		try {
-			JsonFileUtil.writeToJsonFile(filePath, obj);
+			ObjectUtil.writeToFile(filePath, obj);
 			return filePath;
 		} catch (Exception e) {
-			throw new DAOException(e);
+			throw new DaoException(e);
 		}
 	}
 
 	@Override
-	public boolean removeObject(String path, String key) {
-		String filePath = getDefaultBasePath() + File.separator + path
+	public boolean removeObject(String path, String key) throws DaoException {
+		String filePath = getBasePath() + File.separator + path
 				+ File.separator + key;
 		boolean ret = false;
 		File file = new File(filePath);
@@ -78,7 +82,13 @@ public abstract class AbstractObjectStoreJSONFileDaoImpl implements ObjectStoreD
 		}
 		return ret;
 	}
-	
-	public abstract String getDefaultBasePath();
+
+	/**
+	 * 返回基础路径
+	 *
+	 * @return 路径
+	 */
+	public abstract String getBasePath();
+
 
 }

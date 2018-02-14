@@ -8,7 +8,9 @@ import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 import java.util.Date;
 
-
+/**
+ * @author guodong
+ */
 @MappedSuperclass
 @Lazy(value = false)
 public abstract class BaseUserDetails implements Serializable {
@@ -36,7 +38,6 @@ public abstract class BaseUserDetails implements Serializable {
 	/**
 	 * 生日
 	 */
-/*	@JsonSerialize(using = CustomDateSerializer.class)  */
 	private Date birthDay;
 	
 	/**

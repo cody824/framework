@@ -10,9 +10,14 @@ import org.springframework.beans.factory.annotation.Value;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+/**
+ * @author 未知
+ */
 public class LanChuangSMSProvider extends BaseSMSProvider implements SMSProvider {
 
     private final Logger logger = (Logger) LoggerFactory.getLogger(getClass());
+
+    private static final String ID = "id";
 
     @Value("${sms.lanchuang.apiurl}")
     private String apiUrl = "";
@@ -24,7 +29,7 @@ public class LanChuangSMSProvider extends BaseSMSProvider implements SMSProvider
     private String signature = "";
 
     @Override
-	protected void initProvider() {
+    protected void initProvider() {
         this.name = "蓝创科技";
         this.maxNum = 100;
     }
@@ -33,13 +38,11 @@ public class LanChuangSMSProvider extends BaseSMSProvider implements SMSProvider
     public String getSMSUrl(SMS sms) {
         String urlFmt = "%s?account=%s&pswd=%s&mobile=%s&msg=%s&needstatus=true";
 
-        if(StringUtil.isNotBlank(signature))
-        {
-        	urlFmt="%s?un=%s&pw=%s&da=%s&sm=%s&dc=15&rd=1&tf=3&rf=2e";
+        if (StringUtil.isNotBlank(signature)) {
+            urlFmt = "%s?un=%s&pw=%s&da=%s&sm=%s&dc=15&rd=1&tf=3&rf=2e";
         }
 
 
-       
         try {
             return String.format(urlFmt, apiUrl, account, pswd,
                     transitionPhones(sms.getPhones()), URLEncoder.encode(signature+sms.getContent(), "UTF-8"));
@@ -48,6 +51,7 @@ public class LanChuangSMSProvider extends BaseSMSProvider implements SMSProvider
         }
         return null;
     }
+
     /**
      * 0	提交成功
      * 101	无此用户
@@ -70,22 +74,20 @@ public class LanChuangSMSProvider extends BaseSMSProvider implements SMSProvider
      * 119	用户已过期
      * 120	短信内容不在白名单中
      *
-     * @param code
+     * @param code 编码
      */
     @Override
-	protected void checkResult(String code,String phones) {
+    protected void checkResult(String code, String phones) {
 
         logger.info(String.format("【%s】发送短消息结果【%s】！", name, code));
 
         String state=code.split(",")[1];
-        
-        if(state.startsWith("0"))
-        {
-        	 sendSuccess();
-        	 return;
+
+        if (state.startsWith(BaseSMSProvider.SEND_SUCCESS)) {
+            sendSuccess();
+            return;
         }
-        if(code.contains("id"))
-        {
+        if (code.contains(ID)) {
             sendSuccess();
             return;
         }

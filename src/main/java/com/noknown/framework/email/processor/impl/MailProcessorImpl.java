@@ -23,18 +23,20 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.*;
 
+/**
+ * @author 未知
+ */
 @Component
 public class MailProcessorImpl implements MailProcessor {
 
 	private final Logger logger = (Logger) LoggerFactory.getLogger(getClass());
 
-	/* 邮件发送器 */
-	@Autowired
-	private JavaMailSender sender;
-	
-	/* 模板解析 */
-	@Autowired
-	private FreeMarkerConfigurer freeMarkerConfigurer = null;
+	private final JavaMailSender sender;
+
+	private final FreeMarkerConfigurer freeMarkerConfigurer;
+
+	@Value("${mail.support:false}")
+	private boolean mailSupport;
 
 	@Value("${mail.fromUser:noknown@163.com}")
 	private String fromUser;
@@ -45,11 +47,20 @@ public class MailProcessorImpl implements MailProcessor {
 	@Value("${mail.waitSecond:0}")
 	private int waitSecond;
 
-	public BlockingQueue<MimeMessage> msgQueue = new LinkedBlockingDeque<>(1000);
+	private BlockingQueue<MimeMessage> msgQueue = new LinkedBlockingDeque<>(1000);
+
+	@Autowired
+	public MailProcessorImpl(JavaMailSender sender, FreeMarkerConfigurer freeMarkerConfigurer) {
+		this.sender = sender;
+		this.freeMarkerConfigurer = freeMarkerConfigurer;
+	}
 
 	@PostConstruct
 	void runEmailThread() {
 
+		if (!mailSupport) {
+			return;
+		}
 
 		ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
 				.setNameFormat("email-sender-%d").build();
@@ -57,7 +68,7 @@ public class MailProcessorImpl implements MailProcessor {
 		//Common Thread Pool
 		ExecutorService pool = new ThreadPoolExecutor(sendTreadNum, 200,
 				0L, TimeUnit.MILLISECONDS,
-				new LinkedBlockingQueue<Runnable>(1024), namedThreadFactory, new ThreadPoolExecutor.AbortPolicy());
+				new LinkedBlockingQueue<>(1024), namedThreadFactory, new ThreadPoolExecutor.AbortPolicy());
 
 		for (int i = 0; i < sendTreadNum; i++) {
 			pool.execute(new EmailSendThread());
@@ -97,7 +108,7 @@ public class MailProcessorImpl implements MailProcessor {
 
 	@Override
 	public boolean sendMail(String from, String to, String subject, String tpl, Map<String, String> tplData,
-			boolean async) {
+	                        boolean async) {
 		String content = this.getMailContentFromTpl(tpl, tplData);
 		return this.sendMail(from, to, subject, content, async);
 	}
@@ -118,16 +129,8 @@ public class MailProcessorImpl implements MailProcessor {
 		}
 	}
 
-	public String getFromUser() {
-		return fromUser;
-	}
-
-	public void setFromUser(String fromUser) {
-		this.fromUser = fromUser;
-	}
-
 	private Template getMailTpl(String tpl) {
-		Template mailTpl = null;
+		Template mailTpl;
 		try {
 			mailTpl = freeMarkerConfigurer.getConfiguration().getTemplate(tpl);
 		} catch (IOException e) {
@@ -158,16 +161,19 @@ public class MailProcessorImpl implements MailProcessor {
 		@Override
 		public void run() {
 			logger.info("启动发送邮件线程！");
-			try {
-				do {
+			while (true) {
+				try {
 					MimeMessage message = msgQueue.take();
 					sender.send(message);
 					if (waitSecond > 0) {
 						Thread.sleep(1000 * waitSecond);
 					}
-				} while (true);
-			} catch (Exception e) {
-				e.printStackTrace();
+				} catch (InterruptedException e) {
+					break;
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.error(e.getLocalizedMessage());
+				}
 			}
 		}
 	}

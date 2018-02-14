@@ -14,11 +14,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author guodong
+ */
 @Component
 public class JwtTokenUtil implements Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 5736754086917853567L;
 
@@ -42,20 +45,19 @@ public class JwtTokenUtil implements Serializable {
 		}
 		return username;
 	}
-	
+
 	public User getUserFromToken(String token) {
 		User user;
 		try {
 			final Claims claims = getClaimsFromToken(token);
-			user = (User) JsonUtil.toObject((String)claims.get(CLAIM_KEY_USER), User.class);
+			user = JsonUtil.toObject((String) claims.get(CLAIM_KEY_USER), User.class);
 		} catch (Exception e) {
-			//e.printStackTrace();
 			user = null;
 		}
 		return user;
 	}
 
-	public Date getCreatedDateFromToken(String token) {
+	private Date getCreatedDateFromToken(String token) {
 		Date created;
 		try {
 			final Claims claims = getClaimsFromToken(token);
@@ -66,7 +68,7 @@ public class JwtTokenUtil implements Serializable {
 		return created;
 	}
 
-	public Date getExpirationDateFromToken(String token) {
+	private Date getExpirationDateFromToken(String token) {
 		Date expiration;
 		try {
 			final Claims claims = getClaimsFromToken(token);
@@ -82,7 +84,6 @@ public class JwtTokenUtil implements Serializable {
 		try {
 			claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 		} catch (Exception e) {
-			//e.printStackTrace();
 			claims = null;
 		}
 		return claims;
@@ -102,14 +103,14 @@ public class JwtTokenUtil implements Serializable {
 	}
 
 	public String generateToken(UserDetails userDetails) {
-		Map<String, Object> claims = new HashMap<>();
+		Map<String, Object> claims = new HashMap<>(3);
 		claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
 		claims.put(CLAIM_KEY_USER, JsonUtil.toJson(userDetails));
 		claims.put(CLAIM_KEY_CREATED, new Date());
 		return generateToken(claims);
 	}
 
-	String generateToken(Map<String, Object> claims) {
+	private String generateToken(Map<String, Object> claims) {
 		return Jwts.builder().setClaims(claims).setExpiration(generateExpirationDate())
 				.signWith(SignatureAlgorithm.HS512, secret).compact();
 	}

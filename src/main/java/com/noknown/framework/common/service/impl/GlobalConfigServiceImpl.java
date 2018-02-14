@@ -11,14 +11,21 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+/**
+ * @author guodong
+ */
 @Service
 public class GlobalConfigServiceImpl implements GlobalConfigService {
 
-	@Autowired
-	private GlobalConfigDao gcDao;
+	private final GlobalConfigDao gcDao;
 
 	private static GlobalConfig globalConfig;
-	
+
+	@Autowired
+	public GlobalConfigServiceImpl(GlobalConfigDao gcDao) {
+		this.gcDao = gcDao;
+	}
+
 	@Override
 	public void fetchConfig(String configType, String domain, String key, boolean isDelete) {
 		Map<String, ConfigRepo> crs = globalConfig.getConfigRepos();
@@ -44,20 +51,17 @@ public class GlobalConfigServiceImpl implements GlobalConfigService {
 
 	@Override
 	public String getConfig(String configType, String domain, String key, boolean isFetch) {
-		String value = null;
+		String value;
 		if (globalConfig == null || isFetch) {
 			getGlobalConfig(true);
 		}
 		value = globalConfig.getConfig(configType, domain, key);
-		if (value != null) {
-			value = new String(value);
-		}
 		return value;
 	}
 
 	@Override
 	public Properties getProperties(String configType, String domain, boolean isFetch) {
-		Properties p = null;
+		Properties p;
 		if (globalConfig == null || isFetch) {
 			getGlobalConfig(true);
 		}
@@ -70,7 +74,7 @@ public class GlobalConfigServiceImpl implements GlobalConfigService {
 
 	@Override
 	public ConfigRepo getConfigRepo(String configType, boolean isFetch) {
-		ConfigRepo cr = null;
+		ConfigRepo cr;
 		if (globalConfig == null || isFetch) {
 			getGlobalConfig(true);
 		}
@@ -103,20 +107,20 @@ public class GlobalConfigServiceImpl implements GlobalConfigService {
 
 	@Override
 	public void updateProperties(String cofnigType, String domain,
-			Properties configs) {
+	                             Properties configs) {
 		gcDao.updateProperties(cofnigType, domain, configs);
 		getGlobalConfig(true);
 
 	}
-	
+
 
 	@Override
 	public void updateValue(String cofnigType, String domain, String key,
-			String value) {
+	                        String value) {
 		gcDao.updateValue(cofnigType, domain, key, value);
 		fetchConfig(cofnigType, domain, key, false);
 	}
-	
+
 	@Override
 	public void deleteValue(String cofnigType, String domain, String key) {
 		gcDao.deleteValue(cofnigType, domain, key);
@@ -135,31 +139,24 @@ public class GlobalConfigServiceImpl implements GlobalConfigService {
 		gcDao.removeProperties(configType, domain);
 		getGlobalConfig(true);
 	}
-	
+
 	@Override
 	public Properties getNameConfig() {
 		Properties ncp;
-		
+
 		ncp = gcDao.getNameConfig();
-		
+
 		return ncp;
 	}
-	
+
 	@Override
 	public void updateNameConfig(String key, String value) {
 		gcDao.updateNameConfig(key, value);
 	}
-	
+
 	@Override
 	public void deleteNameConfig(String key) {
 		gcDao.deleteNameConfig(key);
 	}
 
-	public GlobalConfigDao getGcDao() {
-		return gcDao;
-	}
-
-	public void setGcDao(GlobalConfigDao gcDao) {
-		this.gcDao = gcDao;
-	}
 }

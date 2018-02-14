@@ -3,17 +3,6 @@ package com.noknown.framework.common.exception;
 import com.noknown.framework.common.web.model.ErrorMsg;
 
 /**
- * @(#)ServiceException.java 
- * 版权声明 soulinfo 版权所有 违者必究 
- *
- * 修订记录:
- * 1)更改者:郭栋
- * 时　间：2007-12-21　
- * 描　述：创建
- */
-
-
-/**
  * 
  * 
  * 服务类抛出异常的包装
@@ -29,8 +18,6 @@ import com.noknown.framework.common.web.model.ErrorMsg;
  * @version 1.1
  * @since 1.0
  */
-
-
 public class ServiceException extends Exception {
 	
 	/**
@@ -60,8 +47,8 @@ public class ServiceException extends Exception {
 
 	public ServiceException(Throwable cause) {
 		super(cause);
-		if (cause instanceof DAOException) {
-			DAOException e = (DAOException)cause;
+		if (cause instanceof DaoException) {
+			DaoException e = (DaoException) cause;
 			emsg = e.getEmsg();
 		} else if (cause instanceof ServiceException) {
 			ServiceException e = (ServiceException)cause;

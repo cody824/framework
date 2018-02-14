@@ -82,10 +82,6 @@ public class Role implements Serializable {
 	}
 
 
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
 		return "Role [id=" + id + ", name=" + name + ", comment=" + comment + "]";

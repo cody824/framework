@@ -293,7 +293,7 @@ public class RedisUtil {
 	 */
 	public Map<String, String> hgetall(String key) {
 		Jedis jedis = null;
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		try {
 			jedis = jedisPool.getResource();
 			map = jedis.hgetAll(key);

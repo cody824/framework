@@ -7,7 +7,13 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Date;
 
+
+/**
+ * @author 未知
+ */
 public class JedisCacheServiceImpl implements CacheService{
+
+	private static final String OK = "OK";
 
 	@Autowired
 	private RedisUtil redisUtil;
@@ -19,7 +25,7 @@ public class JedisCacheServiceImpl implements CacheService{
 	public boolean set(String key, Object obj, Date expireTime) {
 		//设置值
 		String ok = redisUtil.setObject(prefix + ":" + key, obj);
-		if(!"OK".equals(ok)){
+		if (!OK.equals(ok)) {
 			return false;
 		}
 
