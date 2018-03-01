@@ -138,7 +138,7 @@ public abstract class AbstractUserServiceImpl extends BaseServiceImpl<User, Inte
 		User user = new User();
 		user.setNick("wechat" + BaseUtil.getUUID());
 		user.setCreateDate(new Date());
-		user.setPassword(pswdEncoder.encode(openId));
+		user.setPassword(pswdEncoder.encode(nickname));
 		user.setLastPasswordResetDate(new Date());
 		user = userDao.save(user);
 		ThirdPartyAccount tpa = this.bindWxAccout(user.getId(), wxId, unionId, openId, avatar, avatarHd, nickname);
