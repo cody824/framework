@@ -65,7 +65,7 @@ public class AuthController  extends BaseController {
 			token = getTaken(tpaType, text, "figureurl_qq_1", "figureurl_qq_2", "nickname");
 		}  else if ("wechat".equals(tpaType)) {
 			Map<String, Object> map = JsonUtil.toMap(text);
-			String openId = (String) map.get("openId");
+			String openId = (String) map.get("openid");
 			ThirdPartyAccount tpa = userService.getWxAccoutByOpenId(openId);
 			User user;
 			if (tpa != null) {
