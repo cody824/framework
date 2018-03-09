@@ -137,6 +137,15 @@ public class GlobalConfigImplDao implements GlobalConfigDao {
 
 	@Override
 	public void updateConfigRepo(String configType, ConfigRepo cr) {
+		String dirPath = getBasePath() + File.separator + configType;
+		File file = new File(dirPath);
+		if (!file.exists()) {
+			boolean ret = file.mkdirs();
+			if (!ret) {
+				logger.warn("配置库目录生成失败");
+			}
+		}
+
 		Properties repoProps = new OrderProperties();
 		if (StringUtil.isNotBlank(cr.getConfigDesc())) {
 			repoProps.put("configDesc", cr.getConfigDesc());
@@ -144,6 +153,7 @@ public class GlobalConfigImplDao implements GlobalConfigDao {
 		if (StringUtil.isNotBlank(cr.getConfigDesc())) {
 			repoProps.put("configName", cr.getConfigName());
 		}
+
 		if (!repoProps.isEmpty()) {
 			String path = getBasePath() + File.separator + configType
 					+ File.separator + configType + DESC_SUFFIX;

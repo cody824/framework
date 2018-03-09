@@ -101,6 +101,7 @@ public class GlobalConfigServiceImpl implements GlobalConfigService {
 
 	@Override
 	public void updateConfigRepo(String configType, ConfigRepo cr) {
+		gcDao.removeConfigRepo(configType);
 		gcDao.updateConfigRepo(configType, cr);
 		getGlobalConfig(true);
 	}

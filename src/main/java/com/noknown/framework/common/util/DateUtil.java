@@ -1301,4 +1301,20 @@ public class DateUtil {
 
     }
 
+    public static java.sql.Time strToTime(String strDate, String formart) {
+        if (formart == null) {
+            formart = "hh:mm:ss";
+        }
+        String str = strDate;
+        SimpleDateFormat format = new SimpleDateFormat(formart);
+        java.util.Date d = null;
+        try {
+            d = format.parse(str);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        java.sql.Time date = new java.sql.Time(d.getTime());
+        return date;
+    }
+
 }

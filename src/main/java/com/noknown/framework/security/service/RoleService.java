@@ -18,18 +18,20 @@ public interface RoleService extends BaseService<Role, Integer> {
 	 * 增加角色
 	 * @param roleName 角色英文名
 	 * @param comment 角色的说明
+	 * @return 角色
 	 * @throws ServiceException 异常信息
 	 * @throws DaoException     异常信息
 	 */
-	void createRole(String roleName, String comment) throws DaoException, ServiceException;
+	Role createRole(String roleName, String comment) throws DaoException, ServiceException;
 
 	/**
 	 * 增加角色
 	 * @param role 角色对象
+	 * @return 角色
 	 * @throws ServiceException 异常信息
 	 * @throws DaoException     异常信息
 	 */
-	void createRole(Role role) throws DaoException, ServiceException;
+	Role createRole(Role role) throws DaoException, ServiceException;
 
 	/**
 	 *修改角色 

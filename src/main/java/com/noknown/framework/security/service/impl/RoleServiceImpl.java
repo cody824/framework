@@ -36,16 +36,16 @@ public  class RoleServiceImpl extends BaseServiceImpl<Role, Integer> implements 
 	}
 
 	@Override
-	public void createRole(String roleName, String comment) {
+	public Role createRole(String roleName, String comment) {
 		Role role = new Role();
 		role.setName(roleName);
 		role.setComment(comment);
-		createRole(role);
+		return createRole(role);
 	}
 
 	@Override
-	public void createRole(Role role) {
-		roleDao.save(role);
+	public Role createRole(Role role) {
+		return roleDao.save(role);
 	}
 
 	@Override
