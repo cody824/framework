@@ -69,12 +69,12 @@ public class RoleMgtController extends BaseController {
 		return outActionReturn(role, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/role/{id}/user/{userKey}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/role/{id}/user/", method = RequestMethod.PUT)
 	public
 	@ResponseBody
 	Object attachUserToRole(
 			@PathVariable Integer id,
-			@PathVariable String userKey)
+			@RequestParam String userKey)
 			throws Exception {
 		User user;
 		if (RegexValidateUtil.checkEmail(userKey)) {
