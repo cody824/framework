@@ -47,4 +47,10 @@ public class Constants {
 	public static final String SURE_LOGIN_USER_ROLES = "sure_login_user_roles";
 
 	public static final String ROLE_ADMIN = "ROLE_ADMIN";
+
+	public static final String SIGN_METHOD_MD5 = "md5";
+
+	public static final String SIGN_METHOD_HMAC = "hmac";
+
+	public static final String CHARSET_UTF8 = "utf8";
 }
