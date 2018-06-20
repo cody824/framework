@@ -15,6 +15,15 @@ public interface GlobalConfigDao {
 	 * @return 全局配置对象ClobalConfig
 	 */
 	GlobalConfig getGlobalConfig();
+
+
+	/**
+	 * 获取configType配置库
+	 *
+	 * @param configType 配置类型
+	 * @return 配置库
+	 */
+	ConfigRepo getConfigRepo(String configType);
 	
 	/**
 	 * 获取domain对应配置表
@@ -36,7 +45,6 @@ public interface GlobalConfigDao {
 	/**
 	 * 更新全局配置对象
 	 * @param gc GlobalConfig对象
-	 * @return
 	 */
 	void updateGlobalConfig(GlobalConfig gc);
 	
@@ -44,7 +52,6 @@ public interface GlobalConfigDao {
 	 * 更新配置类型对应的配置库
 	 * @param configType 配置类型
 	 * @param cr configType对应的配置库
-	 * @return
 	 */
 	void updateConfigRepo(String configType, ConfigRepo cr);
 	
@@ -53,7 +60,6 @@ public interface GlobalConfigDao {
 	 * @param configType 配置类型
 	 * @param domain domain名
 	 * @param configs domain对应的配置
-	 * @return
 	 */
 	void updateProperties(String configType, String domain, Properties configs);
 	
@@ -63,7 +69,6 @@ public interface GlobalConfigDao {
 	 * @param domain domain名
 	 * @param key 配置名称
 	 * @param value 配置值
-	 * @return
 	 */
 	void updateValue(String configType, String domain, String key, String value);
 	
@@ -72,14 +77,12 @@ public interface GlobalConfigDao {
 	 * @param configType 配置类型
 	 * @param domain domain名
 	 * @param key 配置名称
-	 * @return
 	 */
 	void deleteValue(String configType, String domain, String key);
 	
 	/**
 	 * 删除configType类型的配置库
 	 * @param configType 配置类型
-	 * @return
 	 */
 	void removeConfigRepo(String configType);
 	
@@ -87,7 +90,6 @@ public interface GlobalConfigDao {
 	 * 删除configType类型的配置库下domain对应的配置信息
 	 * @param configType 配置类型
 	 * @param domain domain名
-	 * @return
 	 */
 	void removeProperties(String configType, String domain);
 	
@@ -101,14 +103,12 @@ public interface GlobalConfigDao {
 	 * 更新配置库下的配置名称对应的别名
 	 * @param key 配置名称
 	 * @param value 配置别名
-	 * @return
 	 */
 	void updateNameConfig(String key, String value);
 	
 	/**
 	 * 删除配置库下的配置名称对应的别名
 	 * @param key 配置名称
-	 * @return
 	 */
 	void deleteNameConfig(String key);
 	

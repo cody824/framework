@@ -60,8 +60,8 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 	public abstract JpaSpecificationExecutor<T> getSpecificationExecutor();
 
 	@Override
-	public T create(T entry) {
-		getRepository().save(entry);
+	public T create(T entry) throws ServiceException {
+		entry = getRepository().save(entry);
 		return entry;
 	}
 

@@ -19,6 +19,10 @@ public abstract class BaseUserDetails implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 7464655669064879252L;
+
+	public static final int MALE = 1;
+
+	public static final int FEMALE = 0;
 	
 	@Id
 	private Integer id;

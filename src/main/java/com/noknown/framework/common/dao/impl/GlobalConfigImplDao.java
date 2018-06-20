@@ -57,6 +57,13 @@ public class GlobalConfigImplDao implements GlobalConfigDao {
 	}
 
 	@Override
+	public ConfigRepo getConfigRepo(String configType) {
+		String path = getBasePath();
+		File baseDir = new File(path + "/" + configType);
+		return getConfigRepoFromDir(baseDir);
+	}
+
+	@Override
 	public Properties getProperties(String configType, String domain) {
 		String path = getBasePath() + File.separator + configType
 				+ File.separator + domain;
@@ -291,11 +298,7 @@ public class GlobalConfigImplDao implements GlobalConfigDao {
 	}
 
 	public String getBasePath() {
-		if (basePath.startsWith("classpath")) {
-			basePath = BaseUtil.getClassPath()
-					+ basePath.substring(basePath.indexOf(":") + 1);
-		}
-		return basePath;
+		return basePath = BaseUtil.getPath(basePath);
 	}
 
 }

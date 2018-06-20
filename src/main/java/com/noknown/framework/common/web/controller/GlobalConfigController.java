@@ -5,6 +5,7 @@ import com.noknown.framework.common.config.AppInfo;
 import com.noknown.framework.common.model.ConfigRepo;
 import com.noknown.framework.common.service.GlobalConfigService;
 import com.noknown.framework.common.util.ConfigUtil;
+import com.noknown.framework.common.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -85,7 +86,7 @@ public class GlobalConfigController extends BaseController {
 	}
 
 
-	@RequestMapping(value = "/globalconfig/{configType}/{domain}/{key}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/globalconfig/{configType}/{domain}/", method = RequestMethod.POST)
 	public @ResponseBody
 	Object updateConfigKey(
 			@PathVariable("domain") String domain,
@@ -122,7 +123,7 @@ public class GlobalConfigController extends BaseController {
 	 * @param domain         domain名
 	 * @param configType     配置类型
 	 * @param key            配置名称
-	 * @return
+	 * @return 空
 	 */
 	@RequestMapping(value = "/globalconfig/{configType}/{domain}/{key}", method = RequestMethod.DELETE)
 	public @ResponseBody
@@ -138,8 +139,13 @@ public class GlobalConfigController extends BaseController {
 	public @ResponseBody
 	Object deleteProperties(
 			@PathVariable String domain,
-			@PathVariable String configType) {
-		gcs.deleteProperties(configType, domain);
+			@PathVariable String configType,
+			@RequestParam(value = "key", required = false) String key) {
+		if (StringUtil.isNotBlank(key)) {
+			gcs.deleteValue(configType, domain, key);
+		} else {
+			gcs.deleteProperties(configType, domain);
+		}
 		return outActionReturn(HttpStatus.OK, HttpStatus.OK);
 	}
 

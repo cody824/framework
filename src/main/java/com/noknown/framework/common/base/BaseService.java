@@ -19,10 +19,11 @@ public interface BaseService<T, ID extends Serializable> {
 	/**
 	 * 创建对象
 	 *
-	 * @param entry
-	 * @return
+	 * @param entry 对象
+	 * @return 返回T对象
+	 * @throws ServiceException 操作失败抛出异常
 	 */
-	T create(T entry);
+	T create(T entry) throws ServiceException;
 
 	/**
 	 * 获取对象

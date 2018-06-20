@@ -35,11 +35,10 @@ public class BaseUtil{
 	/**
 	 * 获取10位的随机码
 	 * 
-	 * @return
 	 */
 	@SuppressWarnings("deprecation")
 	public static String getIdentifyCode() {
-		String identifyCode = "";
+		String identifyCode;
 		Date date = new Date();
 		int year = date.getYear() + (new Random().nextInt(1100));
 		int month = date.getMonth() * (new Random().nextInt(10));
@@ -48,8 +47,8 @@ public class BaseUtil{
 		int sec = date.getSeconds() * (new Random().nextInt(10));
 		int num = new Random().nextInt(1000);
 		StringBuffer buffer = new StringBuffer();
-		buffer = buffer.append(year + "").append(month + "").append(hou + "")
-				.append(min + "").append(sec + "").append(num + "");
+		buffer = buffer.append(year).append(month).append(hou)
+				.append(min).append(sec).append(num);
 		String code = buffer.toString();
 		Long long1 = Long.parseLong(code);
 		identifyCode = Long.toHexString(long1);
@@ -59,26 +58,21 @@ public class BaseUtil{
 	/**
 	 * 获取指定时间的随机码
 	 * 
-	 * @param time
-	 * @return
 	 */
 	public static String getTimeCode(Date time) {
-		String timesplit = new Long(time.getTime()).toString().substring(8, 11);
-		String code = DateUtil.toString(time, DateUtil.ACCOUNT_DATE_FORMAT) // 类似20150728
-				+ "00" // 分类识别码，默认00，代表书册
-				+ timesplit // 取时间毫秒数中的4位，精确到0.1秒
-				+ RandomString.randomNumber(2); // 取2位随机数
-		return code;
+		String timesplit = Long.toString(time.getTime()).substring(8, 11);
+		return DateUtil.toString(time, DateUtil.ACCOUNT_DATE_FORMAT)
+				+ "00"
+				+ timesplit
+				+ RandomString.randomNumber(2);
 	}
 
 	/**
 	 * 获取进程号
-	 * 
-	 * @return
 	 */
 	public static int getPid() {
 		RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
-		String name = runtime.getName(); // format: "pid@hostname"
+		String name = runtime.getName();
 		try {
 			return Integer.parseInt(name.substring(0, name.indexOf('@')));
 		} catch (Exception e) {
@@ -112,15 +106,14 @@ public class BaseUtil{
 	 */
 	public static Properties loadProperties(String filePath)
 			throws UtilException {
-		String path = "";
+		String path;
 		path = getClassPath() + "/" + filePath;
 		String dirPath = path.substring(0, path.lastIndexOf("/"));
 		File dir = new File(dirPath);
 		if (!dir.exists()) {
 			dir.mkdirs();
 		}
-		Properties pro = loadPropertiesFromRealPath(path);
-		return pro;
+		return loadPropertiesFromRealPath(path);
 	}
 
 	/**
@@ -148,8 +141,6 @@ public class BaseUtil{
 			Writer fw = new FileWriter(file);
 			pro.store(fw, null);
 			fw.close();
-		} catch (FileNotFoundException e) {
-			throw new UtilException(e);
 		} catch (IOException e) {
 			throw new UtilException(e);
 		}
@@ -169,13 +160,12 @@ public class BaseUtil{
 		File file = new File(filePath);
 		if (!file.exists()) {
 			try {
-				file.createNewFile();
+				BaseUtil.createFile(filePath);
 			} catch (IOException e) {
 				throw new UtilException(e);
 			}
 		}
-		Properties pro = loadPropertiesFromFile(file);
-		return pro;
+		return loadPropertiesFromFile(file);
 	}
 
 	public static Properties loadPropertiesFromRealPath(String filePath, boolean isCreate)
@@ -188,8 +178,7 @@ public class BaseUtil{
 				throw new UtilException(e);
 			}
 		}
-		Properties pro = loadPropertiesFromFile(file);
-		return pro;
+		return loadPropertiesFromFile(file);
 	}
 
 	/**
@@ -209,7 +198,7 @@ public class BaseUtil{
 			reader = new InputStreamReader(new FileInputStream(file), "utf8");
 			pro.load(reader);
 		} catch (FileNotFoundException e) {
-			throw new UtilException(e);
+			return pro;
 		} catch (IOException e) {
 			throw new UtilException(e);
 		} finally {
@@ -248,8 +237,6 @@ public class BaseUtil{
 			Writer fw = new FileWriter(file);
 			pro.store(fw, null);
 			fw.close();
-		} catch (FileNotFoundException e) {
-			throw new UtilException(e);
 		} catch (IOException e) {
 			throw new UtilException(e);
 		}
@@ -280,8 +267,6 @@ public class BaseUtil{
 			fw.write(data);
 			fw.flush();
 			fw.close();
-		} catch (FileNotFoundException e) {
-			throw new UtilException(e);
 		} catch (IOException e) {
 			throw new UtilException(e);
 		}
@@ -289,11 +274,7 @@ public class BaseUtil{
 
 	/**
 	 * 创建目标文件
-	 * 
-	 * @param destFileName
-	 * @return File 返回创建成功的文件 ，null返回失败
-	 * @throws IOException
-	 *             创建失败的异常信息
+	 *
 	 */
 	public static File createFile(String destFileName) throws IOException {
 		File file = new File(destFileName);
@@ -332,10 +313,12 @@ public class BaseUtil{
 		if (dir.isDirectory()) {
 			String[] children = dir.list();
 			// 递归删除目录中的子目录下
-			for (int i = 0; i < children.length; i++) {
-				boolean success = deleteDir(new File(dir, children[i]));
-				if (!success) {
-					return false;
+			if (children != null) {
+				for (String child : children) {
+					boolean success = deleteDir(new File(dir, child));
+					if (!success) {
+						return false;
+					}
 				}
 			}
 		}
@@ -345,10 +328,6 @@ public class BaseUtil{
 
 	/**
 	 * 仿深度克隆效果 复制对象
-	 * 
-	 * @param obj
-	 * @return
-	 * @throws Exception
 	 */
 	public static Object cloneObject(Object obj) throws Exception {
 		ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
@@ -363,12 +342,11 @@ public class BaseUtil{
 	/**
 	 * 获取路径解析是否以classpath开头，以classpath开头返回以classpath为起点的真实路劲
 	 * 
-	 * @param path
-	 * @return
 	 */
 	public static String getPath(String path) {
 		String ret = path;
-		if (path != null && path.startsWith("classpath")) {
+		String classpath = "classpath";
+		if (path != null && path.startsWith(classpath)) {
 			ret = BaseUtil.getClassPath()
 					+ path.substring(path.indexOf(":") + 1);
 		}
@@ -377,26 +355,26 @@ public class BaseUtil{
 
 	/**
 	 * 读取文件内容到 字符串中
-	 * 
-	 * @param fileName
+	 *
+	 * @param filePath  文件路径
 	 * @return 读取失败返回null
 	 */
-	public static String file2String(String fileName) {
-		File file = new File(fileName);
+	public static String file2String(String filePath) {
+		File file = new File(filePath);
 		BufferedReader reader = null;
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		try {
 			reader = new BufferedReader(new FileReader(file));
-			String tempString = null;
+			String tempString;
 			while ((tempString = reader.readLine()) != null) {
 				if (result.length() == 0) {
-					result = tempString;
+					result.append(tempString);
 				} else {
-					result = result + "\n" + tempString;
+					result.append("\n").append(tempString);
 				}
 			}
 			reader.close();
-			return result;
+			return result.toString();
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
@@ -404,7 +382,7 @@ public class BaseUtil{
 			if (reader != null) {
 				try {
 					reader.close();
-				} catch (IOException e1) {
+				} catch (IOException ignore) {
 				}
 			}
 		}

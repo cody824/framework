@@ -17,7 +17,7 @@ public class TestSMSProvider  extends BaseSMSProvider implements SMSProvider  {
 
 	@Override
 	protected void initProvider() {
-		this.name = "测试覅我";
+		this.name = "测试短信";
 		this.maxNum = 100;
 		this.split = ",";
 	}

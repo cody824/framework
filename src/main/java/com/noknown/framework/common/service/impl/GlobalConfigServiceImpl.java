@@ -119,13 +119,15 @@ public class GlobalConfigServiceImpl implements GlobalConfigService {
 	public void updateValue(String cofnigType, String domain, String key,
 	                        String value) {
 		gcDao.updateValue(cofnigType, domain, key, value);
-		fetchConfig(cofnigType, domain, key, false);
+		getGlobalConfig(true);
+		//fetchConfig(cofnigType, domain, key, false);
 	}
 
 	@Override
 	public void deleteValue(String cofnigType, String domain, String key) {
 		gcDao.deleteValue(cofnigType, domain, key);
-		fetchConfig(cofnigType, domain, key, true);
+		getGlobalConfig(true);
+//		fetchConfig(cofnigType, domain, key, true);
 	}
 
 	@Override
