@@ -70,6 +70,9 @@ public abstract class AbstractUserServiceImpl extends BaseServiceImpl<User, Inte
 	public User loginAuth(String userName, String password) throws ServiceException {
 		User user = (User) loadUserByUsername(userName);
 		if (user != null){
+			if (!user.isEnabled()) {
+				throw new ServiceException("用户被禁用，无法登陆");
+			}
 			if (!pswdEncoder.matches(password, user.getPassword())){
 				throw new ServiceException("密码错误");
 			}
