@@ -1,9 +1,9 @@
 package com.noknown.framework.common.model;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * @author guodong
@@ -23,7 +23,7 @@ public class ConfigRepo implements Cloneable{
 	 * Map 的 key为配置的与domain信息
 	 * Map 的value为该domain对应的配置
 	 * */
-	private Map<String, Properties> configs;
+	private Map<String, Properties> configs = new TreeMap<>();
 
 	/**顺序存放配置库的key信息
 	 * Map 的 key为配置的与domain信息
@@ -57,7 +57,7 @@ public class ConfigRepo implements Cloneable{
 
 	public Map<String, Properties> getConfigs() {
 		if (configs == null) {
-			configs = new HashMap<>(10);
+			configs = new TreeMap<>();
 		}
 		return configs;
 	}
@@ -68,7 +68,7 @@ public class ConfigRepo implements Cloneable{
 
 	public Map<String, Set<String>> getKeySets() {
 		if (keySets == null) {
-			keySets = new HashMap<>(10);
+			keySets = new TreeMap<>();
 		}
 		return keySets;
 	}
