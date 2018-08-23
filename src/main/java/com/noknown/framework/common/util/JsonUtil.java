@@ -1,6 +1,7 @@
 package com.noknown.framework.common.util;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -78,6 +79,26 @@ public class JsonUtil {
 		om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		try {
 			return om.readValue(body, clazz);
+		} catch (JsonParseException e) {
+			logger.warn(e.getLocalizedMessage());
+		} catch (JsonMappingException e) {
+			logger.warn(e.getLocalizedMessage());
+		} catch (IOException e) {
+			logger.error(e.getLocalizedMessage());
+		}
+		return null;
+	}
+
+	public static <T> T toObject(String body, TypeReference<T> ref) {
+		try {
+			body = URLDecoder.decode(body, "UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			logger.warn(e1.getLocalizedMessage());
+		}
+		ObjectMapper om = new ObjectMapper();
+		om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		try {
+			return om.readValue(body, ref);
 		} catch (JsonParseException e) {
 			logger.warn(e.getLocalizedMessage());
 		} catch (JsonMappingException e) {

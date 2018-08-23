@@ -307,7 +307,7 @@ public class SQLFilter implements Serializable {
 
 	public List<SQLOrder> getOrderList() {
 		if (orderList == null) {
-			orderList = new ArrayList<SQLOrder>();
+			orderList = new ArrayList<>();
 		}
 		return orderList;
 	}

@@ -41,26 +41,30 @@ public class BaseObjJsonRepoImpl<T extends BaseObj> extends AbstractObjectStoreJ
         }
     }
 
+	protected String configName() {
+		return clazz.getSimpleName();
+	}
+
 
     @Override
     public T get(String key) throws DaoException {
-	    return (T) getObjectByKey(clazz.getSimpleName(), key + ".json", clazz);
+	    return (T) getObjectByKey(configName(), key + ".json", clazz);
     }
 
     @Override
     public void save(T t) throws DaoException {
 	    String key = t.getKey();
-        this.saveObject(clazz.getSimpleName(), key + ".json", t);
+	    this.saveObject(configName(), key + ".json", t);
     }
 
     @Override
     public void delete(String key) {
-	    this.removeObject(clazz.getSimpleName(), key);
+	    this.removeObject(configName(), key);
     }
 
     @Override
     public List<T> findAll() {
-	    List<Object> objects = this.getObjectList(clazz.getSimpleName(), clazz);
+	    List<Object> objects = this.getObjectList(configName(), clazz);
         List<T> rets = new ArrayList<>();
         for (Object object : objects){
             if (clazz.isInstance(object)) {

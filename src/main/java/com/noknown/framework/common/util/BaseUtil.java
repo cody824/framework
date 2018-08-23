@@ -228,7 +228,7 @@ public class BaseUtil{
 		File file = new File(filePath);
 		if (!file.exists()) {
 			try {
-				file.createNewFile();
+				BaseUtil.createFile(filePath);
 			} catch (IOException e) {
 				throw new UtilException(e);
 			}
