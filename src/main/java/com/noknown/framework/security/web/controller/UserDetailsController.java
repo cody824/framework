@@ -57,8 +57,10 @@ public class UserDetailsController  extends BaseController {
 		}
 		udDetails.setId(userId);
 		udDetails = udService.updateUserDetails(udDetails);
-		session.setAttribute(Constants.SURE_LOGIN_USER_DETAIL, udDetails);
-		session.setAttribute(Constants.SURE_LOGIN_USER_NAME, udDetails.getFullName());
+		if (user.getPrincipal().equals(userId)) {
+			session.setAttribute(Constants.SURE_LOGIN_USER_DETAIL, udDetails);
+			session.setAttribute(Constants.SURE_LOGIN_USER_NAME, udDetails.getFullName());
+		}
 		return ResponseEntity.ok(udDetails);
 	}
 

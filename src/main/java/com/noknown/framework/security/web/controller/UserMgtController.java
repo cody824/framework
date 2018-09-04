@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -77,6 +78,15 @@ public class UserMgtController extends BaseController {
 	Object deleteUsers(@RequestBody List<String> userNames)
 			throws Exception {
 		userService.deleteUsersByName(userNames);
+		return outActionReturn(null, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/user/{userName}", method = RequestMethod.DELETE)
+	public
+	@ResponseBody
+	Object deleteUser(@PathVariable String userName)
+			throws Exception {
+		userService.deleteUsersByName(Arrays.asList(userName));
 		return outActionReturn(null, HttpStatus.OK);
 	}
 

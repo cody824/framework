@@ -2,8 +2,6 @@ package com.noknown.framework.email.processor;
 
 import com.noknown.framework.email.model.MailMessage;
 
-import java.util.Map;
-
 /**
  * @author 未知
  */
@@ -30,7 +28,7 @@ public interface MailProcessor {
 	 * @param async 异步发送
 	 * @return 是否成功
 	 */
-	boolean sendMail(String from, String to, String subject, String tpl, Map<String, String> tplData, boolean async);
+	boolean sendMail(String from, String to, String subject, String tpl, Object tplData, boolean async);
 	
 	/**
 	 * 发送邮件

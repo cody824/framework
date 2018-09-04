@@ -18,6 +18,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.Map;
@@ -80,6 +81,7 @@ public class MailProcessorImpl implements MailProcessor {
 	public boolean sendMail(String from, String to, String subject, String content, boolean async) {
 		MimeMessage msg = sender.createMimeMessage();
 		try {
+			msg.addRecipients(MimeMessage.RecipientType.CC, InternetAddress.parse(fromUser));
 			MimeMessageHelper helper = new MimeMessageHelper(msg, false, "UTF-8");
 			helper.setSubject(subject);
 
@@ -107,7 +109,7 @@ public class MailProcessorImpl implements MailProcessor {
 	}
 
 	@Override
-	public boolean sendMail(String from, String to, String subject, String tpl, Map<String, String> tplData,
+	public boolean sendMail(String from, String to, String subject, String tpl, Object tplData,
 	                        boolean async) {
 		String content = this.getMailContentFromTpl(tpl, tplData);
 		return this.sendMail(from, to, subject, content, async);
@@ -140,7 +142,7 @@ public class MailProcessorImpl implements MailProcessor {
 		return mailTpl;
 	}
 
-	private String getMailContentFromTpl(String tpl, Map<String, String> tplData) {
+	private String getMailContentFromTpl(String tpl, Object tplData) {
 		Template maiTemplate = this.getMailTpl(tpl);
 		String html = null;
 		if (maiTemplate == null) {
