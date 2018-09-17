@@ -48,7 +48,7 @@ public abstract class AbstractUseDetailsrServiceImpl<T extends BaseUserDetails> 
 
 	@Override
 	public BaseUserDetails getUserDetail(Integer id) {
-		return getRepository().findOne(id);
+		return getRepository().findById(id).orElse(null);
 	}
 
 

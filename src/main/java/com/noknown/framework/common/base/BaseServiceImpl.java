@@ -82,7 +82,7 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 
 	@Override
 	public T get(ID entityid) {
-		return getRepository().findOne(entityid);
+		return getRepository().findById(entityid).orElse(null);
 	}
 
 
@@ -109,13 +109,13 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 	@Override
 	public final void delete(ID... entityids) {
 		for (ID id : entityids) {
-			getRepository().delete(id);
+			getRepository().deleteById(id);
 		}
 	}
 
 	@Override
 	public void delete(Collection<T> objs) {
-		getRepository().delete(objs);
+		getRepository().deleteAll(objs);
 	}
 
 	@Override

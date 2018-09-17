@@ -124,9 +124,9 @@ public class ExcelUtil {
 		}
 		if (cellStyle != null) {
 			//修复产生多超过4000 cellStyle 异常
-			CellStyle newStyle = sheet.getWorkbook().createCellStyle();
-			newStyle.cloneStyleFrom(cellStyle);
-			cellIn.setCellStyle(newStyle);
+//			CellStyle newStyle = sheet.getWorkbook().createCellStyle();
+//			newStyle.cloneStyleFrom(cellStyle);
+			cellIn.setCellStyle(cellStyle);
 		}
 		//对时间格式进行单独处理
 		if (value == null) {

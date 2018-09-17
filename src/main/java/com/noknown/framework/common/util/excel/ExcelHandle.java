@@ -392,6 +392,7 @@ public class ExcelHandle {
 		String listName = null;
 		Map<String, Integer> listCellName = new HashMap<>();
 		Map<String, CellStyle> listCellStyle = new HashMap<>();
+		Map<String, CellStyle> newListCellStyle = new HashMap<>();
 
 		for (String key : tem.keySet()) {
 			Object value = tem.get(key);
@@ -412,6 +413,12 @@ public class ExcelHandle {
 				}
 			}
 		}
+		for (String key : listCellStyle.keySet()) {
+			CellStyle newStyle = wsheet.getWorkbook().createCellStyle();
+			newStyle.cloneStyleFrom(listCellStyle.get(key));
+			newListCellStyle.put(key, newStyle);
+		}
+
 
 		if (startCell >= 0) {
 			wsheet.removeRow(wsheet.getRow(startCell));
@@ -424,7 +431,7 @@ public class ExcelHandle {
 							for (String key : listCellName.keySet()) {
 								Integer colNum = listCellName.get(key);
 								Object dataValue = getDataValue((JSONObject) obj, key);
-								ExcelUtil.setValue(wsheet, startCell, colNum, dataValue, listCellStyle.get(key));
+								ExcelUtil.setValue(wsheet, startCell, colNum, dataValue, newListCellStyle.get(key));
 							}
 							startCell++;
 						}

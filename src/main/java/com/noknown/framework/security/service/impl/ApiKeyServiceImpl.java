@@ -130,7 +130,7 @@ public class ApiKeyServiceImpl extends BaseServiceImpl<ApiKey, String> implement
 
 	@Override
 	public void enable(String accessKey) throws ServiceException {
-		ApiKey apiKey = apiKeyDao.findOne(accessKey);
+		ApiKey apiKey = apiKeyDao.findById(accessKey).orElse(null);
 		if (apiKey == null) {
 			throw new ServiceException("key不存在");
 		}
@@ -140,7 +140,7 @@ public class ApiKeyServiceImpl extends BaseServiceImpl<ApiKey, String> implement
 
 	@Override
 	public void disable(String accessKey) throws ServiceException {
-		ApiKey apiKey = apiKeyDao.findOne(accessKey);
+		ApiKey apiKey = apiKeyDao.findById(accessKey).orElse(null);
 		if (apiKey == null) {
 			throw new ServiceException("key不存在");
 		}
@@ -151,7 +151,7 @@ public class ApiKeyServiceImpl extends BaseServiceImpl<ApiKey, String> implement
 
 	@Override
 	public User check(SureApiAuthToken token) throws ServiceException {
-		ApiKey apiKey = apiKeyDao.findOne(token.getAccessKey());
+		ApiKey apiKey = apiKeyDao.findById(token.getAccessKey()).orElse(null);
 		if (apiKey == null) {
 			throw new ServiceException("key不存在");
 		}
@@ -164,7 +164,7 @@ public class ApiKeyServiceImpl extends BaseServiceImpl<ApiKey, String> implement
 		}
 		User user;
 		if (token.getSign().equals(cipher)) {
-			user = userDao.findOne(apiKey.getUserId());
+			user = userDao.findById(apiKey.getUserId()).orElse(null);
 		} else {
 			throw new ServiceException("签名失败");
 		}

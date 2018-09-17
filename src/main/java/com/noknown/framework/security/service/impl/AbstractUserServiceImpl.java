@@ -382,7 +382,7 @@ public abstract class AbstractUserServiceImpl extends BaseServiceImpl<User, Inte
 	@Override
 	public void resetUsersPasswd(List<Integer> userIds) throws ServiceException {
 		for (Integer userId : userIds) {
-			User user = userDao.findOne(userId);
+			User user = userDao.findById(userId).orElse(null);
 			if (user == null) {
 				throw new ServiceException("用户ID:" + userId + " 对应的用户不存在");
 			}
@@ -434,7 +434,7 @@ public abstract class AbstractUserServiceImpl extends BaseServiceImpl<User, Inte
 	@Override
 	public void lockUsersById(List<Integer> userSIds) {
 		for (Integer userId : userSIds) {
-			User user = userDao.findOne(userId);
+			User user = userDao.findById(userId).orElse(null);
 			if (user != null) {
 				user.setEnable(false);
 				userDao.save(user);
@@ -446,7 +446,7 @@ public abstract class AbstractUserServiceImpl extends BaseServiceImpl<User, Inte
 	@Override
 	public void unlockUsersById(List<Integer> userSIds) {
 		for (Integer userId : userSIds) {
-			User user = userDao.findOne(userId);
+			User user = userDao.findById(userId).orElse(null);
 			if (user != null) {
 				user.setEnable(true);
 				userDao.save(user);
@@ -457,7 +457,7 @@ public abstract class AbstractUserServiceImpl extends BaseServiceImpl<User, Inte
 
 	@Override
 	public void updateUserPasswd(Integer userId, String oldPassword, String newPassword) throws ServiceException {
-		User user = userDao.findOne(userId);
+		User user = userDao.findById(userId).orElse(null);
 		if (user != null){
 			if (!pswdEncoder.matches(oldPassword, user.getPassword())){
 				throw new ServiceException("密码错误");
@@ -470,7 +470,7 @@ public abstract class AbstractUserServiceImpl extends BaseServiceImpl<User, Inte
 
 	@Override
 	public void updateNick(Integer userId, String name) throws ServiceException {
-		User user = userDao.findOne(userId);
+		User user = userDao.findById(userId).orElse(null);
 		if (user == null){
 			throw new ServiceException("用户不存在");
 		}

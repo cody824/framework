@@ -55,20 +55,20 @@ public  class RoleServiceImpl extends BaseServiceImpl<Role, Integer> implements 
 
 	@Override
 	public void destroyRole(Integer id) {
-		roleDao.delete(id);
+		roleDao.deleteById(id);
 	}
 
 	@Override
 	public void destroyRole(List<Integer> ids) {
 		for (Integer idInteger : ids) {
-			roleDao.delete(idInteger);
+			roleDao.deleteById(idInteger);
 		}
 
 	}
 
 	@Override
 	public Role getRoleById(Integer id) {
-		return roleDao.findOne(id);
+		return roleDao.findById(id).orElse(null);
 	}
 
 	@Override
@@ -84,12 +84,12 @@ public  class RoleServiceImpl extends BaseServiceImpl<Role, Integer> implements 
 
 	@Override
 	public void attachRoleForUser(Integer userId, Integer roleId) throws ServiceException {
-		User user = userDao.findOne(userId);
+		User user = userDao.findById(userId).orElse(null);
 		if (user == null) {
 			throw new ServiceException("用户不存在");
 		}
 
-		Role role = roleDao.findOne(roleId);
+		Role role = roleDao.findById(roleId).orElse(null);
 		if (role == null) {
 			throw new ServiceException("角色不存在");
 		}
@@ -101,7 +101,7 @@ public  class RoleServiceImpl extends BaseServiceImpl<Role, Integer> implements 
 
 	@Override
 	public void attachRoleForUser(Integer userId, String roleName) throws ServiceException {
-		User user = userDao.findOne(userId);
+		User user = userDao.findById(userId).orElse(null);
 		if (user == null) {
 			throw new ServiceException("用户不存在");
 		}
@@ -117,12 +117,12 @@ public  class RoleServiceImpl extends BaseServiceImpl<Role, Integer> implements 
 
 	@Override
 	public void detachRoleFromUser(Integer userId, Integer roleId) throws ServiceException {
-		User user = userDao.findOne(userId);
+		User user = userDao.findById(userId).orElse(null);
 		if (user == null) {
 			throw new ServiceException("用户不存在");
 		}
 
-		Role role = roleDao.findOne(roleId);
+		Role role = roleDao.findById(roleId).orElse(null);
 		if (role == null) {
 			throw new ServiceException("角色不存在");
 		}
@@ -134,7 +134,7 @@ public  class RoleServiceImpl extends BaseServiceImpl<Role, Integer> implements 
 
 	@Override
 	public void detachRoleFromUser(Integer userId, String roleName) throws ServiceException {
-		User user = userDao.findOne(userId);
+		User user = userDao.findById(userId).orElse(null);
 		if (user == null) {
 			throw new ServiceException("用户不存在");
 		}

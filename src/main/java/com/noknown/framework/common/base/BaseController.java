@@ -79,12 +79,12 @@ public class BaseController {
 
 	public SQLFilter buildFilter(String filter, String sort) {
 		filter = HtmlUtils.htmlUnescape(filter);
-		sort = HtmlUtils.htmlUnescape(sort);
 		SQLFilter sqlFilter = null;
 		if (filter != null) {
 			sqlFilter = JsonUtil.toObject(filter, SQLFilter.class);
 		}
 		if (sort != null) {
+			sort = HtmlUtils.htmlUnescape(sort);
 			if (sqlFilter == null) {
 				sqlFilter = new SQLFilter();
 			}
