@@ -45,6 +45,9 @@ public class AuthController  extends BaseController {
 	@Value("${security.login.appWxId:no}")
 	private String wxId;
 
+	@Value("${security.login.emailAuthcode:false}")
+	private boolean emailAuthcode;
+
 
 	private final TokenAuthService authService;
 
@@ -219,9 +222,11 @@ public class AuthController  extends BaseController {
 		if (StringUtil.isBlank(user.getNick())){
 			user.setNick("e" + BaseUtil.getUUID());
 		}
-		boolean checkOk = verificationCodeService.check(user.getEmail(), authcode);
-		if (!checkOk){
-			throw new WebException("验证码错误");
+		if (emailAuthcode) {
+			boolean checkOk = verificationCodeService.check(user.getEmail(), authcode);
+			if (!checkOk) {
+				throw new WebException("验证码错误");
+			}
 		}
 		BaseUserDetails udDetails = userService.addUser(user);
 		return ResponseEntity.ok(udDetails);
