@@ -17,7 +17,7 @@ public class SMSConfig {
 
 	public final Logger logger = LoggerFactory.getLogger(getClass());
 
-	@Value("${sms.global.provder:noprovder}")
+	@Value("${sms.global.provder:test}")
 	private String provder;
 
 	@Bean
@@ -29,14 +29,14 @@ public class SMSConfig {
 				break;
 			case "lanchuang":
 				smsProvider = new LanChuangSMSProvider();
-			case "test":
-				smsProvider = new TestSMSProvider();
-				break;
+//			case "test":
+//				smsProvider = new TestSMSProvider();
+//				break;
 			case "ali":
 				smsProvider = new AliSMSProvider();
 				break;
 			default:
-				break;
+				smsProvider = new TestSMSProvider();
 		}
 		return smsProvider;
 	}
