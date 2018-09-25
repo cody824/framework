@@ -59,7 +59,7 @@ public class BaseObjJsonRepoImpl<T extends BaseObj> extends AbstractObjectStoreJ
 
     @Override
     public void delete(String key) {
-	    this.removeObject(configName(), key);
+	    this.removeObject(configName(), key + ".json");
     }
 
     @Override

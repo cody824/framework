@@ -1,5 +1,6 @@
 package com.noknown.framework.common.base;
 
+import com.noknown.framework.common.exception.DaoException;
 import com.noknown.framework.common.exception.ServiceException;
 import com.noknown.framework.common.util.JpaUtil;
 import com.noknown.framework.common.util.ObjectUtil;
@@ -60,7 +61,7 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 	public abstract JpaSpecificationExecutor<T> getSpecificationExecutor();
 
 	@Override
-	public T create(T entry) throws ServiceException {
+	public T create(T entry) throws ServiceException, DaoException {
 		entry = getRepository().save(entry);
 		return entry;
 	}
@@ -114,17 +115,17 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 	}
 
 	@Override
-	public void delete(Collection<T> objs) {
+	public void delete(Collection<T> objs) throws DaoException {
 		getRepository().deleteAll(objs);
 	}
 
 	@Override
-	public void delete(T obj)  {
+	public void delete(T obj) throws DaoException {
 		getRepository().delete(obj);
 	}
 
 	@Override
-	public void update(T obj) {
+	public void update(T obj) throws DaoException {
 		getRepository().save(obj);
 	}
 

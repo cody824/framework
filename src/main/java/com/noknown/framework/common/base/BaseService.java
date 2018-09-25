@@ -23,7 +23,7 @@ public interface BaseService<T, ID extends Serializable> {
 	 * @return 返回T对象
 	 * @throws ServiceException 操作失败抛出异常
 	 */
-	T create(T entry) throws ServiceException;
+	T create(T entry) throws ServiceException, DaoException;
 
 	/**
 	 * 获取对象
