@@ -16,7 +16,7 @@ public class ThirdPartyAccount implements Serializable {
 	 * 主键 第三方账号ID
 	 */
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
 	/**

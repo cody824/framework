@@ -39,11 +39,19 @@ public class ExportUtil {
 	public static DownloadInfo exportList(Collection<?> objList, String exportPath, String title, String excelTpl, MessageSource messageSource, List<String> messageAttr) throws Exception {
 		String taskKey = BaseUtil.getTimeCode(new Date());
 		File dir = new File(exportPath, taskKey);
-		File file;
 		if (dir.exists()) {
 			FileUtil.delFile(dir.getAbsolutePath());
 		}
 		if (!dir.mkdirs()) {
+			throw new Exception("系统错误，生成目录失败");
+		}
+		return exportList(objList, exportPath, taskKey, title, excelTpl, messageSource, messageAttr);
+	}
+
+	public static DownloadInfo exportList(Collection<?> objList, String exportPath, String taskKey, String title, String excelTpl, MessageSource messageSource, List<String> messageAttr) throws Exception {
+		File dir = new File(exportPath, taskKey);
+		File file;
+		if (!dir.exists() && !dir.mkdirs()) {
 			throw new Exception("系统错误，生成目录失败");
 		}
 		if (excelTpl == null) {
