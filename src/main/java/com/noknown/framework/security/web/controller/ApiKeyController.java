@@ -31,7 +31,7 @@ public class ApiKeyController extends BaseController {
 
 	private final ApiKeyService apiKeyService;
 	private final TokenAuthService authService;
-	@Value("${security.jwt.header}")
+	@Value("${security.jwt.header:jwtheader}")
 	private String tokenHeader;
 	@Value("${security.login.needAuthcode:false}")
 	private boolean needImgAuthcode;

@@ -25,10 +25,10 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
 
-	@Value("${security.jwt.header}")
+	@Value("${security.jwt.header:jwtheader}")
 	private String tokenHeader;
 
-	@Value("${security.jwt.tokenHead}")
+	@Value("${security.jwt.tokenHead:common}")
 	private String tokenHead;
 
 	@Override

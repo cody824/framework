@@ -2,6 +2,7 @@ package com.noknown.framework.cache.config;
 
 import com.noknown.framework.cache.service.CacheService;
 import com.noknown.framework.cache.service.impl.memcached.XMemcachedCacheServiceImpl;
+import com.noknown.framework.cache.service.impl.memory.MemoryCacheServiceImpl;
 import com.noknown.framework.cache.service.impl.redis.JedisCacheServiceImpl;
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.utils.XMemcachedClientFactoryBean;
@@ -23,17 +24,17 @@ public class CacheConfig {
 
 	public final Logger logger = LoggerFactory.getLogger(getClass());
 
-	@Value("${cache.global.type:jedis}")
+	@Value("${cache.global.type:memory}")
 	private String cacheType;
 
 	@Bean
-	public JedisPool redisPoolFactory(@Value("${redis.config.open:true}") boolean connect,
-	                                  @Value("${spring.redis.host}") String host,
-	                                  @Value("${spring.redis.port}") int port,
-	                                  @Value("${spring.redis.timeout}") int timeout,
-	                                  @Value("${spring.redis.pool.max-idle}") int maxIdle,
-	                                  @Value("${spring.redis.pool.max-wait}") long maxWaitMillis,
-	                                  @Value("${spring.redis.password}") String password) {
+	public JedisPool redisPoolFactory(@Value("${redis.config.open:false}") boolean connect,
+	                                  @Value("${spring.redis.host:}") String host,
+	                                  @Value("${spring.redis.port:6379}") int port,
+	                                  @Value("${spring.redis.password:}") String password,
+	                                  @Value("${spring.redis.timeout:300}") int timeout,
+	                                  @Value("${spring.redis.pool.max-idle:20}") int maxIdle,
+	                                  @Value("${spring.redis.pool.max-wait:10000}") long maxWaitMillis) {
 		JedisPool jedisPool = null;
 		if (connect) {
 			JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
@@ -73,8 +74,11 @@ public class CacheConfig {
 			case "xmemcached":
 				cacheService = new XMemcachedCacheServiceImpl();
 				break;
+			case "memory":
+				cacheService = new MemoryCacheServiceImpl();
+				break;
 			default:
-				cacheService = new JedisCacheServiceImpl();
+				cacheService = new MemoryCacheServiceImpl();
 				break;
 		}
 

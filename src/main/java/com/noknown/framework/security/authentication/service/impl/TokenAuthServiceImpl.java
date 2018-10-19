@@ -24,7 +24,7 @@ public class TokenAuthServiceImpl implements TokenAuthService {
 	private JwtTokenUtil jwtTokenUtil;
 
 
-	@Value("${security.jwt.tokenHead}")
+	@Value("${security.jwt.tokenHead:common}")
 	private String tokenHead;
 
 	@Autowired

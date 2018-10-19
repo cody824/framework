@@ -36,7 +36,7 @@ public class AuthController  extends BaseController {
 
 	private final VerificationCodeService verificationCodeService;
 
-	@Value("${security.jwt.header}")
+	@Value("${security.jwt.header:jwtheader}")
 	private String tokenHeader;
 
 	@Value("${security.login.needAuthcode:false}")
