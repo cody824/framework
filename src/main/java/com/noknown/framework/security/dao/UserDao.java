@@ -41,4 +41,22 @@ public interface UserDao extends JpaRepository<User, Integer> ,JpaSpecificationE
 	 */
 	@EntityGraph(attributePaths = {"roles"})
 	List<User> findAllByRoles_Name(String name);
+
+	/**
+	 * 通过组名查找用户
+	 *
+	 * @param name 组名
+	 * @return 用户列表
+	 */
+	@EntityGraph(attributePaths = {"groups"})
+	List<User> findAllByGroups_Name(String name);
+
+	/**
+	 * 通过组名查找用户
+	 *
+	 * @param Id 组ID
+	 * @return 用户列表
+	 */
+	@EntityGraph(attributePaths = {"groups"})
+	List<User> findAllByGroups_Id(Integer Id);
 }

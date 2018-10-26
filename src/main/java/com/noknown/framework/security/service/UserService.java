@@ -385,4 +385,24 @@ public interface UserService extends UserDetailsService, BaseService<User, Integ
 	 * @throws ServiceException 异常信息
 	 */
 	List<User> findUserByRoleName(String roleName) throws DaoException, ServiceException;
+
+	/**
+	 * 获取组中的所有用户
+	 *
+	 * @param groupName 组名
+	 * @return 用户列表
+	 * @throws DaoException     异常信息
+	 * @throws ServiceException 异常信息
+	 */
+	List<User> findUserByGroupName(String groupName) throws DaoException, ServiceException;
+
+	/**
+	 * 获取组中的所有用户
+	 *
+	 * @param groupId 组ID
+	 * @return 用户列表
+	 * @throws DaoException     异常信息
+	 * @throws ServiceException 异常信息
+	 */
+	List<User> findUserByGroupId(Integer groupId) throws DaoException, ServiceException;
 }

@@ -71,7 +71,7 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 		Pageable pageable = new PageRequest(start / limit, limit);
 		Specification<T> spec = (root, query, cb) -> JpaUtil.sqlFilterToPredicate(clazz, root, query, cb, filter);
 		Page<T> pd = getSpecificationExecutor().findAll(spec , pageable);
-		
+
 		PageData<T> pageData = new PageData<>();
 		pageData.setTotal(pd.getTotalElements());
 		pageData.setTotalPage(pd.getTotalPages());
@@ -106,9 +106,8 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 		return t;
 	}
 
-	@SafeVarargs
 	@Override
-	public final void delete(ID... entityids) {
+	public void delete(ID... entityids) {
 		for (ID id : entityids) {
 			getRepository().deleteById(id);
 		}

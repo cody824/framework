@@ -492,4 +492,14 @@ public abstract class AbstractUserServiceImpl extends BaseServiceImpl<User, Inte
 	}
 
 
+	@Override
+	public List<User> findUserByGroupName(String groupName) {
+		return userDao.findAllByGroups_Name(groupName);
+	}
+
+	@Override
+	public List<User> findUserByGroupId(Integer groupId) {
+		return userDao.findAllByGroups_Id(groupId);
+	}
+
 }

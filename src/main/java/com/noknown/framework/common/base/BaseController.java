@@ -4,6 +4,7 @@ import com.noknown.framework.common.util.JsonUtil;
 import com.noknown.framework.common.web.model.ErrorMsg;
 import com.noknown.framework.common.web.model.SQLFilter;
 import com.noknown.framework.common.web.model.SQLOrder;
+import com.noknown.framework.security.authentication.SureAuthenticationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +36,14 @@ public class BaseController {
 
 	protected Authentication loginAuth() {
 		return SecurityContextHolder.getContext().getAuthentication();
+	}
+
+	protected SureAuthenticationInfo loginUser() {
+		Authentication authentication = loginAuth();
+		if (authentication != null && authentication instanceof SureAuthenticationInfo) {
+			return ((SureAuthenticationInfo) authentication);
+		}
+		return null;
 	}
 
 	protected boolean hasRole(String role) {

@@ -11,6 +11,7 @@ import me.chanjar.weixin.mp.api.WxMpInMemoryConfigStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -35,6 +36,9 @@ public class WxConfigCacheStorage  extends WxMpInMemoryConfigStorage {
     @Autowired
     AppInfo baseAppIdUtil;
 
+	@Value("${weixin.media.support:false}")
+	private boolean wxMediaSupport;
+
     private String mediaDownloadTempPath = "/var/";
 
     public WxConfigCacheStorage() {
@@ -46,6 +50,9 @@ public class WxConfigCacheStorage  extends WxMpInMemoryConfigStorage {
      */
     @PostConstruct
     public void initConfig(){
+	    if (!wxMediaSupport) {
+		    return;
+	    }
         if (this.getAppId() == null) {
             Properties wechatConfig = gcService.getProperties("wechat", baseAppIdUtil.getAppId(), false);
 

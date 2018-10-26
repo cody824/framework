@@ -10,17 +10,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author guodong
  */
 @Entity
-@NamedEntityGraph(name = "User.role",
-		attributeNodes = @NamedAttributeNode("roles"))
+@NamedEntityGraph(name = "User.role.group",
+		attributeNodes = {@NamedAttributeNode("roles"), @NamedAttributeNode("groups")})
+
 @Table(name = "security_user")
 @JsonIgnoreProperties({ "handler","hibernateLazyInitializer", "authorities" }) 
 public class User implements Serializable, Authentication, UserDetails {
@@ -62,6 +60,10 @@ public class User implements Serializable, Authentication, UserDetails {
 	@ManyToMany(cascade = { CascadeType.REFRESH }, fetch = FetchType.EAGER)
 	@JSONField(serialize = false)
 	private List<Role> roles = new ArrayList<>();
+
+	@ManyToMany(cascade = {CascadeType.REFRESH}, fetch = FetchType.EAGER)
+	@JSONField(serialize = false)
+	private Set<Group> groups = new HashSet<>();
 
 
 	@Override
@@ -217,6 +219,21 @@ public class User implements Serializable, Authentication, UserDetails {
 		}
 	}
 
+	public void addGroup(Group group) {
+		if (groups == null) {
+			groups = new HashSet<>();
+		}
+		if (!groups.contains(group)) {
+			groups.add(group);
+		}
+	}
+
+	public void removeGroup(Group group) {
+		if (groups != null) {
+			groups.remove(group);
+		}
+	}
+
 
 	/**
 	 * @param password the password to set
@@ -316,4 +333,12 @@ public class User implements Serializable, Authentication, UserDetails {
 		this.nickOk = nickOk;
 	}
 
+	public Set<Group> getGroups() {
+		return groups;
+	}
+
+	public User setGroups(Set<Group> groups) {
+		this.groups = groups;
+		return this;
+	}
 }
