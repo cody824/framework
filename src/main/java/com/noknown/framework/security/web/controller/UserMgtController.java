@@ -1,23 +1,28 @@
 package com.noknown.framework.security.web.controller;
 
 import com.noknown.framework.common.base.BaseController;
+import com.noknown.framework.common.exception.DaoException;
+import com.noknown.framework.common.exception.ServiceException;
 import com.noknown.framework.common.util.JsonUtil;
 import com.noknown.framework.common.util.StringUtil;
 import com.noknown.framework.common.web.model.PageData;
 import com.noknown.framework.common.web.model.SQLExpression;
 import com.noknown.framework.common.web.model.SQLFilter;
+import com.noknown.framework.security.model.BaseUserDetails;
+import com.noknown.framework.security.model.Role;
 import com.noknown.framework.security.model.User;
+import com.noknown.framework.security.pojo.UserWarpForReg;
 import com.noknown.framework.security.service.RoleService;
 import com.noknown.framework.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import javax.annotation.PostConstruct;
+import java.util.*;
 
 /**
  * @author guodong
@@ -30,10 +35,52 @@ public class UserMgtController extends BaseController {
 
 	private final RoleService roleService;
 
+	private final boolean initAdmin;
+
 	@Autowired
-	public UserMgtController(UserService userService, RoleService roleService) {
+	public UserMgtController(UserService userService,
+	                         RoleService roleService,
+	                         @Value("${security.admin.auto-create:true}")boolean initAdmin) {
 		this.userService = userService;
 		this.roleService = roleService;
+		this.initAdmin = initAdmin;
+	}
+
+	@PostConstruct
+	private void initAdmin(){
+		if (!initAdmin){
+			return;
+		}
+		Integer userId = null;
+		User user = userService.findByNick("admin");
+		if (user == null){
+			UserWarpForReg userWarpForReg = new UserWarpForReg();
+			userWarpForReg.setNick("admin");
+			userWarpForReg.setNickOk(true);
+			userWarpForReg.setPassword("123456");
+			Map<String, String> params = new HashMap<>(1);
+			params.put("fullName", "管理员");
+			userWarpForReg.setParams(params);
+			try {
+				BaseUserDetails userDetails = userService.addUser(userWarpForReg);
+				userId = userDetails.getId();
+			} catch (ServiceException e) {
+				e.printStackTrace();
+			}
+		} else {
+			userId = user.getId();
+		}
+		try {
+			Role role = roleService.getRoleByName("ROLE_ADMIN");
+			if (role == null){
+				roleService.createRole("ROLE_ADMIN", "系统管理员");
+				roleService.attachRoleForUser(userId, "ROLE_ADMIN");
+			}
+		} catch (DaoException e) {
+			e.printStackTrace();
+		} catch (ServiceException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@RequestMapping(value = "/user/", method = RequestMethod.GET)

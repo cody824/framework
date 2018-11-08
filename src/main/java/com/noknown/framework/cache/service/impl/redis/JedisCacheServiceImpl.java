@@ -16,7 +16,7 @@ public class JedisCacheServiceImpl implements CacheService{
 	private static final String OK = "OK";
 
 	@Autowired
-	private RedisUtil redisUtil;
+	private  RedisUtil redisUtil;
 
 	@Value("${cache.prefix:noknown}")
 	private String prefix;

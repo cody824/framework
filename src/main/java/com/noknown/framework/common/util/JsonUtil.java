@@ -327,4 +327,51 @@ public class JsonUtil {
 
 		return null;
 	}
+
+	/**
+	 * 格式化JSON
+	 *
+	 * @param jsonStr json字符串
+	 * @return 格式化好的字符串
+	 */
+	public static String format(String jsonStr) {
+		String start = "丨  ";
+		// 用户标记层级
+		int level = 0;
+		StringBuffer jsonResultStr = new StringBuffer();
+		for (int i = 0; i < jsonStr.length(); i++) {
+			char piece = jsonStr.charAt(i);
+			if (i != 0 && '\n' == jsonResultStr.charAt(jsonResultStr.length() - 1)) {
+				for (int k = 0; k < level; k++) {
+					jsonResultStr.append(start);
+				}
+			}
+			switch (piece) {
+				case '{':
+				case '[':
+					// 如果字符是{或者[，则断行，level加1
+					jsonResultStr.append(piece + "\n");
+					level++;
+					break;
+				case ',':
+					// 如果是“,”，则断行
+					jsonResultStr.append(piece + "\n");
+					break;
+				case '}':
+				case ']':
+					// 如果是}或者]，则断行，level减1
+					jsonResultStr.append("\n");
+					level--;
+					for (int k = 0; k < level; k++) {
+						jsonResultStr.append(start);
+					}
+					jsonResultStr.append(piece);
+					break;
+				default:
+					jsonResultStr.append(piece);
+					break;
+			}
+		}
+		return jsonResultStr.toString();
+	}
 }
