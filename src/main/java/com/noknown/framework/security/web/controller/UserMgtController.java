@@ -3,11 +3,13 @@ package com.noknown.framework.security.web.controller;
 import com.noknown.framework.common.base.BaseController;
 import com.noknown.framework.common.exception.DaoException;
 import com.noknown.framework.common.exception.ServiceException;
+import com.noknown.framework.common.exception.WebException;
 import com.noknown.framework.common.util.JsonUtil;
 import com.noknown.framework.common.util.StringUtil;
 import com.noknown.framework.common.web.model.PageData;
 import com.noknown.framework.common.web.model.SQLExpression;
 import com.noknown.framework.common.web.model.SQLFilter;
+import com.noknown.framework.security.authentication.SureAuthenticationInfo;
 import com.noknown.framework.security.model.BaseUserDetails;
 import com.noknown.framework.security.model.Role;
 import com.noknown.framework.security.model.User;
@@ -257,6 +259,20 @@ public class UserMgtController extends BaseController {
 	) throws Exception {
 
 		userService.updateUserPasswd(userId, oldPassword, newPassword);
+		return outActionReturn(HttpStatus.OK, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/user/password", method = RequestMethod.PUT, headers = "Accept=*")
+	public
+	@ResponseBody
+	Object updateUserPasswd(@RequestParam String oldPassword,
+	                        @RequestParam String newPassword
+	) throws Exception {
+		SureAuthenticationInfo sai = this.loginUser();
+		if (sai == null) {
+			throw new WebException("请登录", 401);
+		}
+		userService.updateUserPasswd(sai.getUser().getId(), oldPassword, newPassword);
 		return outActionReturn(HttpStatus.OK, HttpStatus.OK);
 	}
 
