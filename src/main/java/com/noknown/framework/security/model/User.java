@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author guodong
@@ -217,6 +218,17 @@ public class User implements Serializable, Authentication, UserDetails {
 		if (roles != null){
 			roles.remove(role);
 		}
+	}
+
+	public boolean hasRole(String roleName) {
+		boolean ret = false;
+		if (roles != null) {
+			List<Role> a = roles.stream().filter(role -> roleName.equals(role.getName())).collect(Collectors.toList());
+			if (a != null && a.size() > 0) {
+				ret = true;
+			}
+		}
+		return ret;
 	}
 
 	public void addGroup(Group group) {

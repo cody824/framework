@@ -113,7 +113,7 @@ public class ExcelUtil {
 	 * @param value     值
 	 * @param cellStyle 样式
 	 */
-	public static void setValue(Sheet sheet, int row, int cell, Object value, CellStyle cellStyle) {
+	public static void setValue(Sheet sheet, int row, int cell, Object value, CellStyle cellStyle, boolean clone) {
 		Row rowIn = sheet.getRow(row);
 		if (rowIn == null) {
 			rowIn = sheet.createRow(row);
@@ -123,10 +123,15 @@ public class ExcelUtil {
 			cellIn = rowIn.createCell(cell);
 		}
 		if (cellStyle != null) {
-			//修复产生多超过4000 cellStyle 异常
-//			CellStyle newStyle = sheet.getWorkbook().createCellStyle();
-//			newStyle.cloneStyleFrom(cellStyle);
-			cellIn.setCellStyle(cellStyle);
+
+			if (clone) {
+				//修复产生多超过4000 cellStyle 异常
+				CellStyle newStyle = sheet.getWorkbook().createCellStyle();
+				newStyle.cloneStyleFrom(cellStyle);
+				cellIn.setCellStyle(newStyle);
+			} else {
+				cellIn.setCellStyle(cellStyle);
+			}
 		}
 		//对时间格式进行单独处理
 		if (value == null) {
@@ -175,7 +180,7 @@ public class ExcelUtil {
 	 */
 	public static void createCell(Workbook wbModule, Sheet sheet, HashMap<String, Object> pos, int startCell, Object value, String cellStyle) {
 		int[] excelPos = getPos(pos, cellStyle);
-		setValue(sheet, startCell, excelPos[0], value, getStyle(pos, cellStyle, wbModule));
+		setValue(sheet, startCell, excelPos[0], value, getStyle(pos, cellStyle, wbModule), false);
 	}
 
 	/**

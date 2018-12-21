@@ -46,6 +46,14 @@ public class BaseController {
 		return null;
 	}
 
+	protected Integer loginId() {
+		Authentication authentication = loginAuth();
+		if (authentication != null) {
+			return (Integer) authentication.getPrincipal();
+		}
+		return null;
+	}
+
 	protected boolean hasRole(String role) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth != null) {

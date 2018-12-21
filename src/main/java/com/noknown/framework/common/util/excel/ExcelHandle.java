@@ -251,7 +251,7 @@ public class ExcelHandle {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	public Workbook getTempWorkbook(String tempFilePath) throws FileNotFoundException, IOException {
+	public Workbook getTempWorkbook(String tempFilePath) throws IOException {
 		if (!tempWorkbook.containsKey(tempFilePath)) {
 			if (tempFilePath.endsWith(".xlsx")) {
 				tempWorkbook.put(tempFilePath, new XSSFWorkbook(getFileInputStream(tempFilePath)));
@@ -310,7 +310,7 @@ public class ExcelHandle {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	public void writeAndClose(String tempFilePath, OutputStream os) throws FileNotFoundException, IOException {
+	public void writeAndClose(String tempFilePath, OutputStream os) throws IOException {
 		if (getTempWorkbook(tempFilePath) != null) {
 			getTempWorkbook(tempFilePath).write(os);
 			tempWorkbook.remove(tempFilePath);
@@ -330,7 +330,7 @@ public class ExcelHandle {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	private Workbook getDataWorkbook(String tempFilePath, File excelFile) throws FileNotFoundException, IOException {
+	private Workbook getDataWorkbook(String tempFilePath, File excelFile) throws IOException {
 		if (!dataWorkbook.containsKey(tempFilePath)) {
 			if (tempFilePath.endsWith(".xlsx")) {
 				dataWorkbook.put(tempFilePath, new XSSFWorkbook(new FileInputStream(excelFile)));
@@ -402,7 +402,7 @@ public class ExcelHandle {
 					String[] pos = vStr.split(",");
 					Object dataValue = getDataValue(dataMap, key);
 					CellStyle cellStyle = (CellStyle) tem.get(key + "CellStyle");
-					ExcelUtil.setValue(wsheet, Integer.parseInt(pos[1]), Integer.parseInt(pos[0]), dataValue, cellStyle);
+					ExcelUtil.setValue(wsheet, Integer.parseInt(pos[1]), Integer.parseInt(pos[0]), dataValue, cellStyle, true);
 				} else {
 					if (key != "STARTCELL" && key.indexOf(".") > 0) {
 						listName = key.substring(0, key.indexOf("."));
@@ -431,7 +431,7 @@ public class ExcelHandle {
 							for (String key : listCellName.keySet()) {
 								Integer colNum = listCellName.get(key);
 								Object dataValue = getDataValue((JSONObject) obj, key);
-								ExcelUtil.setValue(wsheet, startCell, colNum, dataValue, newListCellStyle.get(key));
+								ExcelUtil.setValue(wsheet, startCell, colNum, dataValue, newListCellStyle.get(key), false);
 							}
 							startCell++;
 						}
