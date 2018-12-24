@@ -255,6 +255,20 @@ public class JpaUtil {
 		} else if ("between".equals(se.getMatchMode())) {
 			if (isDate) {
 				predicate = cb.between(root.get(se.getProperty()).as(Date.class), Date.class.cast(valueArray[0]), Date.class.cast(valueArray[1]));
+			} else {
+				if (type.equals(long.class) || type.equals(Long.class)) {
+					predicate = cb.between(root.get(se.getProperty()), Long.class.cast(valueArray[0]), Long.class.cast(valueArray[1]));
+				} else if (type.equals(BigDecimal.class)) {
+					predicate = cb.between(root.get(se.getProperty()), BigDecimal.class.cast(valueArray[0]), BigDecimal.class.cast(valueArray[1]));
+				} else if (type.equals(BigInteger.class)) {
+					predicate = cb.between(root.get(se.getProperty()), BigInteger.class.cast(valueArray[0]), BigInteger.class.cast(valueArray[1]));
+				} else if (type.equals(Double.class) || type.equals(double.class)) {
+					predicate = cb.between(root.get(se.getProperty()), Double.class.cast(valueArray[0]), Double.class.cast(valueArray[1]));
+				} else if (type.equals(Float.class) || type.equals(float.class)) {
+					predicate = cb.between(root.get(se.getProperty()), Float.class.cast(valueArray[0]), Float.class.cast(valueArray[1]));
+				} else if (type.equals(Integer.class) || type.equals(int.class)) {
+					predicate = cb.between(root.get(se.getProperty()), Integer.class.cast(valueArray[0]), Integer.class.cast(valueArray[1]));
+				}
 			}
 		} else if ("like".equals(se.getMatchMode())) {
 			if (isNeedIgnoreCase){
