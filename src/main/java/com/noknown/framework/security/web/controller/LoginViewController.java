@@ -5,6 +5,7 @@ import com.noknown.framework.common.config.AppInfo;
 import com.noknown.framework.common.service.GlobalConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,25 +23,21 @@ import java.util.*;
 @Controller
 public class LoginViewController extends BaseController {
 
+	private final GlobalConfigService gcs;
+	private final AppInfo appIdUtil;
 	@Value("${security.login.defaultView:login}")
 	private String defaultView = "login";
+	@Value("${security.login.qq:false}")
+	private boolean supportQQLogin;
 
-	private final GlobalConfigService gcs;
+	@Value("${security.login.weibo:false}")
+	private boolean supportWeiboLogin;
 
-	private final AppInfo appIdUtil;
-	
-	  
-    @Value("${security.login.qq:false}")
-    private boolean supportQQLogin;
-    
-    @Value("${security.login.weibo:false}")
-    private boolean supportWeiboLogin;
-    
-    @Value("${security.login.wechat:false}")
-    private boolean supportWechatLogin;
-    
-    @Value("${security.login.wechatOS:false}")
-    private boolean supportWechatOSLogin;
+	@Value("${security.login.wechat:false}")
+	private boolean supportWechatLogin;
+
+	@Value("${security.login.wechatOS:false}")
+	private boolean supportWechatOSLogin;
 
 	@Autowired
 	public LoginViewController(GlobalConfigService gcs, AppInfo appIdUtil) {
@@ -49,7 +46,7 @@ public class LoginViewController extends BaseController {
 	}
 
 
-	@RequestMapping(value = "/gotoLoginView", method = { RequestMethod.GET, RequestMethod.POST })
+	@RequestMapping(value = "/gotoLoginView", method = {RequestMethod.GET, RequestMethod.POST})
 	public String gotoLoginView(HttpSession session, HttpServletRequest request,
 	                            @RequestParam(required = false) String appId, @RequestParam(required = false) String view)
 			throws Exception {
@@ -69,6 +66,9 @@ public class LoginViewController extends BaseController {
 		if (loginConfig == null) {
 			loginConfig = new Properties();
 		}
+
+		Locale locale = LocaleContextHolder.getLocale();
+		request.setAttribute("defaultLang", locale.toString());
 
 		String avString = loginConfig.getProperty(request.getServerName());
 		if (avString != null && appId == null) {
@@ -96,8 +96,7 @@ public class LoginViewController extends BaseController {
 		if (supportWechatOSLogin) {
 			supportTpaType.add("wechatOS");
 		}
-		
-		
+
 
 		for (String type : supportTpaType) {
 			String url = loginConfig.getProperty(type + "OauthBaseUrl_" + appId);
