@@ -68,7 +68,7 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 
 	@Override
 	public PageData<T> find(SQLFilter filter, int start, int limit) {
-		Pageable pageable = new PageRequest(start / limit, limit);
+		Pageable pageable = PageRequest.of(start / limit, limit);
 		Specification<T> spec = (root, query, cb) -> JpaUtil.sqlFilterToPredicate(clazz, root, query, cb, filter);
 		Page<T> pd = getSpecificationExecutor().findAll(spec , pageable);
 
@@ -119,7 +119,7 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 	}
 
 	@Override
-	public void delete(T obj) throws DaoException {
+	public void delete(T obj) throws DaoException, ServiceException {
 		getRepository().delete(obj);
 	}
 
@@ -173,7 +173,7 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 
 	@Override
 	public PageData<T> find(int start, int limit) {
-		Pageable pageable = new PageRequest(start / limit, limit);
+		Pageable pageable = PageRequest.of(start / limit, limit);
 	
 		Page<T> pd = getRepository().findAll(pageable);
 		

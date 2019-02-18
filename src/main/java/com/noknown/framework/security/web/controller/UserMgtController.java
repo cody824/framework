@@ -273,7 +273,7 @@ public class UserMgtController extends BaseController {
 			throw new WebException("请登录", 401);
 		}
 		userService.updateUserPasswd(sai.getUser().getId(), oldPassword, newPassword);
-		return outActionReturn(HttpStatus.OK, HttpStatus.OK);
+		return outActionReturn(sai.getUser(), HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/user/{userId}/name", method = RequestMethod.PUT, headers = "Accept=*")

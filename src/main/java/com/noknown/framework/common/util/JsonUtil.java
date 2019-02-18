@@ -148,9 +148,9 @@ public class JsonUtil {
 							method = cla.getMethod("set"
 									+ fname.substring(0, 1).toUpperCase()
 									+ fname.substring(1),
-									new Class[] { obj.getClass() });
+									obj.getClass());
 						}
-						method.invoke(bean, new Object[] { obj });
+						method.invoke(bean, obj);
 					} catch (NoSuchMethodException e) {
 						e.printStackTrace();
 					} catch (SecurityException e) {
@@ -237,7 +237,7 @@ public class JsonUtil {
 							"set" + fname.substring(0, 1).toUpperCase()
 									+ fname.substring(1), fields.get(i)
 									.getType());
-					method.invoke(object, new Object[] { obj });
+					method.invoke(object, obj);
 				} catch (NoSuchMethodException e) {
 					logger.warn(e.getLocalizedMessage());
 				} catch (SecurityException e) {
@@ -373,5 +373,80 @@ public class JsonUtil {
 			}
 		}
 		return jsonResultStr.toString();
+	}
+
+	/**
+	 * 格式化
+	 *
+	 * @param jsonStr
+	 * @return
+	 * @author lizhgb
+	 * @Date 2015-10-14 下午1:17:35
+	 * @Modified 2017-04-28 下午8:55:35
+	 */
+	public static String formatJson(String jsonStr) {
+		if (null == jsonStr || "".equals(jsonStr)) {
+			return "";
+		}
+		StringBuilder sb = new StringBuilder();
+		char last = '\0';
+		char current = '\0';
+		int indent = 0;
+		boolean isInQuotationMarks = false;
+		for (int i = 0; i < jsonStr.length(); i++) {
+			last = current;
+			current = jsonStr.charAt(i);
+			switch (current) {
+				case '"':
+					if (last != '\\') {
+						isInQuotationMarks = !isInQuotationMarks;
+					}
+					sb.append(current);
+					break;
+				case '{':
+				case '[':
+					sb.append(current);
+					if (!isInQuotationMarks) {
+						sb.append('\n');
+						indent++;
+						addIndentBlank(sb, indent);
+					}
+					break;
+				case '}':
+				case ']':
+					if (!isInQuotationMarks) {
+						sb.append('\n');
+						indent--;
+						addIndentBlank(sb, indent);
+					}
+					sb.append(current);
+					break;
+				case ',':
+					sb.append(current);
+					if (last != '\\' && !isInQuotationMarks) {
+						sb.append('\n');
+						addIndentBlank(sb, indent);
+					}
+					break;
+				default:
+					sb.append(current);
+			}
+		}
+
+		return sb.toString();
+	}
+
+	/**
+	 * 添加space
+	 *
+	 * @param sb
+	 * @param indent
+	 * @author lizhgb
+	 * @Date 2015-10-14 上午10:38:04
+	 */
+	private static void addIndentBlank(StringBuilder sb, int indent) {
+		for (int i = 0; i < indent; i++) {
+			sb.append('\t');
+		}
 	}
 }
