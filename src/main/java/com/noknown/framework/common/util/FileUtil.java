@@ -467,7 +467,7 @@ public class FileUtil {
 		if (!file.exists() && isNew) {
 			return file.mkdirs();
 		}
-		return false;
+		return file.exists();
 	}
 
 	/**
