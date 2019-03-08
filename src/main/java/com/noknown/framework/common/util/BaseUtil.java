@@ -353,38 +353,4 @@ public class BaseUtil{
 		return ret;
 	}
 
-	/**
-	 * 读取文件内容到 字符串中
-	 *
-	 * @param filePath  文件路径
-	 * @return 读取失败返回null
-	 */
-	public static String file2String(String filePath) {
-		File file = new File(filePath);
-		BufferedReader reader = null;
-		StringBuilder result = new StringBuilder();
-		try {
-			reader = new BufferedReader(new FileReader(file));
-			String tempString;
-			while ((tempString = reader.readLine()) != null) {
-				if (result.length() == 0) {
-					result.append(tempString);
-				} else {
-					result.append("\n").append(tempString);
-				}
-			}
-			reader.close();
-			return result.toString();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		} finally {
-			if (reader != null) {
-				try {
-					reader.close();
-				} catch (IOException ignore) {
-				}
-			}
-		}
-	}
 }

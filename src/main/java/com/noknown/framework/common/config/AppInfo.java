@@ -14,32 +14,32 @@ public class AppInfo {
 
 	private String warProject;
 
-	/**
-	 * @return the appId
-	 */
+	private String version;
+
 	public String getAppId() {
 		return appId;
 	}
 
-	/**
-	 * @param appId the appId to set
-	 */
-	public void setAppId(String appId) {
+	public AppInfo setAppId(String appId) {
 		this.appId = appId;
+		return this;
 	}
 
-	/**
-	 * @return the warProject
-	 */
 	public String getWarProject() {
 		return warProject;
 	}
 
-	/**
-	 * @param warProject the warProject to set
-	 */
-	public void setWarProject(String warProject) {
+	public AppInfo setWarProject(String warProject) {
 		this.warProject = warProject;
+		return this;
 	}
 
+	public String getVersion() {
+		return version;
+	}
+
+	public AppInfo setVersion(String version) {
+		this.version = version;
+		return this;
+	}
 }

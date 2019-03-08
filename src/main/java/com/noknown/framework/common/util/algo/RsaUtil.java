@@ -15,7 +15,24 @@ import java.security.spec.X509EncodedKeySpec;
  */
 public class RsaUtil {
 
-	private final static String KEY_ALGORITHM = "RSA";
+	public final static String RSA_ALGORITHM = "RSA";
+
+	public final static String PKCS1_ALGORITHM = "RSA/ECB/PKCS1Padding";
+
+	/**
+	 * 得到公钥
+	 *
+	 * @param key 密钥字符串（经过base64编码）
+	 * @throws Exception 异常
+	 */
+	public static PublicKey getPublicKey(String key, String algoType) throws Exception {
+		byte[] keyBytes;
+		keyBytes = Base64.decode(key.toCharArray());
+
+		X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
+		KeyFactory keyFactory = KeyFactory.getInstance(algoType);
+		return keyFactory.generatePublic(keySpec);
+	}
 
 
 	/**
@@ -29,7 +46,7 @@ public class RsaUtil {
 		keyBytes = Base64.decode(key.toCharArray());
 
 		X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
-		KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+		KeyFactory keyFactory = KeyFactory.getInstance(RSA_ALGORITHM);
 		return keyFactory.generatePublic(keySpec);
 	}
 
@@ -44,7 +61,7 @@ public class RsaUtil {
 		keyBytes = Base64.decode(key.toCharArray());
 
 		PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
-		KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+		KeyFactory keyFactory = KeyFactory.getInstance(RSA_ALGORITHM);
 		return keyFactory.generatePrivate(keySpec);
 	}
 
