@@ -20,7 +20,6 @@ public class NetUtil {
 	 */
 	public static String getLocalMac() throws SocketException, UnknownHostException {
 		InetAddress ia = InetAddress.getLocalHost();
-
 		return getMac(ia);
 	}
 
