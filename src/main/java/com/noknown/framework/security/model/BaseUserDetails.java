@@ -30,7 +30,7 @@ public abstract class BaseUserDetails implements Serializable {
 	/**
 	 * 用户账号
 	 */
-	@Column(length = 32)
+	@Column(length = 128)
 	private String nick;
 	
 	/**
