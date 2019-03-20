@@ -392,46 +392,36 @@ public class FileUtil {
 			}
 			entry = entries.nextElement();
 			//构建压缩包中一个文件解压后保存的文件全路径
-			String fileName = entry.getName();
-			//entry.getKey()=压缩包名+"/"+文件名
-			String[] str = fileName.replaceAll("\\\\", "/").split("/");
-			if (str.length > 1) {
-				fileName = str[1];
-			}
-
-			entryFilePath = unzipFilePath + File.separator + fileName;
-
-			map.put(fileName, entryFilePath);
-
-			//构建解压后保存的文件夹路径
-			index = entryFilePath.lastIndexOf(File.separator);
-			if (index != -1) {
-				entryDirPath = entryFilePath.substring(0, index);
-			} else {
-				entryDirPath = "";
-			}
-			entryDir = new File(entryDirPath);
-			//如果文件夹路径不存在，则创建文件夹
-			if (!entryDir.exists() || !entryDir.isDirectory()) {
-				entryDir.mkdirs();
-			}
-
-			//创建解压文件
+			String key = entry.getName().replaceAll("\\\\", "/");
+			entryFilePath = unzipFilePath + File.separator + key;
 			entryFile = new File(entryFilePath);
+			map.put(key, entryFilePath);
+			if (entry.isDirectory()) {
+				if (entryFile.exists()) {
+					entryFile.delete();
+				}
+				entryFile.mkdirs();
+			} else {
+				entryDir = entryFile.getParentFile();
+				//如果文件夹路径不存在，则创建文件夹
+				if (!entryDir.exists() || !entryDir.isDirectory()) {
+					entryDir.mkdirs();
+				}
+				entryFile = new File(entryFilePath);
+				if (entryFile.exists()) {
+					//删除已存在的目标文件
+					entryFile.delete();
+				}
 
-			if (entryFile.exists()) {
-				//删除已存在的目标文件
-				entryFile.delete();
+				//写入文件
+				bos = new BufferedOutputStream(new FileOutputStream(entryFile));
+				bis = new BufferedInputStream(zip.getInputStream(entry));
+				while ((count = bis.read(buffer, 0, bufferSize)) != -1) {
+					bos.write(buffer, 0, count);
+				}
+				bos.flush();
+				bos.close();
 			}
-
-			//写入文件
-			bos = new BufferedOutputStream(new FileOutputStream(entryFile));
-			bis = new BufferedInputStream(zip.getInputStream(entry));
-			while ((count = bis.read(buffer, 0, bufferSize)) != -1) {
-				bos.write(buffer, 0, count);
-			}
-			bos.flush();
-			bos.close();
 		}
 		zip.close();
 		return map;
