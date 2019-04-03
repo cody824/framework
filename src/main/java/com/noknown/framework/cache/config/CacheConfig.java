@@ -4,11 +4,13 @@ import com.noknown.framework.cache.service.CacheService;
 import com.noknown.framework.cache.service.impl.memcached.XMemcachedCacheServiceImpl;
 import com.noknown.framework.cache.service.impl.memory.MemoryCacheServiceImpl;
 import com.noknown.framework.cache.service.impl.redis.JedisCacheServiceImpl;
+import com.noknown.framework.common.util.StringUtil;
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.utils.XMemcachedClientFactoryBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -29,20 +31,18 @@ public class CacheConfig {
 
 	@Bean
 	public JedisPool redisPoolFactory(@Value("${redis.config.open:false}") boolean connect,
-	                                  @Value("${spring.redis.host:}") String host,
-	                                  @Value("${spring.redis.port:6379}") int port,
-	                                  @Value("${spring.redis.password:}") String password,
-	                                  @Value("${spring.redis.timeout:300}") int timeout,
-	                                  @Value("${spring.redis.pool.max-idle:20}") int maxIdle,
-	                                  @Value("${spring.redis.pool.max-wait:10000}") long maxWaitMillis) {
+	                                  RedisProperties redisProperties) {
 		JedisPool jedisPool = null;
 		if (connect) {
 			JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
-			jedisPoolConfig.setMaxIdle(maxIdle);
-			jedisPoolConfig.setMaxWaitMillis(maxWaitMillis);
-			jedisPool = new JedisPool(jedisPoolConfig, host, port, timeout, password);
-			logger.info("JedisPool注入成功！！");
-			logger.info("redis地址：" + host + ":" + port);
+			jedisPoolConfig.setMaxIdle(redisProperties.getJedis().getPool().getMaxIdle());
+			jedisPoolConfig.setMaxWaitMillis(redisProperties.getJedis().getPool().getMaxWait().toMillis());
+			if (StringUtil.isNotBlank(redisProperties.getPassword())) {
+				jedisPool = new JedisPool(jedisPoolConfig, redisProperties.getHost(), redisProperties.getPort(), (int) redisProperties.getTimeout().getSeconds(), redisProperties.getPassword());
+			} else {
+				jedisPool = new JedisPool(jedisPoolConfig, redisProperties.getHost(), redisProperties.getPort(), (int) redisProperties.getTimeout().getSeconds());
+
+			}
 		}
 		return jedisPool;
 	}

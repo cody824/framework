@@ -384,13 +384,17 @@ public class FileUtil {
 		ZipFile zip = new ZipFile(zipFile);
 		Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zip.entries();
 		//循环对压缩包里的每一个文件进行解压
-		Boolean ispackage = true;
+//		Boolean ispackage = true;
+
 		while (entries.hasMoreElements()) {
-			if (ispackage) {
-				entries.nextElement();
-				ispackage = false;
-			}
+//			if (ispackage) {
+//				entry = entries.nextElement();
+//				ispackage = false;
+//			}
 			entry = entries.nextElement();
+			if (entry.getName().equals("\\") && entries.hasMoreElements()){
+				entry = entries.nextElement();
+			}
 			//构建压缩包中一个文件解压后保存的文件全路径
 			String key = entry.getName().replaceAll("\\\\", "/");
 			entryFilePath = unzipFilePath + File.separator + key;
