@@ -532,6 +532,10 @@ public class FileUtil {
 		FileOutputStream fos = null;
 		try {
 			File tmpFile;
+			//小于3生成临时文件报错
+			if (name.length() < 3){
+				name += "000";
+			}
 			if (tmpDirFile == null) {
 				tmpFile = File.createTempFile(name, '.' + ext);
 			} else {
