@@ -7,7 +7,10 @@ import com.noknown.framework.fss.service.FileStoreService;
 
 import java.io.*;
 
-public class AliFSImpl implements FileStoreService {
+/**
+ * @author guodong
+ */
+public class AliFsImpl implements FileStoreService {
 	
 
 	private OSSConfig config;
@@ -25,25 +28,24 @@ public class AliFSImpl implements FileStoreService {
 			if (config != null) {
 				client = new OSSClient(config.endpoint, config.accessKeyId, config.secretAccessKey);
 				isInit = true;
-				return;
 			}
 		}
 	}
 
 	@Override
-	public String put(byte[] data, String key) throws IOException {
+	public String put(byte[] data, String key) {
 		return put(new ByteArrayInputStream(data), key);
 	}
 
 	@Override
-	public String put(InputStream inputStream, String key) throws IOException {
+	public String put(InputStream inputStream, String key) {
 		init(null);
 		client.putObject(config.getBucketName(), key, inputStream);
 		return config.getDomain() + key;
 	}
 
 	@Override
-	public String put(String path, String key) throws IOException {
+	public String put(String path, String key) {
 		init(null);
 		File file = new File(path);
 		client.putObject(config.getBucketName(), key, file);
@@ -62,7 +64,7 @@ public class AliFSImpl implements FileStoreService {
 	@Override
 	public void get(OutputStream outputStream, String key) throws IOException {
 		init(null);
-		InputStream is = null;
+		InputStream is;
 		OSSObject ossObject = client.getObject(config.getBucketName(), key);
 		if (ossObject != null){
 			is = ossObject.getObjectContent();
@@ -76,8 +78,19 @@ public class AliFSImpl implements FileStoreService {
 	}
 
 	@Override
-	public void del(String key) throws IOException {
+	public void del(String key) {
 		client.deleteObject(config.getBucketName(), key);
+	}
+
+	@Override
+	public String copy(String srcKey, String targetKey) {
+		client.copyObject(config.getBucketName(), srcKey, config.getBucketName(), targetKey);
+		return config.getDomain() + targetKey;
+	}
+
+	@Override
+	public boolean exist(String key) {
+		return client.doesObjectExist(config.getBucketName(), key);
 	}
 
 	/**

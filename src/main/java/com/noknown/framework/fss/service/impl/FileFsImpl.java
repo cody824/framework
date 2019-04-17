@@ -9,13 +9,13 @@ import java.io.*;
 /**
  * @author guodong
  */
-public class FileFSImpl implements FileStoreService {
+public class FileFsImpl implements FileStoreService {
 
 	private String basePath;
 	
 	private String baseUrl;
 
-	public FileFSImpl(String basePath, String baseUrl) {
+	public FileFsImpl(String basePath, String baseUrl) {
 		this.basePath = basePath;
 		this.baseUrl = baseUrl;
 	}
@@ -52,7 +52,21 @@ public class FileFSImpl implements FileStoreService {
 		File file = new File(BaseUtil.getPath(basePath) + key);
 		FileUtil.deleteContents(file);
 	}
-	
+
+	@Override
+	public String copy(String srcKey, String targetKey) throws IOException {
+		File fromFile = new File(BaseUtil.getPath(basePath), srcKey);
+		File toFile = new File(BaseUtil.getPath(basePath), targetKey);
+		FileUtil.copyFile(fromFile, toFile);
+		return baseUrl + targetKey;
+	}
+
+	@Override
+	public boolean exist(String key) {
+		File file = new File(BaseUtil.getPath(basePath), key);
+		return file.exists() && file.isFile();
+	}
+
 
 	@Override
 	public void get(String path, String key) throws IOException {

@@ -61,7 +61,7 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 	public abstract JpaSpecificationExecutor<T> getSpecificationExecutor();
 
 	@Override
-	public T create(T entry) throws ServiceException, DaoException {
+	public T create(T entry) throws ServiceException {
 		entry = getRepository().save(entry);
 		return entry;
 	}
@@ -93,7 +93,7 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 		T t = null;
 		Field f;
 		try {
-			f = clazz.getField(attrName);
+			f = clazz.getDeclaredField(attrName);
 			Method getMethod = getRepository().getClass().getMethod(
 					"findBy" + attrName.substring(0, 1).toUpperCase()
 							+ attrName.substring(1), f.getType());
@@ -114,7 +114,7 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 	}
 
 	@Override
-	public void delete(Collection<T> objs) throws DaoException {
+	public void delete(Collection<T> objs) {
 		getRepository().deleteAll(objs);
 	}
 
@@ -124,7 +124,7 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 	}
 
 	@Override
-	public void update(T obj) throws DaoException {
+	public void update(T obj) {
 		getRepository().save(obj);
 	}
 

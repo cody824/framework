@@ -227,17 +227,17 @@ public class ObjectUtil {
 	/**
 	 * 通过get，set方法拷贝对象
 	 * 		要求对象中属性不能有基本类型，通过null判断是否对属性进行copy
-	 * @param obj1	目标
-	 * @param obj2	源
+	 * @param target    目标
+	 * @param src    源
 	 * @param ignoreFs 强制忽略的属性
 	 * @return 拷贝完成的对象
 	 */
-	public static Object copy(Object obj1, Object obj2, List<String> ignoreFs) {
-		Class<?> type = obj1.getClass();
-		Class<?> type2 = obj2.getClass();
+	public static Object copy(Object target, Object src, List<String> ignoreFs) {
+		Class<?> type = target.getClass();
+		Class<?> type2 = src.getClass();
 		List<Field> fields = new ArrayList<>();
 
-		for (Class<?> clazz = obj1.getClass(); clazz != Object.class; clazz = clazz
+		for (Class<?> clazz = target.getClass(); clazz != Object.class; clazz = clazz
 				.getSuperclass()) {
 			Collections.addAll(fields, clazz.getDeclaredFields());
 		}
@@ -257,7 +257,7 @@ public class ObjectUtil {
 						"get" + fname.substring(0, 1).toUpperCase()
 								+ fname.substring(1));
 				if (getMethod != null) {
-					value = getMethod.invoke(obj2);
+					value = getMethod.invoke(src);
 				}
 
 				if (value != null) {
@@ -265,14 +265,14 @@ public class ObjectUtil {
 							"set" + fname.substring(0, 1).toUpperCase()
 									+ fname.substring(1), field
 									.getType());
-					setMethod.invoke(obj1, value);
+					setMethod.invoke(target, value);
 				}
 			} catch (NoSuchMethodException ignored) {
 			} catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				logger.warn(e.getLocalizedMessage());
 			}
 		}
-		return obj1;
+		return target;
 	}
 
 	/**
