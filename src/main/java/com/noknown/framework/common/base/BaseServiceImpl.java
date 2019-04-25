@@ -192,4 +192,51 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 		return getSpecificationExecutor().count(spec);
 	}
 
+
+	@Override
+	public T getByRepoFunc(String funcName, Object... args) throws ServiceException {
+		T t;
+		try {
+			Method method = null;
+			Method[] methods = getRepository().getClass().getMethods();
+			for (Method m : methods) {
+				if (m.getName().equals(funcName)) {
+					method = m;
+					break;
+				}
+			}
+			if (method != null) {
+				t = (T) method.invoke(getRepository(), args);
+			} else {
+				throw new ServiceException("方法" + funcName + "不存在");
+			}
+		} catch (SecurityException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+			throw new ServiceException(e);
+		}
+		return t;
+	}
+
+	@Override
+	public List<T> findByRepoFunc(String funcName, Object... args) throws ServiceException {
+		List<T> col;
+		try {
+			Method method = null;
+			Method[] methods = getRepository().getClass().getMethods();
+			for (Method m : methods) {
+				if (m.getName().equals(funcName)) {
+					method = m;
+					break;
+				}
+			}
+			if (method != null) {
+				col = (List<T>) method.invoke(getRepository(), args);
+			} else {
+				throw new ServiceException("方法" + funcName + "不存在");
+			}
+		} catch (SecurityException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+			throw new ServiceException(e);
+		}
+		return col;
+	}
+
 }

@@ -35,6 +35,24 @@ public interface BaseService<T, ID extends Serializable> {
 	T get(ID entityid) throws DaoException, ServiceException;
 
 	/**
+	 * 通过dao方法直接获取数据
+	 *
+	 * @param funcName
+	 * @param args
+	 * @return
+	 */
+	T getByRepoFunc(String funcName, Object... args) throws ServiceException;
+
+	/**
+	 * 通过dao方法直接获取数据
+	 *
+	 * @param funcName 方法名
+	 * @param args     参数
+	 * @return
+	 */
+	List<T> findByRepoFunc(String funcName, Object... args) throws ServiceException;
+
+	/**
 	 * 根据对象属性获取对象，该属性的值必须唯一，否则只返回第一个匹配的对象
 	 * @param attrName 对象属性名
 	 * @param attrValue 对象属性值
