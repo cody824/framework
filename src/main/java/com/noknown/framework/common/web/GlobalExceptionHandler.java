@@ -43,8 +43,7 @@ public class GlobalExceptionHandler {
 			responseStatus = HttpStatus.BAD_REQUEST;
 			msg = se.getEmsg();
 		} else if (ex instanceof DaoException) {
-			logger.error(ex.getLocalizedMessage());
-			ex.printStackTrace();
+			logger.error(ex.getLocalizedMessage(), ex);
 			msg = new ErrorMsg("服务错误：" + ex.getLocalizedMessage(), true);
 			responseStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 		} else if (ex instanceof BadCredentialsException) {
@@ -53,8 +52,7 @@ public class GlobalExceptionHandler {
 			msg = new ErrorMsg("验证错误：" + ex.getLocalizedMessage(), false);
 			responseStatus = HttpStatus.UNAUTHORIZED;
 		} else {
-			logger.error(ex.getLocalizedMessage());
-			ex.printStackTrace();
+			logger.error(ex.getLocalizedMessage(), ex);
 			msg = new ErrorMsg("服务错误：" + ex.getLocalizedMessage(), true);
 			responseStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 		}
