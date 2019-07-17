@@ -185,6 +185,9 @@ public class JpaUtil {
 				} else if (type.equals(Boolean.class) || type.equals(boolean.class)) {
 					isNeedIgnoreCase = false;
 					valueArray[j] = Boolean.parseBoolean(valueArray[j].toString());
+				} else if (type.equals(Date.class) || type.equals(java.sql.Date.class)) {
+					isNeedIgnoreCase = false;
+					isDate = true;
 				}
 			}
 			
