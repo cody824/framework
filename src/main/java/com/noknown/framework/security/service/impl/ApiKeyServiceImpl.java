@@ -12,6 +12,8 @@ import com.noknown.framework.security.dao.UserDao;
 import com.noknown.framework.security.model.ApiKey;
 import com.noknown.framework.security.model.User;
 import com.noknown.framework.security.service.ApiKeyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -35,6 +37,8 @@ import java.util.Map;
 @Service
 public class ApiKeyServiceImpl extends BaseServiceImpl<ApiKey, String> implements ApiKeyService {
 
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
+
 	private final ApiKeyDao apiKeyDao;
 
 	private final UserDao userDao;
@@ -45,15 +49,19 @@ public class ApiKeyServiceImpl extends BaseServiceImpl<ApiKey, String> implement
 		this.userDao = userDao;
 	}
 
-	private String signTopRequest(Map<String, String> params, String secret, String signMethod) throws IOException, InvalidKeyException, NoSuchAlgorithmException {
+	private String signTopRequest(Map<String, String> params, String secret, String signMethod) throws ServiceException, IOException, InvalidKeyException, NoSuchAlgorithmException {
 		// 第一步：检查参数是否已经排序
 		String[] keys = params.keySet().toArray(new String[0]);
 		Arrays.sort(keys);
 
 		// 第二步：把所有参数名和参数值串在一起
 		StringBuilder query = new StringBuilder();
-		if (Constants.SIGN_METHOD_MD5.equals(signMethod)) {
+		if (Constants.SIGN_METHOD_MD5.equalsIgnoreCase(signMethod)) {
 			query.append(secret);
+		} else if (Constants.SIGN_METHOD_HMAC.equalsIgnoreCase(signMethod)) {
+			//DO nothing
+		} else {
+			throw new ServiceException("不支持的算法" + signMethod, -4);
 		}
 		for (String key : keys) {
 			String value = params.get(key);
@@ -64,7 +72,7 @@ public class ApiKeyServiceImpl extends BaseServiceImpl<ApiKey, String> implement
 
 		// 第三步：使用MD5/HMAC加密
 		byte[] bytes;
-		if (Constants.SIGN_METHOD_HMAC.equals(signMethod)) {
+		if (Constants.SIGN_METHOD_HMAC.equalsIgnoreCase(signMethod)) {
 			bytes = encryptHMAC(query.toString(), secret);
 			return byte2hex(bytes);
 		} else {
@@ -132,7 +140,7 @@ public class ApiKeyServiceImpl extends BaseServiceImpl<ApiKey, String> implement
 	public void enable(String accessKey) throws ServiceException {
 		ApiKey apiKey = apiKeyDao.findById(accessKey).orElse(null);
 		if (apiKey == null) {
-			throw new ServiceException("key不存在");
+			throw new ServiceException("key不存在", -3);
 		}
 		apiKey.setEnable(true);
 		apiKeyDao.save(apiKey);
@@ -142,7 +150,7 @@ public class ApiKeyServiceImpl extends BaseServiceImpl<ApiKey, String> implement
 	public void disable(String accessKey) throws ServiceException {
 		ApiKey apiKey = apiKeyDao.findById(accessKey).orElse(null);
 		if (apiKey == null) {
-			throw new ServiceException("key不存在");
+			throw new ServiceException("key不存在", -3);
 		}
 		apiKey.setEnable(false);
 		apiKeyDao.save(apiKey);
@@ -153,20 +161,23 @@ public class ApiKeyServiceImpl extends BaseServiceImpl<ApiKey, String> implement
 	public User check(SureApiAuthToken token) throws ServiceException {
 		ApiKey apiKey = apiKeyDao.findById(token.getAccessKey()).orElse(null);
 		if (apiKey == null) {
-			throw new ServiceException("key不存在");
+			throw new ServiceException("key不存在", -3);
 		}
 
 		String cipher;
 		try {
 			cipher = signTopRequest(token.getParams(), apiKey.getSecurityKey(), token.getSignMethod());
+		} catch (ServiceException e) {
+			throw e;
 		} catch (Exception e) {
-			throw new ServiceException(e);
+			logger.error("加密失败：" + e.getMessage(), e);
+			throw new ServiceException("加密失败，请联系管理员", -99);
 		}
 		User user;
 		if (token.getSign().equals(cipher)) {
 			user = userDao.findById(apiKey.getUserId()).orElse(null);
 		} else {
-			throw new ServiceException("签名失败");
+			throw new ServiceException("签名不匹配", -5);
 		}
 		return user;
 	}
