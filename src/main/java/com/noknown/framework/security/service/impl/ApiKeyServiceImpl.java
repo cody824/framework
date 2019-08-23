@@ -177,6 +177,7 @@ public class ApiKeyServiceImpl extends BaseServiceImpl<ApiKey, String> implement
 		if (token.getSign().equals(cipher)) {
 			user = userDao.findById(apiKey.getUserId()).orElse(null);
 		} else {
+			logger.debug("正确签名：" + cipher);
 			throw new ServiceException("签名不匹配", -5);
 		}
 		return user;

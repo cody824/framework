@@ -67,7 +67,6 @@ public class ApiKeyController extends BaseController {
 		} else {
 			apiKey = apiKeyService.create(userId);
 		}
-
 		return ResponseEntity.ok(apiKey);
 	}
 
