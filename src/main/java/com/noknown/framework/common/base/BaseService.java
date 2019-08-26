@@ -158,6 +158,19 @@ public interface BaseService<T, ID extends Serializable> {
 	 */
 	PageData<T> find(SQLFilter filter, int start, int limit) throws DaoException, ServiceException;
 
+
+	/**
+	 * 获取SQLFilter相匹配的分页对象
+	 *
+	 * @param filter SQLFilter对象
+	 * @param pageNo 分页数
+	 * @param size   显示几条数据
+	 * @return PageData 返回符合条件的分页数据
+	 * @throws DaoException     操作失败抛出异常
+	 * @throws ServiceException 操作失败抛出异常
+	 */
+	PageData<T> findByPage(SQLFilter filter, int pageNo, int size) throws DaoException, ServiceException;
+
 	/**
 	 * 获取SQLFilter相匹配的对象总数
 	 * @param filter SQLFilter对象
