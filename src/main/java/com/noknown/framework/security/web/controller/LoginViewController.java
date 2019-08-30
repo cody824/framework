@@ -46,7 +46,7 @@ public class LoginViewController extends BaseController {
 	}
 
 
-	@RequestMapping(value = "/gotoLoginView", method = {RequestMethod.GET, RequestMethod.POST})
+	@RequestMapping(value = {"/gotoLoginView"}, method = {RequestMethod.GET, RequestMethod.POST})
 	public String gotoLoginView(HttpSession session, HttpServletRequest request,
 	                            @RequestParam(required = false) String appId, @RequestParam(required = false) String view)
 			throws Exception {

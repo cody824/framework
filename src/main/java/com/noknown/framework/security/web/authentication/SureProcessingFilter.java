@@ -6,21 +6,25 @@ import com.noknown.framework.security.authentication.SureAuthenticationInfo;
 import com.noknown.framework.security.authentication.SureOauthToken;
 import com.noknown.framework.security.authentication.SurePhoteAuthToken;
 import com.noknown.framework.security.authentication.SureUsernamePasswordAuthenticationToken;
+import com.noknown.framework.security.exception.ExceedsLimitException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 /**
  * @author guodong
@@ -39,8 +43,21 @@ public class SureProcessingFilter  extends AbstractAuthenticationProcessingFilte
 	private static String codeParam = "code";
 	private static String stateParam = "state";
 
+	/**
+	 * 是否检测登录数量
+	 */
+	private boolean checkLoginNum = false;
+
+	/**
+	 * 最大登录数量
+	 */
+	private int maxLoginNum = Integer.MAX_VALUE;
+
 	@Autowired
 	private AuthenticationManager authenticationManager;
+
+	@Autowired
+	private SessionRegistry sessionRegistry;
 
 	public SureProcessingFilter() {
 		super(defautlLoginAction);
@@ -104,7 +121,17 @@ public class SureProcessingFilter  extends AbstractAuthenticationProcessingFilte
 		if (auth == null || !auth.isAuthenticated()) {
 			throw new BadCredentialsException("登录失败");
 		}
+
+		if (checkLoginNum) {
+			List<Object> objectList = sessionRegistry.getAllPrincipals();
+			int loginNum = objectList.size();
+			if (!objectList.contains(auth.getPrincipal()) && loginNum >= maxLoginNum) {
+				throw new ExceedsLimitException("超出在线用户数限制[" + maxLoginNum + "]");
+			}
+		}
+		sessionRegistry.registerNewSession(request.getSession().getId(), auth.getPrincipal());
 		session.setAttribute(Constants.SURE_LOGIN_INFO, auth);
+
 		if (auth instanceof SureAuthenticationInfo) {
 			SureAuthenticationInfo saInfo = (SureAuthenticationInfo) auth;
 			session.setAttribute(Constants.SURE_LOGIN_USER_NAME, saInfo.getUd().getFullName());
@@ -114,6 +141,12 @@ public class SureProcessingFilter  extends AbstractAuthenticationProcessingFilte
 			session.setAttribute(Constants.SURE_LOGIN_USER_ROLES, saInfo.getRoles());
 		}
 		return auth;
+	}
+
+	@Override
+	@Autowired
+	public void setSessionAuthenticationStrategy(SessionAuthenticationStrategy sessionStrategy) {
+		super.setSessionAuthenticationStrategy(sessionStrategy);
 	}
 
 	@Override
@@ -142,4 +175,21 @@ public class SureProcessingFilter  extends AbstractAuthenticationProcessingFilte
 
 	}
 
+	public boolean isCheckLoginNum() {
+		return checkLoginNum;
+	}
+
+	public SureProcessingFilter setCheckLoginNum(boolean checkLoginNum) {
+		this.checkLoginNum = checkLoginNum;
+		return this;
+	}
+
+	public int getMaxLoginNum() {
+		return maxLoginNum;
+	}
+
+	public SureProcessingFilter setMaxLoginNum(int maxLoginNum) {
+		this.maxLoginNum = maxLoginNum;
+		return this;
+	}
 }
