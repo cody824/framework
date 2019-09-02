@@ -125,7 +125,7 @@ public class SureProcessingFilter  extends AbstractAuthenticationProcessingFilte
 		if (checkLoginNum) {
 			List<Object> objectList = sessionRegistry.getAllPrincipals();
 			int loginNum = objectList.size();
-			if (!objectList.contains(auth.getPrincipal()) && loginNum >= maxLoginNum) {
+			if (!objectList.contains(auth.getPrincipal()) && loginNum >= maxLoginNum && maxLoginNum != 0) {
 				throw new ExceedsLimitException("超出在线用户数限制[" + maxLoginNum + "]");
 			}
 		}
