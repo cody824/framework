@@ -76,7 +76,7 @@ public abstract class AbstractObjectStoreJsonFileDaoImpl implements ObjectStoreD
 				+ File.separator + key;
 		boolean ret = false;
 		File file = new File(filePath);
-		if (file.isFile()) {
+		if (file.exists() && file.isFile()) {
 			ret = file.delete();
 		}
 		return ret;

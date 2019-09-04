@@ -19,6 +19,9 @@ import com.noknown.framework.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
@@ -248,6 +251,30 @@ public class UserMgtController extends BaseController {
 			roleService.detachRoleFromUser(userId, roleName);
 		}
 		return outActionReturn(null, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/user/{userId}/role", method = RequestMethod.GET)
+	public
+	@ResponseBody
+	Object getUserRole(@PathVariable("userId") Integer userId) throws Exception {
+		User user = userService.get(userId);
+		if (user != null) {
+			return outActionReturn(user.getAuthorities(), HttpStatus.OK);
+		}
+		return outActionReturn(null, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/user/role", method = RequestMethod.GET)
+	public
+	@ResponseBody
+	Object getUserRole() throws Exception {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth == null) {
+			return outActionError("请登录", HttpStatus.UNAUTHORIZED);
+		}
+
+		Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
+		return outActionReturn(authorities, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/user/{userId}/password", method = RequestMethod.PUT, headers = "Accept=*")
