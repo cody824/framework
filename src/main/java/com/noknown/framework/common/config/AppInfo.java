@@ -16,6 +16,8 @@ public class AppInfo {
 
 	private String version;
 
+	private String buildTime;
+
 	public String getAppId() {
 		return appId;
 	}
@@ -40,6 +42,15 @@ public class AppInfo {
 
 	public AppInfo setVersion(String version) {
 		this.version = version;
+		return this;
+	}
+
+	public String getBuildTime() {
+		return buildTime;
+	}
+
+	public AppInfo setBuildTime(String buildTime) {
+		this.buildTime = buildTime;
 		return this;
 	}
 }
