@@ -7,6 +7,7 @@ import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.Properties;
 import java.util.Random;
@@ -28,8 +29,21 @@ public class BaseUtil{
 	public static String getUUID() {
 		String s = UUID.randomUUID().toString();
 		// 去掉“-”符号
-		return s.substring(0, 8) + s.substring(9, 13) + s.substring(14, 18)
-				+ s.substring(19, 23) + s.substring(24);
+		return s.replace("-", "");
+	}
+
+
+	private static byte[] longToBytes(long x) {
+		ByteBuffer buffer = ByteBuffer.allocate(8);
+		buffer.putLong(0, x);
+		return buffer.array();
+	}
+
+	private static long bytesToLong(byte[] bytes) {
+		ByteBuffer buffer = ByteBuffer.allocate(8);
+		buffer.put(bytes, 0, bytes.length);
+		buffer.flip();
+		return buffer.getLong();
 	}
 
 	/**
@@ -351,6 +365,82 @@ public class BaseUtil{
 					+ path.substring(path.indexOf(":") + 1);
 		}
 		return ret;
+	}
+
+
+	/**
+	 * Hex字符串转byte
+	 *
+	 * @param inHex 待转换的Hex字符串
+	 * @return 转换后的byte
+	 */
+	public static byte hexToByte(String inHex) {
+		return (byte) Integer.parseInt(inHex, 16);
+	}
+
+
+	/**
+	 * hex字符串转byte数组
+	 *
+	 * @param inHex 待转换的Hex字符串
+	 * @return 转换后的byte数组结果
+	 */
+	public static byte[] hexToByteArray(String inHex) {
+		int hexlen = inHex.length();
+		byte[] result;
+		if (hexlen % 2 == 1) {
+			//奇数
+			hexlen++;
+			result = new byte[(hexlen / 2)];
+			inHex = "0" + inHex;
+		} else {
+			//偶数
+			result = new byte[(hexlen / 2)];
+		}
+		int j = 0;
+		for (int i = 0; i < hexlen; i += 2) {
+			result[j] = hexToByte(inHex.substring(i, i + 2));
+			j++;
+		}
+		return result;
+	}
+
+	/**
+	 * 字节数组转16进制
+	 *
+	 * @param bytes 需要转换的byte数组
+	 * @return 转换后的Hex字符串
+	 */
+	public static String bytesToHex(byte[] bytes) {
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < bytes.length; i++) {
+			String hex = Integer.toHexString(bytes[i] & 0xFF);
+			if (hex.length() < 2) {
+				sb.append(0);
+			}
+			sb.append(hex);
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * 字节数组转16进制
+	 *
+	 * @param bytes 需要转换的byte数组
+	 * @return 转换后的Hex字符串
+	 */
+	public static String bytesToHex(byte[] bytes, int offset, int length) {
+		StringBuffer sb = new StringBuffer();
+		int max = offset + length;
+		max = max > bytes.length ? bytes.length : max;
+		for (int i = offset; i < max; i++) {
+			String hex = Integer.toHexString(bytes[i] & 0xFF);
+			if (hex.length() < 2) {
+				sb.append(0);
+			}
+			sb.append(hex);
+		}
+		return sb.toString();
 	}
 
 }

@@ -1,10 +1,7 @@
 package com.noknown.framework.common.util.algo;
 
 import java.math.BigInteger;
-import java.security.Key;
-import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -18,6 +15,12 @@ public class RsaUtil {
 	public final static String RSA_ALGORITHM = "RSA";
 
 	public final static String PKCS1_ALGORITHM = "RSA/ECB/PKCS1Padding";
+
+	public static KeyPair genKeyPair(int keyLength) throws Exception {
+		KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+		keyPairGenerator.initialize(1024);
+		return keyPairGenerator.generateKeyPair();
+	}
 
 	/**
 	 * 得到公钥
