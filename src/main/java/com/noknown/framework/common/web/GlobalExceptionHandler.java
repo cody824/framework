@@ -21,6 +21,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 
 /**
  * @author guodong
@@ -93,6 +95,21 @@ public class GlobalExceptionHandler {
 		logger.error(ex.getLocalizedMessage());
 		return returnError(request, response, ex, responseStatus, msg);
 	}
+
+	@ExceptionHandler(value = ConstraintViolationException.class)
+	public Object handleConstraintViolationException(HttpServletRequest request, HttpServletResponse response, ConstraintViolationException ex) {
+		HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
+		ErrorMsg msg = new ErrorMsg();
+		String errorMesssage = "数据错误:\n";
+		for (ConstraintViolation constraintViolation : ex.getConstraintViolations()) {
+			errorMesssage += constraintViolation.getMessage() + "\n";
+		}
+		msg.setErrorMsg(errorMesssage);
+		logger.error(ex.getLocalizedMessage());
+		return returnError(request, response, ex, responseStatus, msg);
+	}
+
+
 
 
 	private Object returnError(HttpServletRequest request, HttpServletResponse response, Exception ex, HttpStatus responseStatus, ErrorMsg msg) {
