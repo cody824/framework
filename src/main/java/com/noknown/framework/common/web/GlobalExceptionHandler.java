@@ -3,6 +3,7 @@ package com.noknown.framework.common.web;
 import com.noknown.framework.common.exception.DaoException;
 import com.noknown.framework.common.exception.ServiceException;
 import com.noknown.framework.common.exception.WebException;
+import com.noknown.framework.common.util.StringUtil;
 import com.noknown.framework.common.web.model.ErrorMsg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -102,14 +104,44 @@ public class GlobalExceptionHandler {
 		ErrorMsg msg = new ErrorMsg();
 		String errorMesssage = "数据错误:\n";
 		for (ConstraintViolation constraintViolation : ex.getConstraintViolations()) {
-			errorMesssage += constraintViolation.getMessage() + "\n";
+			String field = messageSource.getMessage(StringUtil.lowerFirstCase(constraintViolation.getRootBeanClass().getSimpleName()) + "." + constraintViolation.getPropertyPath(), null, constraintViolation.getPropertyPath().toString(), request.getLocale());
+			errorMesssage += field + ":" + constraintViolation.getMessage() + "\n";
 		}
 		msg.setErrorMsg(errorMesssage);
 		logger.error(ex.getLocalizedMessage());
 		return returnError(request, response, ex, responseStatus, msg);
 	}
 
-
+	@ExceptionHandler(value = TransactionSystemException.class)
+	public Object handleTransactionSystemException(HttpServletRequest request, HttpServletResponse response, TransactionSystemException ex) {
+		HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
+		ErrorMsg msg = new ErrorMsg();
+		Throwable cause = ex;
+		boolean constrainError = false;
+		while (true) {
+			cause = cause.getCause();
+			if (cause == null) {
+				break;
+			}
+			if (cause instanceof ConstraintViolationException) {
+				constrainError = true;
+				break;
+			}
+		}
+		if (constrainError) {
+			ConstraintViolationException ce = (ConstraintViolationException) cause;
+			String errorMesssage = "数据错误:\n";
+			for (ConstraintViolation constraintViolation : ce.getConstraintViolations()) {
+				String field = messageSource.getMessage(StringUtil.lowerFirstCase(constraintViolation.getRootBeanClass().getSimpleName()) + "." + constraintViolation.getPropertyPath(), null, constraintViolation.getPropertyPath().toString(), request.getLocale());
+				errorMesssage += field + ":" + constraintViolation.getMessage() + "\n";
+			}
+			msg.setErrorMsg(errorMesssage);
+		} else {
+			msg.setErrorMsg(ex.getLocalizedMessage());
+		}
+		logger.error(ex.getLocalizedMessage());
+		return returnError(request, response, ex, responseStatus, msg);
+	}
 
 
 	private Object returnError(HttpServletRequest request, HttpServletResponse response, Exception ex, HttpStatus responseStatus, ErrorMsg msg) {

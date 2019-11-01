@@ -41,9 +41,8 @@ public class StringUtil extends StringUtils {
 
 	/**
 	 * 将数字字符串+默认加入值（当前默认加入值为1，默认返回值为0） 后重新转换成字符串 如 0099 +1=0100
-	 * 
-	 * @param str
-	 *            需要转换的字符串
+	 *
+	 * @param str 需要转换的字符串
 	 * @return 转换后的字符串
 	 * @author flymz
 	 */
@@ -55,18 +54,15 @@ public class StringUtil extends StringUtils {
 
 	/**
 	 * 将数字字符串加上默认加入值后转换成字符串 如 0099 +1=0100
-	 * 
-	 * @param str
-	 *            需要转换的字符串
-	 * @param defaultResult
-	 *            字符串默认值
-	 * @param defaultAddValue
-	 *            字符串默认需要加入值
+	 *
+	 * @param str             需要转换的字符串
+	 * @param defaultResult   字符串默认值
+	 * @param defaultAddValue 字符串默认需要加入值
 	 * @return 转换后的字符串
 	 * @author flymz
 	 */
 	public static final String transformString(String str,
-			String defaultResult, int defaultAddValue) {
+	                                           String defaultResult, int defaultAddValue) {
 		int flag = 0;
 		if (isBlank(str)) {
 			return defaultResult;
@@ -97,7 +93,7 @@ public class StringUtil extends StringUtils {
 
 	/**
 	 * Trim String，如果String为null，就返回字符串""
-	 * 
+	 *
 	 * @param s
 	 * @return
 	 */
@@ -110,7 +106,7 @@ public class StringUtil extends StringUtils {
 
 	/**
 	 * 去除String中的特殊字符和不可见字符
-	 * 
+	 *
 	 * @param in
 	 * @return
 	 */
@@ -123,8 +119,8 @@ public class StringUtil extends StringUtils {
 
 		for (int i = 0; i < in.length(); i++) {
 			char current = in.charAt(i); // NOTE: No IndexOutOfBoundsException
-											// caught here; it should not
-											// happen.
+			// caught here; it should not
+			// happen.
 			if ((current == 0x9) || (current == 0xA) || (current == 0xD)
 					|| ((current >= 0x20) && (current <= 0x7E))
 					|| ((current >= 0xA1) && (current <= 0xD7FF))
@@ -193,19 +189,19 @@ public class StringUtil extends StringUtils {
 	public static String asString(char[] data, int offset, int count) {
 		return String.valueOf(data, offset, count);
 	}
-	
+
 	public static String[] shortUrl(String url) {
 
 		// 可以自定义生成 MD5 加密字符传前的混合 KEY
 		String key = "soulinfo";
 
 		// 要使用生成 URL 的字符
-		String[] chars = new String[] { "a", "b", "c", "d", "e", "f", "g", "h",
-		"i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t",
-		"u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5",
-		"6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H",
-		"I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
-		"U", "V", "W", "X", "Y", "Z"
+		String[] chars = new String[]{"a", "b", "c", "d", "e", "f", "g", "h",
+				"i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t",
+				"u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5",
+				"6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H",
+				"I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
+				"U", "V", "W", "X", "Y", "Z"
 		};
 
 		// 对传入网址进行 MD5 加密
@@ -219,7 +215,7 @@ public class StringUtil extends StringUtils {
 			// long ，则会越界
 			long lHexLong = 0x3FFFFFFF & Long.parseLong(sTempSubString, 16);
 			String outChars = "";
-			
+
 			for (int j = 0; j < 6; j++) {
 				// 把得到的值与 0x0000003D 进行位与运算，取得字符数组 chars 索引
 				long index = 0x0000003D & lHexLong;
@@ -234,71 +230,74 @@ public class StringUtil extends StringUtils {
 		}
 		return resUrl;
 	}
-	
+
 	/**
 	 * 格式化手机号，即隐藏部分手机号码。13388882222 --> 133****2222
 	 * (前提需要保证手机号位数正确，不正确则直接返回原字符串)
+	 *
 	 * @param phoneNumber
 	 * @return
 	 */
 	public static String formatPhoneNumber(String phoneNumber) {
-		if(isBlank(phoneNumber) || isMobile(phoneNumber) == false) {
+		if (isBlank(phoneNumber) || isMobile(phoneNumber) == false) {
 			return phoneNumber;
 		}
-		
+
 		return phoneNumber.substring(0, 3) + "****" + phoneNumber.substring(7);
 	}
 
 
 	/**
 	 * 隐藏部分字符串
-	 * @param str 需要处理的字符串
+	 *
+	 * @param str   需要处理的字符串
 	 * @param ratio 显示比例（如 2 表示显示前2分之1的字符，不显示的动"***"替代 ）
-     * @return
-     */
-	public static String transformString(String str,int ratio ) {
-		if(isBlank(str)) {
+	 * @return
+	 */
+	public static String transformString(String str, int ratio) {
+		if (isBlank(str)) {
 			return str;
 		}
-		return str.substring(0, (int) Math.ceil(str.length()/ratio))+"***";
+		return str.substring(0, (int) Math.ceil(str.length() / ratio)) + "***";
 	}
 
 
 	/**
 	 * 格式化邮箱地址，即隐藏部分信息 yao.wang@soulinfo.com --> ya***ng@sou***.com
 	 * (前提需要保证邮箱格式正确，不正确则直接返回原字符串)
+	 *
 	 * @param email
 	 * @return
 	 */
 	public static String formatEmail(String email) {
-		if(isBlank(email) || isEmail(email) == false) {
+		if (isBlank(email) || isEmail(email) == false) {
 			return email;
 		}
-		
+
 		String[] splits = email.split("@");
-		if(splits.length < 2) {
+		if (splits.length < 2) {
 			return email;
 		}
-		
+
 		String after = splits[1];
-		if(after.length() > 4){
+		if (after.length() > 4) {
 			after = after.substring(0, 3) + "***";
 		}
-		
+
 		String before = splits[0];
-		if(before.length() > 4){
+		if (before.length() > 4) {
 			before = before.substring(0, 2) + "***" + before.substring(before.length() - 2);
 		}
-		
+
 		return before + "@" + after;
 	}
-	
-	public static boolean isMobile( String mobile) {
+
+	public static boolean isMobile(String mobile) {
 		Matcher m = MOBILE_PATTERN.matcher(mobile);
 		return m.matches();
 	}
-	
-	public static boolean isEmail( String email) {
+
+	public static boolean isEmail(String email) {
 		Matcher m = EMAIL_PATTERN.matcher(email);
 		return m.matches();
 	}
@@ -307,7 +306,7 @@ public class StringUtil extends StringUtils {
 		char aChar;
 		int len = theString.length();
 		StringBuffer outBuffer = new StringBuffer(len);
-		for (int x = 0; x < len;) {
+		for (int x = 0; x < len; ) {
 			aChar = theString.charAt(x++);
 			if (aChar == '\\') {
 				aChar = theString.charAt(x++);
@@ -370,77 +369,80 @@ public class StringUtil extends StringUtils {
 		}
 		return outBuffer.toString();
 	}
-	
+
 
 	/**
 	 * 返回中文拼音
+	 *
 	 * @param src
 	 * @return
 	 */
-	  public static String getPingYin(String src) {  
-   	  
-	        char[] t1 = null;  
-	        t1 = src.toCharArray();  
-	        String[] t2 = new String[t1.length];  
-	        HanyuPinyinOutputFormat t3 = new HanyuPinyinOutputFormat();  
-	          
-	        t3.setCaseType(HanyuPinyinCaseType.LOWERCASE);  
-	        t3.setToneType(HanyuPinyinToneType.WITHOUT_TONE);  
-	        t3.setVCharType(HanyuPinyinVCharType.WITH_V);  
-	        String t4 = "";  
-	        int t0 = t1.length;  
-	        try {  
-	            for (int i = 0; i < t0; i++) {  
-	                // 判断是否为汉字字符  
-	                if (java.lang.Character.toString(t1[i]).matches(  
-	                        "[\\u4E00-\\u9FA5]+")) {  
-	                    t2 = PinyinHelper.toHanyuPinyinStringArray(t1[i], t3);  
-	                    t4 += t2[0];
-	                } else {
-		                t4 += Character.toString(t1[i]);
-	                }
-	            }  
-	            // System.out.println(t4);  
-	            return t4;  
-	        } catch (BadHanyuPinyinOutputFormatCombination e1) {  
-	            e1.printStackTrace();  
-	        }  
-	        return t4;  
-	    }  
+	public static String getPingYin(String src) {
 
-  /**
-   * 返回中文的首字母  
-   * @param str
-   * @return
-   */
-    public static String getPinYinHeadChar(String str) {  
-  
-        String convert = "";  
-        for (int j = 0; j < str.length(); j++) {  
-            char word = str.charAt(j);  
-            String[] pinyinArray = PinyinHelper.toHanyuPinyinStringArray(word);  
-            if (pinyinArray != null) {  
-                convert += pinyinArray[0].charAt(0);  
-            } else {  
-                convert += word;  
-            }  
-        }  
-        return convert;  
-    }  
-	  
-    /**
-     * 将字符串转移为ASCII码  
-     * @param cnStr
-     * @return
-     */
-    public static String getCnASCII(String cnStr) {  
-        StringBuffer strBuf = new StringBuffer();  
-        byte[] bGBK = cnStr.getBytes();  
-        for (int i = 0; i < bGBK.length; i++) {  
-            strBuf.append(Integer.toHexString(bGBK[i] & 0xff));  
-        }  
-        return strBuf.toString();  
-    }
+		char[] t1 = null;
+		t1 = src.toCharArray();
+		String[] t2 = new String[t1.length];
+		HanyuPinyinOutputFormat t3 = new HanyuPinyinOutputFormat();
+
+		t3.setCaseType(HanyuPinyinCaseType.LOWERCASE);
+		t3.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
+		t3.setVCharType(HanyuPinyinVCharType.WITH_V);
+		String t4 = "";
+		int t0 = t1.length;
+		try {
+			for (int i = 0; i < t0; i++) {
+				// 判断是否为汉字字符
+				if (java.lang.Character.toString(t1[i]).matches(
+						"[\\u4E00-\\u9FA5]+")) {
+					t2 = PinyinHelper.toHanyuPinyinStringArray(t1[i], t3);
+					t4 += t2[0];
+				} else {
+					t4 += Character.toString(t1[i]);
+				}
+			}
+			// System.out.println(t4);
+			return t4;
+		} catch (BadHanyuPinyinOutputFormatCombination e1) {
+			e1.printStackTrace();
+		}
+		return t4;
+	}
+
+	/**
+	 * 返回中文的首字母
+	 *
+	 * @param str
+	 * @return
+	 */
+	public static String getPinYinHeadChar(String str) {
+
+		String convert = "";
+		for (int j = 0; j < str.length(); j++) {
+			char word = str.charAt(j);
+			String[] pinyinArray = PinyinHelper.toHanyuPinyinStringArray(word);
+			if (pinyinArray != null) {
+				convert += pinyinArray[0].charAt(0);
+			} else {
+				convert += word;
+			}
+		}
+		return convert;
+	}
+
+	/**
+	 * 将字符串转移为ASCII码
+	 *
+	 * @param cnStr
+	 * @return
+	 */
+	public static String getCnASCII(String cnStr) {
+		StringBuffer strBuf = new StringBuffer();
+		byte[] bGBK = cnStr.getBytes();
+		for (int i = 0; i < bGBK.length; i++) {
+			strBuf.append(Integer.toHexString(bGBK[i] & 0xff));
+		}
+		return strBuf.toString();
+	}
 
 	public static String getRandomString(int length) {
 		String str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -453,5 +455,16 @@ public class StringUtil extends StringUtils {
 		}
 		return sb.toString();
 	}
-	
+
+	/**
+	 * 首字母小写
+	 *
+	 * @param str
+	 * @return
+	 */
+	public static String lowerFirstCase(String str) {
+		char[] chars = str.toCharArray();
+		chars[0] += 32;
+		return String.valueOf(chars);
+	}
 }
