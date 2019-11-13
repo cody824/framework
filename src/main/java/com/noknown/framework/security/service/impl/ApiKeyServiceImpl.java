@@ -174,7 +174,7 @@ public class ApiKeyServiceImpl extends BaseServiceImpl<ApiKey, String> implement
 			throw new ServiceException("加密失败，请联系管理员", -99);
 		}
 		User user;
-		if (token.getSign().equals(cipher)) {
+		if (token.getSign().equalsIgnoreCase(cipher)) {
 			user = userDao.findById(apiKey.getUserId()).orElse(null);
 		} else {
 			logger.debug("正确签名：" + cipher);
