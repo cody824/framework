@@ -11,6 +11,8 @@ import java.net.UnknownHostException;
  */
 public class NetUtil {
 
+	private static final int MAX_RETRY = 10;
+
 	/**
 	 * 获取Local的mac地址
 	 *
@@ -34,6 +36,13 @@ public class NetUtil {
 	public static String getMac(InetAddress ia) throws SocketException {
 		//获取网卡，获取地址
 		byte[] mac = NetworkInterface.getByInetAddress(ia).getHardwareAddress();
+		int retry = 0;
+		while (mac == null && retry++ < MAX_RETRY) {
+			mac = NetworkInterface.getByInetAddress(ia).getHardwareAddress();
+		}
+		if (mac == null) {
+			throw new SocketException("无法获取");
+		}
 		StringBuffer sb = new StringBuffer("");
 		for (int i = 0; i < mac.length; i++) {
 			if (i != 0) {
