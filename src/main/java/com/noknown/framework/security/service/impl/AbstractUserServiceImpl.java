@@ -195,7 +195,7 @@ public abstract class AbstractUserServiceImpl extends BaseServiceImpl<User, Inte
 			user = userDao.findByNick(name);
 		}
 		if (user == null) {
-			throw new UsernameNotFoundException(String.format("User with username=%s was not found", name));
+			throw new UsernameNotFoundException(String.format("用户%s不存在", name));
 		}
 		return user;
 	}
