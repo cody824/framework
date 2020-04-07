@@ -146,7 +146,6 @@ public interface BaseService<T, ID extends Serializable> {
 	 */
 	PageData<T> find(int start, int limit) throws DaoException, ServiceException;
 
-
 	/**
 	 * 获取SQLFilter相匹配的分页对象
 	 * @param filter SQLFilter对象
@@ -158,6 +157,16 @@ public interface BaseService<T, ID extends Serializable> {
 	 */
 	PageData<T> find(SQLFilter filter, int start, int limit) throws DaoException, ServiceException;
 
+
+	/**
+	 * 分页查询
+	 * @param pageNo 分页数
+	 * @param size  显示几条数据
+	 * @return PageData 返回符合条件的分页数据
+	 * @throws DaoException     操作失败抛出异常
+	 * @throws ServiceException 操作失败抛出异常
+	 */
+	PageData<T> findByPage(int pageNo, int size) throws DaoException, ServiceException;
 
 	/**
 	 * 获取SQLFilter相匹配的分页对象

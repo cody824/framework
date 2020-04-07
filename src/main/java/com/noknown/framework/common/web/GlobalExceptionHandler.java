@@ -166,9 +166,10 @@ public class GlobalExceptionHandler {
 
 	private boolean isAjaxRequest(HttpServletRequest request) {
 		boolean check = false;
+		String accept = request.getHeader("Accept");
 		if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
 			check = true;
-		} else if ("application/json".equalsIgnoreCase(request.getHeader("Accept"))) {
+		} else if (StringUtil.isNotBlank(accept) && accept.contains("application/json")) {
 			check = true;
 		}
 		return check;
