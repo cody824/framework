@@ -186,4 +186,9 @@ public interface BaseService<T, ID extends Serializable> {
 	 * @return 符合条件的对象个数
 	 */
 	long getCount(SQLFilter filter);
+
+	/**
+	 * 删除所有的数据
+	 */
+	void deleteAll();
 }

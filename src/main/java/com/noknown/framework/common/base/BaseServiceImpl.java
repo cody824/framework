@@ -267,4 +267,8 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 		return col;
 	}
 
+	@Override
+	public void deleteAll() {
+		getRepository().deleteAll();
+	}
 }
