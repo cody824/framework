@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.noknown.framework.security.Constants.ROLE_ADMIN;
 
 /**
@@ -87,6 +90,23 @@ public class UserDetailsController  extends BaseController {
 			throw new WebException("用户信息不存在");
 		}
 		return ResponseEntity.ok(udDetails);
+	}
+
+	@RequestMapping(value = "/ud/fullInfo", method = RequestMethod.GET)
+	public ResponseEntity<?> getUserAccess()
+			throws WebException, ServiceException {
+		Authentication user = loginAuth();
+		if (user == null){
+			throw new WebException("没有登录");
+		}
+		Map<String, Object> ret = new HashMap<>();
+		BaseUserDetails udDetails = udService.getUserDetail((Integer) user.getPrincipal());
+		if (udDetails == null) {
+			throw new WebException("用户信息不存在");
+		}
+		ret.put("access", user.getAuthorities());
+		ret.put("userInfo", udDetails);
+		return ResponseEntity.ok(ret);
 	}
 
 }

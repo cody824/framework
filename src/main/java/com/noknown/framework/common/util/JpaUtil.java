@@ -208,6 +208,7 @@ public class JpaUtil {
 					boolean dateFlag1 = m1.matches();
 					if (dateFlag) {
 						str = str.replaceAll("T", " ");
+						str = str.replaceAll("Z", "");
 						try {
 							Date date = formatDate.parse(str);
 							valueArray[i++] = date;

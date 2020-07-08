@@ -21,10 +21,8 @@ public class MD5Util {
 	 * 
 	 * @param file
 	 * @return
-	 * @throws InvalidKeyException
-	 * @throws NoSuchAlgorithmException
 	 */
-	public static String getSignature(File file) throws InvalidKeyException, NoSuchAlgorithmException {
+	public static String getSignature(File file) {
 		FileInputStream in = null;
 		try {
 			in = new FileInputStream(file);
@@ -36,6 +34,8 @@ public class MD5Util {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		} finally {
 			if (in != null) {

@@ -3,11 +3,15 @@ package com.noknown.framework.common.util;
 import com.noknown.framework.common.exception.UtilException;
 import com.noknown.framework.common.util.algo.RandomString;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Properties;
 import java.util.Random;
@@ -33,18 +37,57 @@ public class BaseUtil{
 	}
 
 
-	private static byte[] longToBytes(long x) {
+	public static byte[] longToBytes(long x) {
 		ByteBuffer buffer = ByteBuffer.allocate(8);
 		buffer.putLong(0, x);
 		return buffer.array();
 	}
 
-	private static long bytesToLong(byte[] bytes) {
+	public static long bytesToLong(byte[] bytes) {
 		ByteBuffer buffer = ByteBuffer.allocate(8);
 		buffer.put(bytes, 0, bytes.length);
 		buffer.flip();
 		return buffer.getLong();
 	}
+
+	public static byte intToByte(int x) {
+		return (byte) x;
+	}
+
+	/**
+	 * bytes转int
+	 *
+	 * @param b   bytes
+	 * @param pos 位置
+	 * @return 整数
+	 */
+	public static int byteArrayToInt(byte[] b, int pos) {
+		return b[pos] & 0xFF |
+				(b[pos - 1] & 0xFF) << 8 |
+				(b[pos - 2] & 0xFF) << 16 |
+				(b[pos - 3] & 0xFF) << 24;
+	}
+
+	/**
+	 * int转bytes
+	 *
+	 * @param a 整数
+	 * @return bytes
+	 */
+	public static byte[] intToByteArray(int a) {
+		return new byte[]{
+				(byte) ((a >> 24) & 0xFF),
+				(byte) ((a >> 16) & 0xFF),
+				(byte) ((a >> 8) & 0xFF),
+				(byte) (a & 0xFF)
+		};
+	}
+
+	public static int byteToInt(byte b) {
+		//Java 总是把 byte 当做有符处理；我们可以通过将其和 0xFF 进行二进制与得到它的无符值
+		return b & 0xFF;
+	}
+
 
 	/**
 	 * 获取10位的随机码
@@ -441,6 +484,28 @@ public class BaseUtil{
 			sb.append(hex);
 		}
 		return sb.toString();
+	}
+
+	public static String getAesKey() {
+		try {
+			KeyGenerator kg = KeyGenerator.getInstance("AES");
+			kg.init(128);
+			SecretKey sk = kg.generateKey();
+			byte[] b = sk.getEncoded();
+			String s = BaseUtil.bytesToHex(b);
+			return s;
+		} catch (NoSuchAlgorithmException  e) {
+		}
+		return null;
+	}
+
+	public static void main(String[] args) {
+		String key1 = getAesKey();
+		System.out.println(key1.length());
+		System.out.println(key1);
+		key1 = getAesKey();
+		System.out.println(key1.length());
+		System.out.println(key1);
 	}
 
 }

@@ -20,6 +20,7 @@ import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
 import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 import org.apache.commons.lang.StringUtils;
 
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -466,5 +467,33 @@ public class StringUtil extends StringUtils {
 		char[] chars = str.toCharArray();
 		chars[0] += 32;
 		return String.valueOf(chars);
+	}
+
+	/**
+	 * 容量格式化显示
+	 * @param size
+	 * @return
+	 */
+	public static String formatSize(long size) {
+		DecimalFormat df = new DecimalFormat("####.00");
+		if (size < 1024) // 小于1KB
+		{
+			return size + "Byte";
+		} else if (size < 1024 * 1024) // 小于1MB
+		{
+			float kSize = size / 1024f;
+			return df.format(kSize) + "KB";
+		} else if (size < 1024 * 1024 * 1024) // 小于1GB
+		{
+			float mSize = size / 1024f / 1024f;
+			return df.format(mSize) + "MB";
+		} else if (size < 1024L * 1024L * 1024L * 1024L) // 小于1TB
+		{
+			float gSize = size / 1024f / 1024f / 1024f;
+			return df.format(gSize) + "GB";
+		} else {
+			float tSize = size / 1024f / 1024f / 1024f / 1024f;
+			return df.format(tSize) + "TB";
+		}
 	}
 }

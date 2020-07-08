@@ -29,23 +29,6 @@ public class FileUtil {
 	private static final String UPLOAD_DIR = "/upload/";
 
 	/**
-	 * 获取文件的的MD5值
-	 *
-	 * @param file
-	 * @return
-	 */
-	public static String getFileMD5Code(File file) {
-		try {
-			return MD5Util.getSignature(file);
-		} catch (InvalidKeyException e) {
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	/**
 	 * 获取文件新名字
 	 *
 	 * @return 文件新名字
