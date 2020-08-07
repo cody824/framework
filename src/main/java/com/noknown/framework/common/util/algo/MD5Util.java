@@ -53,10 +53,9 @@ public class MD5Util {
 	 * 
 	 * @param bytes
 	 * @return
-	 * @throws InvalidKeyException
 	 * @throws NoSuchAlgorithmException
 	 */
-	public static String getSignature(byte[] bytes) throws InvalidKeyException, NoSuchAlgorithmException {
+	public static String getSignature(byte[] bytes) throws NoSuchAlgorithmException {
 			MessageDigest md = MessageDigest.getInstance("MD5");
 			md.update(bytes);
 			return bufferToHex(md.digest());
