@@ -105,34 +105,6 @@ public class StringUtil extends StringUtils {
 		return s.trim();
 	}
 
-	/**
-	 * 去除String中的特殊字符和不可见字符
-	 *
-	 * @param in
-	 * @return
-	 */
-	public static String cleanString(String in) {
-		if (isBlank(in)) {
-			return "";
-		}
-
-		StringBuffer out = new StringBuffer(); // Used to hold the output.
-
-		for (int i = 0; i < in.length(); i++) {
-			char current = in.charAt(i); // NOTE: No IndexOutOfBoundsException
-			// caught here; it should not
-			// happen.
-			if ((current == 0x9) || (current == 0xA) || (current == 0xD)
-					|| ((current >= 0x20) && (current <= 0x7E))
-					|| ((current >= 0xA1) && (current <= 0xD7FF))
-					|| ((current >= 0xE000) && (current <= 0xFFFD))
-					|| ((current >= 0x10000) && (current <= 0x10FFFF))) {
-				out.append(current);
-			}
-		}
-		return out.toString().trim();
-	}
-
 	public static String asString(Object obj) {
 		if (obj == null) {
 			return "";
@@ -401,7 +373,6 @@ public class StringUtil extends StringUtils {
 					t4 += Character.toString(t1[i]);
 				}
 			}
-			// System.out.println(t4);
 			return t4;
 		} catch (BadHanyuPinyinOutputFormatCombination e1) {
 			e1.printStackTrace();
@@ -472,23 +443,23 @@ public class StringUtil extends StringUtils {
 	/**
 	 * 容量格式化显示
 	 * @param size
-	 * @return
+	 * @return 格式化好的大小
 	 */
 	public static String formatSize(long size) {
 		DecimalFormat df = new DecimalFormat("####.00");
-		if (size < 1024) // 小于1KB
-		{
+		// 小于1KB
+		if (size < 1024) {
 			return size + "Byte";
-		} else if (size < 1024 * 1024) // 小于1MB
-		{
+		} else if (size < 1024 * 1024) {
+			// 小于1MB
 			float kSize = size / 1024f;
 			return df.format(kSize) + "KB";
-		} else if (size < 1024 * 1024 * 1024) // 小于1GB
-		{
+		} else if (size < 1024 * 1024 * 1024) {
+			// 小于1GB
 			float mSize = size / 1024f / 1024f;
 			return df.format(mSize) + "MB";
-		} else if (size < 1024L * 1024L * 1024L * 1024L) // 小于1TB
-		{
+		} else if (size < 1024L * 1024L * 1024L * 1024L) {
+			// 小于1TB
 			float gSize = size / 1024f / 1024f / 1024f;
 			return df.format(gSize) + "GB";
 		} else {
