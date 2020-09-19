@@ -89,7 +89,11 @@ public class FileFsImpl implements FileStoreService {
 		} 
 		fis.close();
 	}
-	
+
+	public String getPath(String key) {
+		File file = new File(BaseUtil.getPath(basePath) + key);
+		return file.getAbsolutePath();
+	}
 
 	public String getBasePath() {
 		return basePath;

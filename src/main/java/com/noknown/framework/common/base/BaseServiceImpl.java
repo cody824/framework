@@ -61,7 +61,7 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 	public abstract JpaSpecificationExecutor<T> getSpecificationExecutor();
 
 	@Override
-	public T create(T entry) throws ServiceException {
+	public T create(T entry) throws ServiceException, ServiceException {
 		entry = getRepository().save(entry);
 		return entry;
 	}
@@ -136,7 +136,7 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 	}
 
 	@Override
-	public void delete(ID... entityids) {
+	public void delete(ID... entityids) throws ServiceException {
 		for (ID id : entityids) {
 			getRepository().deleteById(id);
 		}
