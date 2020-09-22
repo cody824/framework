@@ -95,6 +95,10 @@ public class FileFsImpl implements FileStoreService {
 		return file.getAbsolutePath();
 	}
 
+	public String getUrl(String key) {
+		return baseUrl + key;
+	}
+
 	public String getBasePath() {
 		return basePath;
 	}
