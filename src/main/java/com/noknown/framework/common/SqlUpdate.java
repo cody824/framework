@@ -43,10 +43,10 @@ public class SqlUpdate {
 		Resource resource = resourceLoader.getResource("update.sql");
 		final ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
 		if (resource.exists() && resource.isFile()) {
-			logger.debug("执行更新脚本：" + resource);
+			logger.info("执行更新脚本：" + resource);
 			populator.addScripts(resource);
 		} else {
-			logger.debug("没有SQL更新脚本");
+			logger.info("没有SQL更新脚本");
 		}
 		return populator;
 	}
