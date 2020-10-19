@@ -25,7 +25,7 @@ public class SqlUpdate {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	@Value("${updateSQL:#{null}}")
+	@Value("${UPDATE_SQL:#{null}}")
 	private String uploadSQL;
 
 	/**
