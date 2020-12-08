@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.HtmlUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -72,8 +73,8 @@ public class SureProcessingFilter  extends AbstractAuthenticationProcessingFilte
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException, ServletException {
-		HttpSession session = request.getSession();
-		String userName = request.getParameter(userNameParam);
+		request.getSession(true).invalidate();
+		String userName = request.getParameter(userNameParam) ;
 		String password = request.getParameter(passwordParam);
 		String phone = request.getParameter(phoneParam);
 		String phoneAuthcode = request.getParameter(phoneAuthcodeParam);
@@ -81,6 +82,11 @@ public class SureProcessingFilter  extends AbstractAuthenticationProcessingFilte
 		String clientId = request.getParameter(clientIdParam);
 		String code = request.getParameter(codeParam);
 		String state = request.getParameter(stateParam);
+
+		if (StringUtil.isNotBlank(userName)) {
+			userName = HtmlUtils.htmlEscape(userName);
+		}
+		HttpSession session = request.getSession();
 		Authentication token = null;
 		if (clientId == null) {
 			clientId = session.getId();
