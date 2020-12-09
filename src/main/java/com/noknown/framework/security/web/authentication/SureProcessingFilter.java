@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.HtmlUtils;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -74,6 +75,8 @@ public class SureProcessingFilter  extends AbstractAuthenticationProcessingFilte
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException, ServletException {
 		request.getSession(true).invalidate();
+		Cookie cookie = request.getCookies()[0];
+		cookie.setMaxAge(0);
 		String userName = request.getParameter(userNameParam) ;
 		String password = request.getParameter(passwordParam);
 		String phone = request.getParameter(phoneParam);
