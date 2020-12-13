@@ -45,6 +45,9 @@ public abstract class AbstractUserServiceImpl extends BaseServiceImpl<User, Inte
 	@Value("${security.auth.mobile:true}")
 	private boolean mobileAuth;
 
+	@Value("${security.auth.default-password:123456}")
+	private String defaultPassword;
+
 	@Override
 	public JpaRepository<User, Integer> getRepository() {
 		return userDao;
@@ -387,7 +390,7 @@ public abstract class AbstractUserServiceImpl extends BaseServiceImpl<User, Inte
 				throw new ServiceException("用户ID:" + userId + " 对应的用户不存在");
 			}
 
-			String password = pswdEncoder.encode("123456");
+			String password = pswdEncoder.encode(defaultPassword);
 			user.setPassword(password);
 			userDao.save(user);
 		}

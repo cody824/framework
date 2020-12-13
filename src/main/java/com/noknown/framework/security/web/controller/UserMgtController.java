@@ -42,6 +42,9 @@ public class UserMgtController extends BaseController {
 
 	private final boolean initAdmin;
 
+	@Value("${security.auth.default-password:123456}")
+	private String defaultPassword;
+
 	@Autowired
 	public UserMgtController(UserService userService,
 	                         RoleService roleService,
@@ -62,7 +65,7 @@ public class UserMgtController extends BaseController {
 			UserWarpForReg userWarpForReg = new UserWarpForReg();
 			userWarpForReg.setNick("admin");
 			userWarpForReg.setNickOk(true);
-			userWarpForReg.setPassword("123456");
+			userWarpForReg.setPassword(defaultPassword);
 			Map<String, String> params = new HashMap<>(1);
 			params.put("fullName", "管理员");
 			userWarpForReg.setParams(params);
