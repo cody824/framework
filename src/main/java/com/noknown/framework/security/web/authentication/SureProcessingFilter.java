@@ -74,9 +74,11 @@ public class SureProcessingFilter  extends AbstractAuthenticationProcessingFilte
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException, ServletException {
-		request.getSession(true).invalidate();
-		Cookie cookie = request.getCookies()[0];
-		cookie.setMaxAge(0);
+		request.getSession(false).invalidate();
+		if (request.getCookies() != null && request.getCookies().length > 0) {
+			Cookie cookie = request.getCookies()[0];
+			cookie.setMaxAge(0);
+		}
 		String userName = request.getParameter(userNameParam) ;
 		String password = request.getParameter(passwordParam);
 		String phone = request.getParameter(phoneParam);
