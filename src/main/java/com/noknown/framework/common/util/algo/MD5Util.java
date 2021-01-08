@@ -1,6 +1,8 @@
 
 package com.noknown.framework.common.util.algo;
 
+import org.apache.commons.io.IOUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -23,27 +25,24 @@ public class MD5Util {
 	 * @return
 	 */
 	public static String getSignature(File file) {
-		FileInputStream in = null;
+		FileInputStream fis = null;
 		try {
-			in = new FileInputStream(file);
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			FileChannel ch = in.getChannel();
-			MappedByteBuffer byteBuffer = ch.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
-			md.update(byteBuffer);
-			return bufferToHex(md.digest());
+			fis = new FileInputStream(file);
+
+			byte[] buffer = new byte[8192];
+			MessageDigest md5 = MessageDigest.getInstance("MD5");
+			int len;
+			while ((len = fis.read(buffer)) != -1) {
+				md5.update(buffer, 0, len);
+			}
+			return bufferToHex(md5.digest());
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException e) {
-				}
-			}
+			IOUtils.closeQuietly(fis);
 		}
 		return null;
 	}
