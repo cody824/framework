@@ -1,11 +1,9 @@
 package com.noknown.framework.cache.file;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.Collection;
 import java.util.List;
 
@@ -62,19 +60,12 @@ public interface FileCache {
 	boolean addCacheFile(String key, InputStream inputStream) throws IOException;
 
 	/**
-	 * 打开文件准备写入
-	 * @deprecated
-	 * @param key 缓存key
-	 * @return 文件channel
-	 */
-	FileChannel openCacheForWrite(String key) throws IOException;
-
-	/**
 	 * 创建文件准备协议
 	 *
 	 * @param key  缓存key
 	 * @param size 文件大小
 	 * @return 文件
+	 * @throws IOException IO错误
 	 */
 	File openCacheForWrite(String key, long size) throws IOException;
 

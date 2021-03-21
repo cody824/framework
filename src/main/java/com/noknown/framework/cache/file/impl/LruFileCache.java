@@ -79,14 +79,14 @@ public class LruFileCache implements FileCache {
 	 * cache config
 	 */
 	private FileCacheOptions options;
-	private Map<String, RandomAccessFile> raMap = new ConcurrentHashMap<>();
-	private Map<String, FileChannel> channelMap = new ConcurrentHashMap<>();
-	private BlockingQueue<Collection<PackedFile>> packedFileQueue = new LinkedBlockingQueue<>();
-	private BlockingQueue<ReleaseList> releaseListQuery = new LinkedBlockingQueue<>();
+	private final Map<String, RandomAccessFile> raMap = new ConcurrentHashMap<>();
+	private final Map<String, FileChannel> channelMap = new ConcurrentHashMap<>();
+	private final BlockingQueue<Collection<PackedFile>> packedFileQueue = new LinkedBlockingQueue<>();
+	private final BlockingQueue<ReleaseList> releaseListQuery = new LinkedBlockingQueue<>();
 
 
-	private volatile boolean freeRun = false;
-	private boolean autoRecoveryRun = false;
+	private final boolean freeRun = false;
+	private final boolean autoRecoveryRun = false;
 
 	private File singleDir;
 
@@ -94,24 +94,24 @@ public class LruFileCache implements FileCache {
 
 	private File indexDir;
 
-	private AtomicLong clearBigNum = new AtomicLong(0);
+	private final AtomicLong clearBigNum = new AtomicLong(0);
 
-	private AtomicLong clearSmallNum = new AtomicLong(0);
+	private final AtomicLong clearSmallNum = new AtomicLong(0);
 
-	private AtomicLong autoClearBigNum = new AtomicLong(0);
+	private final AtomicLong autoClearBigNum = new AtomicLong(0);
 
-	private AtomicLong autoClearSmallNum = new AtomicLong(0);
+	private final AtomicLong autoClearSmallNum = new AtomicLong(0);
 
-	private AtomicLong failClearBigNum = new AtomicLong(0);
+	private final AtomicLong failClearBigNum = new AtomicLong(0);
 
-	private AtomicLong failClearSmallNum = new AtomicLong(0);
+	private final AtomicLong failClearSmallNum = new AtomicLong(0);
 
 	private GlobalIndex globalIndex;
 
 	private PackedIndex packedIndex;
 
-	private ScheduledExecutorService clearScheduled = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
-		AtomicInteger atomic = new AtomicInteger();
+	private final ScheduledExecutorService clearScheduled = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+		final AtomicInteger atomic = new AtomicInteger();
 
 		@Override
 		public Thread newThread(@NonNull Runnable r) {
@@ -147,12 +147,12 @@ public class LruFileCache implements FileCache {
 	/**
 	 * 强制关闭MappedByteBuffer
 	 *
-	 * @param mbb
+	 * @param mbb 内存
 	 */
 	private static void forceClose(MappedByteBuffer mbb) {
 		AccessController.doPrivileged((PrivilegedAction) () -> {
 			try {
-				Method getCleanerMethod = mbb.getClass().getMethod("cleaner", new Class[0]);
+				Method getCleanerMethod = mbb.getClass().getMethod("cleaner");
 				getCleanerMethod.setAccessible(true);
 				Cleaner cleaner = (Cleaner)
 						getCleanerMethod.invoke(mbb, new Object[0]);
@@ -322,42 +322,12 @@ public class LruFileCache implements FileCache {
 	}
 
 	@Override
-	public FileChannel openCacheForWrite(String key) throws IOException {
-		forceCleanIfNeed();
-		RandomAccessFile raFile = raMap.get(key);
-		if (raFile != null) {
-			raMap.remove(key);
-			IOUtils.closeQuietly(raFile);
-		}
-		FileChannel channel = channelMap.get(key);
-		if (channel != null) {
-			channelMap.remove(key);
-			IOUtils.closeQuietly(channel);
-		}
-		File file = newWriteCacheFile(key);
-		if (file == null) {
-			return null;
-		}
-		try {
-			raFile = new RandomAccessFile(file, "rw");
-			channel = raFile.getChannel();
-			raMap.put(key, raFile);
-			channelMap.put(key, channel);
-		} catch (FileNotFoundException ignored) {
-		}
-		return channel;
-	}
-
-	@Override
 	public boolean addCacheFile(String key, InputStream inputStream) throws IOException {
 		if (StringUtil.isBlank(key) || inputStream == null) {
 			return false;
 		}
 		forceCleanIfNeed();
 		File file = newWriteCacheFile(key);
-		if (file == null) {
-			return false;
-		}
 		Path path = Paths.get(file.getAbsolutePath());
 		Files.copy(inputStream, path);
 		complete(key);
@@ -476,7 +446,7 @@ public class LruFileCache implements FileCache {
 				packedInit();
 			}
 		} catch (RocksDBException e) {
-			throw new RuntimeException("Cache index DB creation failed");
+			throw new RuntimeException("Cache index DB creation failed", e);
 		}
 	}
 
@@ -608,7 +578,7 @@ public class LruFileCache implements FileCache {
 	}
 
 	@Override
-	public void writeCacheFile(String key, long seek, ByteBuffer buffer) throws IOException {
+	public void writeCacheFile(String key, long offset, ByteBuffer buffer) throws IOException {
 
 		File file = new File(getCacheFilePath(key) + "." + CACHE_IDENTIFY);
 		RandomAccessFile randFile = null;
@@ -618,7 +588,6 @@ public class LruFileCache implements FileCache {
 		try {
 			randFile = new RandomAccessFile(file, "rw");
 			channel = randFile.getChannel();
-			long offset = seek - buffer.limit();
 			mbb = channel.map(FileChannel.MapMode.READ_WRITE, offset, buffer.limit());
 			fileLock = channel.lock(offset, buffer.limit(), true);
 			while (fileLock == null || !fileLock.isValid()) {
@@ -630,12 +599,11 @@ public class LruFileCache implements FileCache {
 			mbb.put(buffer);
 			mbb.force();
 
-		} catch (IOException e) {
-			logger.error(e.getLocalizedMessage(), e);
 		} catch (OverlappingFileLockException e) {
 			throw new IllegalArgumentException("The program design is unreasonable and the locked areas overlap each other");
 		} catch (Exception e) {
 			logger.error(e.getLocalizedMessage(), e);
+			throw e;
 		} finally {
 			release(fileLock);
 			forceClose(mbb);
@@ -835,7 +803,7 @@ public class LruFileCache implements FileCache {
 				RocksIterator iterator = db.newIterator(readOptions);
 				for (iterator.seek(BaseUtil.longToBytes(packedKey)); iterator.isValid(); iterator.next()) {
 					byte[] keys = iterator.key();
-					batch.remove(keys);
+					batch.delete(keys);
 				}
 				db.write(writeOpt, batch);
 			}
@@ -887,10 +855,8 @@ public class LruFileCache implements FileCache {
 			while (true) {
 				try {
 					Collection<PackedFile> caches = packedFileQueue.take();
-					if (caches != null) {
-						globalIndex.batchPut(caches);
-						packedIndex.batchPut(caches, false);
-					}
+					globalIndex.batchPut(caches);
+					packedIndex.batchPut(caches, false);
 				} catch (InterruptedException e) {
 					logger.debug("PackedCacheRecord interrupted and exit");
 					break;

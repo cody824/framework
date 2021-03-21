@@ -10,7 +10,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Properties;
@@ -103,11 +103,9 @@ public class BaseUtil{
 		int min = date.getMinutes() + (new Random().nextInt(10));
 		int sec = date.getSeconds() * (new Random().nextInt(10));
 		int num = new Random().nextInt(1000);
-		StringBuffer buffer = new StringBuffer();
-		buffer = buffer.append(year).append(month).append(hou)
-				.append(min).append(sec).append(num);
-		String code = buffer.toString();
-		Long long1 = Long.parseLong(code);
+		String code = String.valueOf(year) + month + hou +
+				min + sec + num;
+		long long1 = Long.parseLong(code);
 		identifyCode = Long.toHexString(long1);
 		return identifyCode;
 	}
@@ -252,7 +250,7 @@ public class BaseUtil{
 		Properties pro = new OrderProperties();
 		InputStreamReader reader = null;
 		try {
-			reader = new InputStreamReader(new FileInputStream(file), "utf8");
+			reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
 			pro.load(reader);
 		} catch (FileNotFoundException e) {
 			return pro;
@@ -353,7 +351,7 @@ public class BaseUtil{
 		if (file.createNewFile()) {
 			return file;
 		} else {
-			return null;
+			throw new IOException("创建目标文件失败！");
 		}
 	}
 
@@ -455,9 +453,9 @@ public class BaseUtil{
 	 * @return 转换后的Hex字符串
 	 */
 	public static String bytesToHex(byte[] bytes) {
-		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < bytes.length; i++) {
-			String hex = Integer.toHexString(bytes[i] & 0xFF);
+		StringBuilder sb = new StringBuilder();
+		for (byte aByte : bytes) {
+			String hex = Integer.toHexString(aByte & 0xFF);
 			if (hex.length() < 2) {
 				sb.append(0);
 			}
@@ -473,9 +471,9 @@ public class BaseUtil{
 	 * @return 转换后的Hex字符串
 	 */
 	public static String bytesToHex(byte[] bytes, int offset, int length) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		int max = offset + length;
-		max = max > bytes.length ? bytes.length : max;
+		max = Math.min(max, bytes.length);
 		for (int i = offset; i < max; i++) {
 			String hex = Integer.toHexString(bytes[i] & 0xFF);
 			if (hex.length() < 2) {
@@ -492,20 +490,9 @@ public class BaseUtil{
 			kg.init(128);
 			SecretKey sk = kg.generateKey();
 			byte[] b = sk.getEncoded();
-			String s = BaseUtil.bytesToHex(b);
-			return s;
-		} catch (NoSuchAlgorithmException  e) {
+			return BaseUtil.bytesToHex(b);
+		} catch (NoSuchAlgorithmException ignored) {
 		}
 		return null;
 	}
-
-	public static void main(String[] args) {
-		String key1 = getAesKey();
-		System.out.println(key1.length());
-		System.out.println(key1);
-		key1 = getAesKey();
-		System.out.println(key1.length());
-		System.out.println(key1);
-	}
-
 }
