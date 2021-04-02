@@ -146,6 +146,14 @@ public interface FileCache {
 	void closeWriteCacheFile(String key, boolean success);
 
 	/**
+	 * 关闭cache写入
+	 *
+	 * @param key     缓存key
+	 * @param targetKey 目标缓存key
+	 */
+	void closeWriteCacheFile(String key, String targetKey);
+
+	/**
 	 * 移除缓存文件
 	 * @param key   缓存key
 	 * @return 是否成功

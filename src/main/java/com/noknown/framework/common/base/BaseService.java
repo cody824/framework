@@ -188,6 +188,12 @@ public interface BaseService<T, ID extends Serializable> {
 	long getCount(SQLFilter filter);
 
 	/**
+	 * 获取数据总数
+	 * @return
+	 */
+	long countAll();
+
+	/**
 	 * 删除所有的数据
 	 */
 	void deleteAll();

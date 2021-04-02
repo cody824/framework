@@ -91,7 +91,7 @@ public class JsonFileUtil {
 	 * @return 读取的对象
 	 * @throws IOException 工具类异常
 	 */
-	public static Object readObjectFromJsonFile(String path, Class<?> c) throws JsonParseException, JsonMappingException, IOException {
+	public static Object readObjectFromJsonFile(String path, Class<?> c) throws IOException {
 		FileInputStream is = null;
 		FileChannel channel = null;
 		FileLock lock = null;

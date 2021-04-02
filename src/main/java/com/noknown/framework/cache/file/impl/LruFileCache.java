@@ -397,6 +397,28 @@ public class LruFileCache implements FileCache {
 		File fileW = new File(getCacheFilePath(key) + "." + CACHE_IDENTIFY);
 		File fileC = getCacheFile(key);
 		try {
+			if (fileC.exists()) {
+				FileUtils.deleteQuietly(fileW);
+				return;
+			}
+			if (fileW.exists()) {
+				Files.move(Paths.get(fileW.getAbsolutePath()), Paths.get(fileC.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
+			} else {
+				logger.warn("Complete cache failed , cache file({}) is not exist!", key);
+			}
+		} catch (IOException e) {
+			logger.error("Complete cache({}) failed:{}", key, e.getLocalizedMessage(), e);
+		}
+	}
+
+	private void complete(String key, String targetKey) {
+		File fileW = new File(getCacheFilePath(key) + "." + CACHE_IDENTIFY);
+		File fileC = getCacheFile(targetKey);
+		try {
+			if (fileC.exists()) {
+				FileUtils.deleteQuietly(fileW);
+				return;
+			}
 			if (fileW.exists()) {
 				Files.move(Paths.get(fileW.getAbsolutePath()), Paths.get(fileC.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
 			} else {
@@ -639,6 +661,11 @@ public class LruFileCache implements FileCache {
 			clearWriting(key);
 		}
 
+	}
+
+	@Override
+	public void closeWriteCacheFile(String key, String targetKey) {
+		complete(key, targetKey);
 	}
 
 	@Override

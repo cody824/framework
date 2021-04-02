@@ -220,6 +220,10 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 		return getSpecificationExecutor().count(spec);
 	}
 
+	@Override
+	public long countAll() {
+		return getRepository().count();
+	}
 
 	@Override
 	public T getByRepoFunc(String funcName, Object... args) throws ServiceException {
