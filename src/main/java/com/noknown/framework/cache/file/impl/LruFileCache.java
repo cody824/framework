@@ -379,7 +379,7 @@ public class LruFileCache implements FileCache {
 	public void writeCache(String key, long seek, ByteBuffer buffer) throws IOException {
 		FileChannel channel = channelMap.get(key);
 		if (channel != null) {
-			channel.position(seek - buffer.limit());
+			channel.position(seek);
 			channel.write(buffer);
 		} else {
 			throw new IOException("channel is null");
@@ -605,12 +605,10 @@ public class LruFileCache implements FileCache {
 		File file = new File(getCacheFilePath(key) + "." + CACHE_IDENTIFY);
 		RandomAccessFile randFile = null;
 		FileChannel channel = null;
-		MappedByteBuffer mbb = null;
 		FileLock fileLock = null;
 		try {
 			randFile = new RandomAccessFile(file, "rw");
 			channel = randFile.getChannel();
-			mbb = channel.map(FileChannel.MapMode.READ_WRITE, offset, buffer.limit());
 			fileLock = channel.lock(offset, buffer.limit(), true);
 			while (fileLock == null || !fileLock.isValid()) {
 				fileLock = channel.lock(offset, buffer.limit(), true);
@@ -618,8 +616,7 @@ public class LruFileCache implements FileCache {
 					logger.debug("Lock failed, retry");
 				}
 			}
-			mbb.put(buffer);
-			mbb.force();
+			channel.write(buffer, offset);
 		} catch (OverlappingFileLockException e) {
 			throw new IllegalArgumentException("The program design is unreasonable and the locked areas overlap each other");
 		} catch (Exception e) {
@@ -627,7 +624,7 @@ public class LruFileCache implements FileCache {
 			throw e;
 		} finally {
 			release(fileLock);
-			forceClose(mbb);
+//			forceClose(mbb);
 			close(channel, randFile);
 		}
 	}
