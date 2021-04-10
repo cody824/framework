@@ -620,7 +620,6 @@ public class LruFileCache implements FileCache {
 			}
 			mbb.put(buffer);
 			mbb.force();
-
 		} catch (OverlappingFileLockException e) {
 			throw new IllegalArgumentException("The program design is unreasonable and the locked areas overlap each other");
 		} catch (Exception e) {
