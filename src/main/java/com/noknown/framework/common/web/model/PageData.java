@@ -32,6 +32,14 @@ public class PageData<T> implements Serializable {
 	 * 第几个
 	 */
 	private int start;
+
+	/**
+	 * 分页模式
+	 *      false: 更具数量start等信息计算页数
+	 *      true: 手动设置
+	 */
+	private boolean pageModel = false;
+
 	/**
 	 * 每页多少条
 	 */
@@ -76,8 +84,12 @@ public class PageData<T> implements Serializable {
 		return itemsIndex;
 	}
 
+	public void setPageNum(int pageNum) {
+		this.pageNum = pageNum;
+	}
+
 	public int getPageNum() {
-		if (limit != 0) {
+		if (!pageModel && limit != 0) {
 			pageNum = (start+limit)/limit;
 		}
 		return pageNum;
@@ -130,4 +142,12 @@ public class PageData<T> implements Serializable {
 		this.data = collection;
 	}
 
+	public boolean isPageModel() {
+		return pageModel;
+	}
+
+	public PageData<T> setPageModel(boolean pageModel) {
+		this.pageModel = pageModel;
+		return this;
+	}
 }

@@ -97,16 +97,18 @@ public abstract  class BaseServiceImpl<T, ID extends Serializable> implements Ba
 
 	@Override
 	public PageData<T> findByPage(SQLFilter filter, int page, int size) {
-		Pageable pageable = PageRequest.of(page, size);
+		Pageable pageable = PageRequest.of(page - 1, size);
 		Specification<T> spec = (root, query, cb) -> JpaUtil.sqlFilterToPredicate(clazz, root, query, cb, filter);
 		Page<T> pd = getSpecificationExecutor().findAll(spec, pageable);
 
 		PageData<T> pageData = new PageData<>();
+		pageData.setPageModel(true);
 		pageData.setTotal(pd.getTotalElements());
 		pageData.setTotalPage(pd.getTotalPages());
 		pageData.setData(pd.getContent());
-		pageData.setStart(page * size);
+		pageData.setStart((page - 1) * size);
 		pageData.setLimit(size);
+		pageData.setPageNum(page);
 		return pageData;
 	}
 
