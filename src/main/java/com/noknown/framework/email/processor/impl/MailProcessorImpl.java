@@ -30,7 +30,7 @@ import java.util.concurrent.*;
 @Component
 public class MailProcessorImpl implements MailProcessor {
 
-	private final Logger logger = (Logger) LoggerFactory.getLogger(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private final JavaMailSender sender;
 
